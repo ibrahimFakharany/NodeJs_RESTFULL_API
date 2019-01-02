@@ -12,7 +12,7 @@ router.post('/', (req, res, next) => {
     
 
     console.log(req.body.queryResult.intent.displayName);
-    var intentDisplayName = req.queryResult.intent.displayName;
+    var intentDisplayName = req.body.queryResult.intent.displayName;
     switch (intentDisplayName) {
         case "sendingemail":
             var email = req.body.queryResult.parameters.email[0];
