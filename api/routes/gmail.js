@@ -12,8 +12,7 @@ router.post('/', (req, res, next) => {
     
 
     console.log(req.body.queryResult.intent.displayName);
-    /*var intentDisplayName = req.queryResult.intent.displayName;
-
+    var intentDisplayName = req.queryResult.intent.displayName;
     switch (intentDisplayName) {
         case "sendingemail":
             var email = req.queryResult.parameters.email[0];
@@ -62,7 +61,7 @@ router.post('/', (req, res, next) => {
         if (err) return console.log('Error loading client secret file:', err);
         // Authorize a client with credentials, then call the Gmail API.
         authorize(JSON.parse(content), listLabels, res);
-    });*/
+    });
 });
 function listLabels(auth, res_api) {
     const gmail = google.gmail({ version: 'v1', auth });
