@@ -15,9 +15,9 @@ router.post('/', (req, res, next) => {
     var intentDisplayName = req.queryResult.intent.displayName;
     switch (intentDisplayName) {
         case "sendingemail":
-            var email = req.queryResult.parameters.email[0];
-            var subject = req.queryResult.parameters.any[0];
-            var body = req.queryResult.parameters.any1[0];
+            var email = req.body.queryResult.parameters.email[0];
+            var subject = req.body.queryResult.parameters.any[0];
+            var body = req.body.queryResult.parameters.any1[0];
             res.status(200).json({
                 fulfillmentMessages: [
                     {
