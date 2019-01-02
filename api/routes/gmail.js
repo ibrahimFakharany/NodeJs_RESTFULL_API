@@ -55,7 +55,7 @@ function getNewToken(oAuth2Client, callback, res) {
 }
 
 
-function listLabels(auth, res) {
+function listLabels(auth, res_api) {
     const gmail = google.gmail({ version: 'v1', auth });
     gmail.users.labels.list({
         userId: 'me',
@@ -66,7 +66,7 @@ function listLabels(auth, res) {
             console.log('Labels:');
             labels.forEach((label) => {
                 //console.log(`- ${label.name}`);
-                res.status(200).json({
+                res_api.status(200).json({
                     speech: "hello from gmail webservice heroku",
                     displayText: "this is display text",
                     source: "this is the source"
