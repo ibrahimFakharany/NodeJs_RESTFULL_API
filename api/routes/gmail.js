@@ -7,7 +7,7 @@ const SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
 const TOKEN_PATH = 'token.json';
 
 router.post('/', (req, res, next) => {
-    console.log(JSON.stringify(req));
+    console.log(req);
     /*var intentDisplayName = req.queryResult.intent.displayName;
 
     switch (intentDisplayName) {
