@@ -9,7 +9,7 @@ const TOKEN_PATH = 'token.json';
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 router.post('/', (req, res, next) => {
-    
+
 
     console.log(req.body.queryResult.intent.displayName);
     var intentDisplayName = req.body.queryResult.intent.displayName;
@@ -41,11 +41,11 @@ router.post('/', (req, res, next) => {
             });
             break;
         case "restaurant.booking.create":
-        fs.readFile('credentials.json', (err, content) => {
-            if (err) return console.log('Error loading client secret file:', err);
-            // Authorize a client with credentials, then call the Gmail API.
-            authorize(JSON.parse(content), listLabels, res);
-        });
+            fs.readFile('credentials.json', (err, content) => {
+                if (err) return console.log('Error loading client secret file:', err);
+                // Authorize a client with credentials, then call the Gmail API.
+                authorize(JSON.parse(content), listLabels, res);
+            });
             break;
         default:
             res.status(200).json({
@@ -62,7 +62,7 @@ router.post('/', (req, res, next) => {
             break;
     }
 
-    
+
 });
 function listLabels(auth, res_api) {
     const gmail = google.gmail({ version: 'v1', auth });
