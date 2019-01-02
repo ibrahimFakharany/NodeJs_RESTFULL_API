@@ -7,6 +7,52 @@ const SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
 const TOKEN_PATH = 'token.json';
 
 router.post('/', (req, res, next) => {
+    var intentDisplayName = req.queryResult.intent.displayName;
+
+    switch (intentDisplayName) {
+        case "sendingemail":
+            var email = req.queryResult.parameters.email[0];
+            var subject = req.queryResult.parameters.any[0];
+            var body = req.queryResult.parameters.any1[0];
+            res.status(200).json({
+                fulfillmentMessages: [
+                    {
+                        text: {
+                            text: [
+                                "email "+ email
+                            ]
+                        },
+                        text: {
+                            text: [
+                                "subject " + subject
+                            ]
+                        },
+                        text: {
+                            text: [
+                                "body  " + body
+                            ]
+                        }
+                    }
+                ]
+            });
+            break;
+        case "":
+            break;
+        default:
+            res.status(200).json({
+                fulfillmentMessages: [
+                    {
+                        text: {
+                            text: [
+                                "sorry i couldn't understand your request"
+                            ]
+                        }
+                    }
+                ]
+            });
+            break;
+    }
+
     fs.readFile('credentials.json', (err, content) => {
         if (err) return console.log('Error loading client secret file:', err);
         // Authorize a client with credentials, then call the Gmail API.
@@ -26,10 +72,10 @@ function listLabels(auth, res_api) {
                 console.log(`- ${label.name}`);
             });
             res_api.status(200).json({
-                fulfillmentMessages : [
+                fulfillmentMessages: [
                     {
-                        text : {
-                            text : [
+                        text: {
+                            text: [
                                 "from my webservice"
                             ]
                         }
@@ -81,4 +127,9 @@ function authorize(credentials, callback, res_authorize) {
         callback(oAuth2Client, res_authorize);
     });
 };
+
+
+function sendEmail(email, subject, body) {
+    
+}
 module.exports = router;
