@@ -144,7 +144,17 @@ function sendEmail(auth, res_sendEmail) {
                 raw: raw
             }
         }, function(err, response) {
-            res.send(err || response)
+            res_sendEmail.status(200).JSON({
+                fulfillmentMessages: [
+                    {
+                        text: {
+                            text: [
+                                "response "+ response
+                            ]
+                        }
+                    }
+                ]
+            })
         });
 
     })
