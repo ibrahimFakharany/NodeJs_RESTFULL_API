@@ -1,15 +1,17 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const router = express.Router();
 const fs = require('fs');
 const readline = require('readline');
 const { google } = require('googleapis');
 const SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
 const TOKEN_PATH = 'token.json';
-
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 router.post('/', (req, res, next) => {
-    var request = JSON.parse(req);
+    
 
-    console.log(request.body.queryResult.intent.displayName);
+    console.log(req.body.queryResult.intent.displayName);
     /*var intentDisplayName = req.queryResult.intent.displayName;
 
     switch (intentDisplayName) {
