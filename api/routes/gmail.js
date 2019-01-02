@@ -6,7 +6,7 @@ const { google } = require('googleapis');
 const SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
 const TOKEN_PATH = 'token.json';
 
-router.get('/', (req, res, next) => {
+router.get('/', (req, res, next)=>{
     fs.readFile('credentials.json', (err, content) => {
         if (err) return console.log('Error loading client secret file:', err);
         // Authorize a client with credentials, then call the Gmail API.
@@ -112,5 +112,4 @@ function authorize(credentials, callback) {
         callback(oAuth2Client);
     });
 };
-
-
+module.exports = router;
