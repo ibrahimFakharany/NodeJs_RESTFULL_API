@@ -7,7 +7,8 @@ const SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
 const TOKEN_PATH = 'token.json';
 
 router.post('/', (req, res, next) => {
-    var intentDisplayName = req.queryResult.intent.displayName;
+    console.log(JSON.stringify(req));
+    /*var intentDisplayName = req.queryResult.intent.displayName;
 
     switch (intentDisplayName) {
         case "sendingemail":
@@ -19,7 +20,7 @@ router.post('/', (req, res, next) => {
                     {
                         text: {
                             text: [
-                                "email "+ email
+                                "email " + email
                             ]
                         },
                         text: {
@@ -57,7 +58,7 @@ router.post('/', (req, res, next) => {
         if (err) return console.log('Error loading client secret file:', err);
         // Authorize a client with credentials, then call the Gmail API.
         authorize(JSON.parse(content), listLabels, res);
-    });
+    });*/
 });
 function listLabels(auth, res_api) {
     const gmail = google.gmail({ version: 'v1', auth });
@@ -130,6 +131,6 @@ function authorize(credentials, callback, res_authorize) {
 
 
 function sendEmail(email, subject, body) {
-    
+
 }
 module.exports = router;
