@@ -26,7 +26,9 @@ function listLabels(auth, res_api) {
                 console.log(`- ${label.name}`);
             });
             res_api.status(200).json({
-                fulfillmentText: "This is a text response",
+                queryResult: {
+                    fulfillmentText: "This is a text response"
+                }
             });
         } else {
             console.log('No labels found.');
@@ -35,7 +37,7 @@ function listLabels(auth, res_api) {
 };
 
 
-function getNewToken(oAuth2Client, callback,res_new_token) {
+function getNewToken(oAuth2Client, callback, res_new_token) {
     const authUrl = oAuth2Client.generateAuthUrl({
         access_type: 'offline',
         scope: SCOPES,
@@ -55,22 +57,22 @@ function getNewToken(oAuth2Client, callback,res_new_token) {
                 if (err) return console.error(err);
                 console.log('Token stored to', TOKEN_PATH);
             });
-            callback(oAuth2Client,res_new_token);
+            callback(oAuth2Client, res_new_token);
         });
     });
 }
 
 
-function authorize(credentials, callback,res_authorize) {
+function authorize(credentials, callback, res_authorize) {
     const { client_secret, client_id, redirect_uris } = credentials.installed;
     const oAuth2Client = new google.auth.OAuth2(
         client_id, client_secret, redirect_uris[0]);
 
     // Check if we have previously stored a token.
     fs.readFile(TOKEN_PATH, (err, token) => {
-        if (err) return getNewToken(oAuth2Client, callback,res_authorize);
+        if (err) return getNewToken(oAuth2Client, callback, res_authorize);
         oAuth2Client.setCredentials(JSON.parse(token));
-        callback(oAuth2Client,res_authorize);
+        callback(oAuth2Client, res_authorize);
     });
 };
 module.exports = router;
