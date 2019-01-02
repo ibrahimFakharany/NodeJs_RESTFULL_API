@@ -26,9 +26,7 @@ function listLabels(auth, res_api) {
                 console.log(`- ${label.name}`);
             });
             res_api.status(200).json({
-                speech: "hello from gmail webservice heroku",
-                displayText: "this is display text",
-                source: "this is the source"
+                fulfillmentText: "This is a text response",
             });
         } else {
             console.log('No labels found.');
