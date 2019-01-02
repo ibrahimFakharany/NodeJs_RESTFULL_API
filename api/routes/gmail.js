@@ -4,40 +4,33 @@ const router = express.Router();
 const fs = require('fs');
 const readline = require('readline');
 const { google } = require('googleapis');
-const SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
+const SCOPES = ['https://www.googleapis.com/auth/gmail.readonly',
+    'https://mail.google.com/',
+    'https://www.googleapis.com/auth/gmail.modify',
+    'https://www.googleapis.com/auth/gmail.compose',
+    'https://www.googleapis.com/auth/gmail.send'];
+//sending email 
+var toEmail = "";
+var subjectEmail = "";
+var bodyEmail = "";
+
+
+
 const TOKEN_PATH = 'token.json';
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 router.post('/', (req, res, next) => {
-
-
     console.log(req.body.queryResult.intent.displayName);
     var intentDisplayName = req.body.queryResult.intent.displayName;
     switch (intentDisplayName) {
         case "sendingemail":
-            var email = req.body.queryResult.parameters.email[0];
-            var subject = req.body.queryResult.parameters.any[0];
-            var body = req.body.queryResult.parameters.any1[0];
-            res.status(200).json({
-                fulfillmentMessages: [
-                    {
-                        text: {
-                            text: [
-                                "email " + email
-                            ]
-                        },
-                        text: {
-                            text: [
-                                "subject " + subject
-                            ]
-                        },
-                        text: {
-                            text: [
-                                "body  " + body
-                            ]
-                        }
-                    }
-                ]
+            toEmail = req.body.queryResult.parameters.email[0];
+            subjectEmail = req.body.queryResult.parameters.any[0];
+            bodyEmail = req.body.queryResult.parameters.any1[0];
+            fs.readFile('credentials.json', (err, content) => {
+                if (err) return console.log('Error loading client secret file:', err);
+                // Authorize a client with credentials, then call the Gmail API.
+                authorize(JSON.parse(content), sendEmail, res);
             });
             break;
         case "restaurant.booking.create":
@@ -133,8 +126,19 @@ function authorize(credentials, callback, res_authorize) {
     });
 };
 
+function sendEmail(auth, res_sendEmail) {
+    const gmail = google.gmail({ version: 'v1', auth })
+    gmail.users.getProfile({
+        userId: 'me'
+    }, (err, { data }) => {
+        if (err) return console.log('The API returned an error: ' + err)
+        console.log(data.emailAddress);
+        var userEmail = data.emailAddress;
 
-function sendEmail(email, subject, body) {
+        res_sendEmail.status(200).JSON({
+            email : userEmail
+        });
 
+    })
 }
 module.exports = router;
