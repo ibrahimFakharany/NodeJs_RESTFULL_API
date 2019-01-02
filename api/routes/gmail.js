@@ -6,8 +6,8 @@ const readline = require('readline');
 const { google } = require('googleapis');
 const SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
 const TOKEN_PATH = 'token.json';
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({ extended: true }));
 router.post('/', (req, res, next) => {
     
 
