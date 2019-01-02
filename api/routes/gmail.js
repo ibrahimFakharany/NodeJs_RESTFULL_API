@@ -6,7 +6,13 @@ const { google } = require('googleapis');
 const SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
 const TOKEN_PATH = 'token.json';
 
-router.get('/', (req, res, next)=>{
+router.get('/', (req, res, next) => {
+    
+    res.status(200).json({
+        speech: "hello from gmail webservice heroku",
+        displayText: "this is display text",
+        source: "this is the source"
+    })
     fs.readFile('credentials.json', (err, content) => {
         if (err) return console.log('Error loading client secret file:', err);
         // Authorize a client with credentials, then call the Gmail API.
@@ -67,11 +73,13 @@ function listLabels(auth) {
             labels.forEach((label) => {
                 console.log(`- ${label.name}`);
             });
+
+
         } else {
             console.log('No labels found.');
         }
     });
-}
+};
 
 
 function getNewToken(oAuth2Client, callback) {
