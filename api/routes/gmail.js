@@ -19,7 +19,7 @@ var bodyEmail = "";
 const TOKEN_PATH = 'token.json';
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
-router.post('/', (req, res, next) => {
+router.post('/', (req, server_response, next) => {
     console.log(req.body.queryResult.intent.displayName);
     var intentDisplayName = req.body.queryResult.intent.displayName;
     switch (intentDisplayName) {
@@ -30,14 +30,14 @@ router.post('/', (req, res, next) => {
             fs.readFile('credentials.json', (err, content) => {
                 if (err) return console.log('Error loading client secret file:', err);
                 // Authorize a client with credentials, then call the Gmail API.
-                authorize(JSON.parse(content), sendEmail, res);
+                authorize(JSON.parse(content), sendEmail, server_response);
             });
             break;
         case "restaurant.booking.create":
             fs.readFile('credentials.json', (err, content) => {
                 if (err) return console.log('Error loading client secret file:', err);
                 // Authorize a client with credentials, then call the Gmail API.
-                authorize(JSON.parse(content), listLabels, res);
+                authorize(JSON.parse(content), listLabels, server_response);
             });
             break;
         default:
@@ -141,14 +141,14 @@ function sendEmail(auth, res_sendEmail) {
             resource: {
                 raw: raw
             }
-        }, function(err, response) {
+        }, function (err, response) {
             if (err) return console.log('The API returned an error: ' + err)
             res_sendEmail.status(200).JSON({
                 fulfillmentMessages: [
                     {
                         text: {
                             text: [
-                                "response "+ response
+                                "response " + response
                             ]
                         }
                     }
@@ -170,6 +170,6 @@ function makeBody(to, from, subject, message) {
     ].join('');
 
     var encodedMail = new Buffer(str).toString("base64").replace(/\+/g, '-').replace(/\//g, '_');
-        return encodedMail;
+    return encodedMail;
 }
 module.exports = router;
