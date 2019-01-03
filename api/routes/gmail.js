@@ -134,8 +134,6 @@ function sendEmail(auth, res_sendEmail) {
         if (err) return console.log('The API returned an error: ' + err)
         console.log(data.emailAddress);
         var userEmail = data.emailAddress;
-
-
         var raw = makeBody(toEmail, userEmail, subjectEmail, bodyEmail);
         gmail.users.messages.send({
             auth: auth,
@@ -144,6 +142,7 @@ function sendEmail(auth, res_sendEmail) {
                 raw: raw
             }
         }, function(err, response) {
+            if (err) return console.log('The API returned an error: ' + err)
             res_sendEmail.status(200).JSON({
                 fulfillmentMessages: [
                     {
@@ -157,7 +156,7 @@ function sendEmail(auth, res_sendEmail) {
             })
         });
 
-    })
+    });
 }
 
 function makeBody(to, from, subject, message) {
