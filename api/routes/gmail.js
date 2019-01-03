@@ -4,10 +4,11 @@ const router = express.Router();
 const fs = require('fs');
 const readline = require('readline');
 const { google } = require('googleapis');
-const SCOPES = ['https://www.googleapis.com/auth/gmail.readonly',
-    'https://mail.google.com/',
+const SCOPES = ['https://mail.google.com/',
+    'https://www.googleapis.com/auth/gmail.readonly',
     'https://www.googleapis.com/auth/gmail.modify',
     'https://www.googleapis.com/auth/gmail.compose',
+    'https://www.googleapis.com/auth/gmail.insert',
     'https://www.googleapis.com/auth/gmail.send'];
 //sending email 
 var toEmail = "";
@@ -143,7 +144,7 @@ function sendEmail(auth, res_sendEmail) {
             }
         }, function (err, response) {
             if (err) return console.log('The API returned an error: ' + err)
-            res_sendEmail.status(200).JSON({
+            res_sendEmail.status(200).json({
                 fulfillmentMessages: [
                     {
                         text: {
