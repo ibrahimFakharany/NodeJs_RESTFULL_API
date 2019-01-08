@@ -26,6 +26,7 @@ function welcome(agent) {
 
 
 router.post('/', (req, server_response, next) => {
+    console.log(req);
     const agent = new WebhookClient({ req, server_response });
     let intentMap = new Map();
     intentMap.set('TestIntent', welcome);
