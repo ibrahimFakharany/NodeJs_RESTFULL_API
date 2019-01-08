@@ -1,11 +1,12 @@
-const { WebhookClient } = require('dialogflow-fulfillment');
-const { Card, Suggestion } = require('dialogflow-fulfillment');
 const express = require('express');
 const bodyParser = require('body-parser');
 const router = express.Router();
 const fs = require('fs');
 const readline = require('readline');
 const { google } = require('googleapis');
+const {googleAction} = require('actions-on-google');
+const { WebhookClient } = require('dialogflow-fulfillment');
+const { Card, Suggestion } = require('dialogflow-fulfillment');
 const SCOPES = ['https://mail.google.com/',
     'https://www.googleapis.com/auth/gmail.readonly',
     'https://www.googleapis.com/auth/gmail.modify',
