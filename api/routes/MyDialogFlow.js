@@ -18,8 +18,8 @@ const TOKEN_PATH = 'token.json';
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
-function welcome(agent) {
-    agent.add(`helloooo`);
+function emailSendingFullAddress(agent) {
+    
 }
 
 
@@ -30,7 +30,7 @@ router.post('/', (req, server_response, next) => {
         response: server_response
     });
     let intentMap = new Map();
-    intentMap.set('email.send.message_full_address', sendinEmailFullAddress);
+    intentMap.set('email.send.message_full_address', emailSendingFullAddress);
     // intentMap.set('your intent name here', yourFunctionHandler);
     // intentMap.set('your intent name here', googleAssistantHandler);
     agent.handleRequest(intentMap);
