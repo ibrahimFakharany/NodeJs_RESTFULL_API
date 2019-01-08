@@ -30,7 +30,7 @@ router.post('/', (req, server_response, next) => {
     const agent = new WebhookClient({ request: req,
         response: server_response });
     let intentMap = new Map();
-    intentMap.set('TestIntent', welcome);
+    // intentMap.set('TestIntent', welcome);
     // intentMap.set('your intent name here', yourFunctionHandler);
     // intentMap.set('your intent name here', googleAssistantHandler);
     agent.handleRequest(intentMap);
