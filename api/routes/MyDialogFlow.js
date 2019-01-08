@@ -15,7 +15,7 @@ function emailSendingFullAddress() {
     fs.readFile('credentials.json', (err, content) => {
         if (err) return console.log('Error loading client secret file:', err);
         // Authorize a client with credentials, then call the Gmail API.
-        var auth = op.authorize();
+        var auth = op.authorize(JSON.parse(content));
         op.sendEmail(auth);
     });
 
