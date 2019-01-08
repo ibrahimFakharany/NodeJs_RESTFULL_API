@@ -1,9 +1,9 @@
-const fs = require('fs');
-const readline = require('readline');
-const { google } = require('googleapis');
+
 const { googleAction } = require('actions-on-google');
 const { Card, Suggestion } = require('dialogflow-fulfillment');
+const { google } = require('googleapis');
 const fs = require('fs');
+const readline = require('readline');
 const SCOPES = ['https://mail.google.com/',
     'https://www.googleapis.com/auth/gmail.readonly',
     'https://www.googleapis.com/auth/gmail.modify',

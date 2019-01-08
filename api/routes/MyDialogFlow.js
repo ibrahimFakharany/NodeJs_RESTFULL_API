@@ -6,14 +6,12 @@ const { WebhookClient } = require('dialogflow-fulfillment');
 var agent = null;
 
 const TOKEN_PATH = 'token.json';
-var op = null;
+var op =null;
 
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 function emailSendingFullAddress() {
-
     op.authorizeUser();
-
 }
 
 router.post('/', (req, server_response, next) => {
