@@ -1,4 +1,4 @@
-const operation = require('Operation');
+const Operation = require('./Operation');
 const express = require('express');
 const bodyParser = require('body-parser');
 const router = express.Router();
@@ -15,15 +15,15 @@ const SCOPES = ['https://mail.google.com/',
     'https://www.googleapis.com/auth/gmail.insert',
     'https://www.googleapis.com/auth/gmail.send'];
 
-
 var agent = null;
 
 const TOKEN_PATH = 'token.json';
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
+var operation = new Operation();
 
 function emailSendingFullAddress() {
-
+operation.authorize();
 }
 
 router.post('/', (req, server_response, next) => {
