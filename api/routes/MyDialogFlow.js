@@ -6,19 +6,25 @@ const { WebhookClient } = require('dialogflow-fulfillment');
 var agent = null;
 
 const TOKEN_PATH = 'token.json';
-var op = null; 
+var op = null;
 
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 function emailSendingFullAddress() {
-    var auth = op.authorize();
-    op.sendEmail(auth);
+   
+    fs.readFile('credentials.json', (err, content) => {
+        if (err) return console.log('Error loading client secret file:', err);
+        // Authorize a client with credentials, then call the Gmail API.
+        var auth = op.authorize();
+        op.sendEmail(auth);
+    });
+
 }
 
 router.post('/', (req, server_response, next) => {
-    
+
     console.log(req.body);
-    
+
     agent = new WebhookClient({
         request: req,
         response: server_response
