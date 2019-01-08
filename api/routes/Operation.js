@@ -2,7 +2,7 @@
 const { googleAction } = require('actions-on-google');
 const { Card, Suggestion } = require('dialogflow-fulfillment');
 const { google } = require('googleapis');
-const fs = require('fs');
+
 const readline = require('readline');
 const SCOPES = ['https://mail.google.com/',
     'https://www.googleapis.com/auth/gmail.readonly',
@@ -11,7 +11,7 @@ const SCOPES = ['https://mail.google.com/',
     'https://www.googleapis.com/auth/gmail.insert',
     'https://www.googleapis.com/auth/gmail.send'];
 
-
+const fs = require('fs');
 const TOKEN_PATH = 'token.json';
 class Operation {
 
@@ -51,12 +51,12 @@ class Operation {
         return fs.readFile('credentials.json', (err, content) => {
             if (err) return console.log('Error loading client secret file:', err);
             // Authorize a client with credentials, then call the Gmail API.
-            return  authorize(JSON.parse(content));
-           
+            return authorize(JSON.parse(content));
+
         });
     }
     authorize(credentials) {
-        
+
         const { client_secret, client_id, redirect_uris } = credentials.installed;
         const oAuth2Client = new google.auth.OAuth2(
             client_id, client_secret, redirect_uris[0]);
