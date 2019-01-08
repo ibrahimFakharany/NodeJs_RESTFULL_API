@@ -16,7 +16,7 @@ const SCOPES = ['https://mail.google.com/',
 
 
 
-    const TOKEN_PATH = 'token.json';
+const TOKEN_PATH = 'token.json';
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
@@ -33,4 +33,7 @@ router.post('/', (req, server_response, next) => {
     // intentMap.set('your intent name here', googleAssistantHandler);
     agent.handleRequest(intentMap);
 });
+module.exports = router;
+
+
 
