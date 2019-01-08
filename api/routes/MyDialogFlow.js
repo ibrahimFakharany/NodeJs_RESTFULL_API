@@ -1,3 +1,4 @@
+const operation = require('Operation');
 const express = require('express');
 const bodyParser = require('body-parser');
 const router = express.Router();
@@ -14,18 +15,20 @@ const SCOPES = ['https://mail.google.com/',
     'https://www.googleapis.com/auth/gmail.insert',
     'https://www.googleapis.com/auth/gmail.send'];
 
+
+var agent = null;
+
 const TOKEN_PATH = 'token.json';
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
-function emailSendingFullAddress(agent) {
-    
-}
+function emailSendingFullAddress() {
 
+}
 
 router.post('/', (req, server_response, next) => {
     console.log(req.body);
-    const agent = new WebhookClient({
+    agent = new WebhookClient({
         request: req,
         response: server_response
     });
@@ -36,6 +39,3 @@ router.post('/', (req, server_response, next) => {
     agent.handleRequest(intentMap);
 });
 module.exports = router;
-
-
-
