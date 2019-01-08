@@ -51,7 +51,7 @@ class Operation {
         return fs.readFile('credentials.json', (err, content) => {
             if (err) return console.log('Error loading client secret file:', err);
             // Authorize a client with credentials, then call the Gmail API.
-            return authorize(JSON.parse(content));
+            return this.authorize(JSON.parse(content));
 
         });
     }
