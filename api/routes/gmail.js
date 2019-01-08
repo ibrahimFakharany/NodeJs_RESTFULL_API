@@ -120,12 +120,19 @@ function authorize(credentials, callback, res_authorize) {
         client_id, client_secret, redirect_uris[0]);
 
     // Check if we have previously stored a token.
-    fs.readFile(TOKEN_PATH, (err, token) => {
+    return fs.readFile(TOKEN_PATH, (err, token) => {
         if (err) return getNewToken(oAuth2Client, callback, res_authorize);
         oAuth2Client.setCredentials(JSON.parse(token));
-        callback(oAuth2Client, res_authorize);
+        // callback(oAuth2Client, res_authorize);
+        return {
+            auth: oAuth2Client,
+            res: res_authorize
+        }
     });
+
+
 };
+
 
 function sendEmail(auth, res_sendEmail) {
     const gmail = google.gmail({ version: 'v1', auth })
