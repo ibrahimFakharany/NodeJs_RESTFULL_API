@@ -8,5 +8,5 @@ const dialogFlow = require('./api/routes/MyDialogFlow')
 app.use('/products', productsRoutes);
 app.use('/orders', ordersRoutes);
 app.use('/gmail', gmailRoutes);
-app.use('/myDialogFlow', gmailRoutes);
+app.use('/myDialogFlow', dialogFlow);
 module.exports = app;
