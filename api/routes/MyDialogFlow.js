@@ -33,9 +33,7 @@ router.post('/', (req, server_response, next) => {
         response: server_response
     });
     let intentMap = new Map();
-    intentMap.set('email.send.message_full_address', emailSendingFullAddress);
-    // intentMap.set('your intent name here', yourFunctionHandler);
-    // intentMap.set('your intent name here', googleAssistantHandler);
+    intentMap.set('email.send.message_full_text', emailSendingFullAddress);
     agent.handleRequest(intentMap);
 });
 module.exports = router;
