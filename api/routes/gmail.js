@@ -24,7 +24,7 @@ router.post('/', (req, server_response, next) => {
     console.log(req.body.queryResult.intent.displayName);
     var intentDisplayName = req.body.queryResult.intent.displayName;
     switch (intentDisplayName) {
-        case "sendingemail":
+        case "email.send.message_full_address":
             toEmail = req.body.queryResult.parameters.email[0];
             subjectEmail = req.body.queryResult.parameters.any[0];
             bodyEmail = req.body.queryResult.parameters.any1[0];
