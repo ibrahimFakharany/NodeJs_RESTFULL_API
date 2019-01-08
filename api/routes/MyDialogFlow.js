@@ -6,6 +6,7 @@ const { WebhookClient } = require('dialogflow-fulfillment');
 var agent = null;
 
 const TOKEN_PATH = 'token.json';
+var opration = null; 
 
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
@@ -25,7 +26,7 @@ router.post('/', (req, server_response, next) => {
         request: req,
         response: server_response
     });
-    
+
     operation = new Operation(agent, server_response);
     let intentMap = new Map();
     intentMap.set('email.send.message_full_text', emailSendingFullAddress);
