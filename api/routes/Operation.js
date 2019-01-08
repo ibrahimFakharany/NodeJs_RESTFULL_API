@@ -9,7 +9,7 @@ const SCOPES = ['https://mail.google.com/',
     'https://www.googleapis.com/auth/gmail.compose',
     'https://www.googleapis.com/auth/gmail.insert',
     'https://www.googleapis.com/auth/gmail.send'];
-
+const TOKEN_PATH = 'token.json';
 class Operation {
 
     constructor(serverResponse, agent) {
