@@ -48,7 +48,7 @@ async function messageContactEmailSending() {
 async function gettingMessages() {
     let auth = await gmailOps.authorizeUser()
     try {
-        const x = await gmailOps.getMessages(auth);
+        let x = await gmailOps.getMessages(auth);
         agent.add(x);
     } catch (err) {
         agent.add('error in after getting messages');
