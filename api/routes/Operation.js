@@ -1,7 +1,7 @@
 
 const { googleAction } = require('actions-on-google');
 const { Card, Suggestion } = require('dialogflow-fulfillment');
-
+const { google } = require('googleapis');
 
 const readline = require('readline');
 const SCOPES = ['https://mail.google.com/',
@@ -14,7 +14,7 @@ const SCOPES = ['https://mail.google.com/',
 const fs = require('fs');
 const TOKEN_PATH = 'token.json';
 class Operation {
-  
+
     constructor(serverResponse, agent) {
         this.serverResponse = serverResponse;
         this.agent = agent;
@@ -51,50 +51,63 @@ class Operation {
     async authorizeUser() {
 
 
-        let promise = new Promise((resolve, err) => {
+        let promise = new Promise((resolve, reject) => {
             fs.readFile('credentials.json', (err, content) => {
                 if (err) return console.log('Error loading client secret file:', err);
 
                 // Authorize a client with credentials, then call the Gmail API
                 resolve(content);
-
+                reject(new Error('error in authorizeUser'));
             });
 
         })
         let con = await promise;
-        console.log('\n content --- > ' + con + '\n');
+   
 
         let auth = await this.authorize(JSON.parse(con));
-        console.log('authorizeUser --> ' + auth);
+        
         return auth;
 
     }
 
     async authorize(credentials) {
-        const { google } = require('googleapis');
+
         const { client_secret, client_id, redirect_uris } = credentials.installed;
         const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
-        
-        return new Promise((resolve, err) => {
+
+        return new Promise((resolve, reject) => {
             fs.readFile(TOKEN_PATH, (err, token) => {
                 if (err) return this.getNewToken(oAuth2Client);
                 oAuth2Client.setCredentials(JSON.parse(token));
                 // callback(oAuth2Client, res_authorize);
                 console.log('authentication in authorize method in callback ---> ' + typeof oAuth2Client);
                 resolve(oAuth2Client);
+                reject(new Error('error in authorize'));
             });
         });
     };
-
-    sendEmail(auth) {
+   makeBody(to, from, subject, message) {
+        var str = ["Content-Type: text/plain; charset=\"UTF-8\"\n",
+            "MIME-Version: 1.0\n",
+            "Content-Transfer-Encoding: 7bit\n",
+            "to: ", to, "\n",
+            "from: ", from, "\n",
+            "subject: ", subject, "\n\n",
+            message
+        ].join('');
+    
+        var encodedMail = new Buffer(str).toString("base64").replace(/\+/g, '-').replace(/\//g, '_');
+        return encodedMail;
+    }
+    sendEmail(auth,toEmail, subjectEmail, bodyEmail) {
         const gmail = google.gmail({ version: 'v1', auth })
         gmail.users.getProfile({
             userId: 'me'
-        }, (err, { data }) => {
+        }, (err, data) => {
+          
             if (err) return console.log('The API returned an error: ' + err)
-            console.log(data.emailAddress);
             var userEmail = data.emailAddress;
-            var raw = makeBody(toEmail, userEmail, subjectEmail, bodyEmail);
+            var raw = this.makeBody(toEmail, userEmail, subjectEmail, bodyEmail);
             gmail.users.messages.send({
                 auth: auth,
                 userId: 'me',
@@ -103,19 +116,11 @@ class Operation {
                 }
             }, function (err, response) {
                 if (err) return console.log('The API returned an error: ' + err)
-                serverResponse.status(200).json({
-                    fulfillmentMessages: [
-                        {
-                            text: {
-                                text: [
-                                    "response " + response
-                                ]
-                            }
-                        }
-                    ]
-                })
             });
 
+        });
+        return new Promise((resolve, reject) => {
+            resolve('sent');
         });
     }
 

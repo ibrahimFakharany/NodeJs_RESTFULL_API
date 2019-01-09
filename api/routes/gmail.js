@@ -42,7 +42,7 @@ router.post('/', (req, server_response, next) => {
             });
             break;
         default:
-            res.status(200).json({
+            server_response.status(200).json({
                 fulfillmentMessages: [
                     {
                         text: {
@@ -57,6 +57,48 @@ router.post('/', (req, server_response, next) => {
     }
 });
 
+
+function authorize(credentials, callback, authorize_response) {
+    const { google } = require('googleapis');
+    const { client_secret, client_id, redirect_uris } = credentials.installed;
+    const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+
+    fs.readFile(TOKEN_PATH, (err, token) => {
+        if (err) return getNewToken(oAuth2Client, callback, authorize_response);
+        oAuth2Client.setCredentials(JSON.parse(token));
+        console.log('authentication in authorize method in callback ---> ' + typeof oAuth2Client);
+        callback(oAuth2Client, authorize_response);
+    });
+
+};
+function getNewToken(oAuth2Client, callback, newTokenResponse) {
+
+    const authUrl = oAuth2Client.generateAuthUrl({
+        access_type: 'offline',
+        scope: SCOPES,
+    });
+
+    console.log('Authorize this app by visiting this url:', authUrl);
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    });
+    rl.question('Enter the code from that page here: ', (code) => {
+        rl.close();
+        oAuth2Client.getToken(code, (err, token) => {
+            if (err) return console.error('Error retrieving access token', err);
+            oAuth2Client.setCredentials(token);
+            // Store the token to disk for later program executions
+            fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
+                if (err) console.error(err);
+                console.log('Token stored to', TOKEN_PATH);
+                callback(oAuth2Client, newTokenResponse);
+            });
+
+
+        });
+    });
+};
 function listLabels(auth, res_api) {
     const gmail = google.gmail({ version: 'v1', auth });
     gmail.users.labels.list({
@@ -90,6 +132,7 @@ function listLabels(auth, res_api) {
 
 
 function sendEmail(auth, res_sendEmail) {
+    console.log("auth in sendemail", auth);
     const gmail = google.gmail({ version: 'v1', auth })
     gmail.users.getProfile({
         userId: 'me'
