@@ -148,11 +148,5 @@ class GmailOperations {
         });
         return await promise;
     }
-
-
-
-
-
-
 }
 module.exports = GmailOperations;
