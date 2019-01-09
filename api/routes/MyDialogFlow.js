@@ -20,7 +20,7 @@ router.post('/', (req, server_response, next) => {
     });
 
     let intentMap = new Map();
-    intentMap.set('email.send.message_full_address', emailSendingFullAddress);
+    intentMap.set('email.send.message_full_text', emailSendingFullAddress);
     agent.handleRequest(intentMap);
 
 
