@@ -20,7 +20,6 @@ class Operation {
         this.agent = agent;
     }
 
-
     async  getNewToken(oAuth2Client) {
 
         const authUrl = oAuth2Client.generateAuthUrl({
@@ -100,6 +99,7 @@ class Operation {
             });
         });
     };
+
     makeBody(to, from, subject, message) {
         var str = ["Content-Type: text/plain; charset=\"UTF-8\"\n",
             "MIME-Version: 1.0\n",
@@ -113,6 +113,7 @@ class Operation {
         var encodedMail = new Buffer(str).toString("base64").replace(/\+/g, '-').replace(/\//g, '_');
         return encodedMail;
     }
+
     sendEmail(auth, toEmail, subjectEmail, bodyEmail) {
         const gmail = google.gmail({ version: 'v1', auth })
         gmail.users.getProfile({
