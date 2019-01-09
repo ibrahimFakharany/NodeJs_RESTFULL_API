@@ -145,9 +145,9 @@ class GmailOperations {
             gmail.users.messages.list({
                 auth: auth,
                 userId: 'me'
-            }, (err, data) => {
-                console.log('data => '+data);
-                resolve(data);
+            }, (err, res) => {
+                console.log('data => '+res.data);
+                resolve(res.data);
             });
         });
         return await promise;
