@@ -1,7 +1,7 @@
 
 const { googleAction } = require('actions-on-google');
 const { Card, Suggestion } = require('dialogflow-fulfillment');
-const { google } = require('googleapis');
+
 
 const readline = require('readline');
 const SCOPES = ['https://mail.google.com/',
@@ -14,11 +14,12 @@ const SCOPES = ['https://mail.google.com/',
 const fs = require('fs');
 const TOKEN_PATH = 'token.json';
 class Operation {
-
+  
     constructor(serverResponse, agent) {
         this.serverResponse = serverResponse;
         this.agent = agent;
     }
+
 
     getNewToken(oAuth2Client) {
 
@@ -39,7 +40,7 @@ class Operation {
                 oAuth2Client.setCredentials(token);
                 // Store the token to disk for later program executions
                 fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
-                    if (err) return console.error(err);
+                    if (err) console.error(err);
                     console.log('Token stored to', TOKEN_PATH);
                 });
                 return oAuth2Client;
@@ -47,29 +48,43 @@ class Operation {
         });
     }
 
-    authorizeUser() {
-        return fs.readFile('credentials.json', (err, content) => {
-            if (err) return console.log('Error loading client secret file:', err);
-            // Authorize a client with credentials, then call the Gmail API.
-            return this.authorize(JSON.parse(content));
+    async authorizeUser() {
 
-        });
+
+        let promise = new Promise((resolve, err) => {
+            fs.readFile('credentials.json', (err, content) => {
+                if (err) return console.log('Error loading client secret file:', err);
+
+                // Authorize a client with credentials, then call the Gmail API
+                resolve(content);
+
+            });
+
+        })
+        let con = await promise;
+        console.log('\n content --- > ' + con + '\n');
+
+        let auth = await this.authorize(JSON.parse(con));
+        console.log('authorizeUser --> ' + auth);
+        return auth;
+
     }
-    authorize(credentials) {
 
+    async authorize(credentials) {
+        const { google } = require('googleapis');
         const { client_secret, client_id, redirect_uris } = credentials.installed;
-        const oAuth2Client = new google.auth.OAuth2(
-            client_id, client_secret, redirect_uris[0]);
-
-        // Check if we have previously stored a token.
-        return fs.readFile(TOKEN_PATH, (err, token) => {
-            if (err) return getNewToken(oAuth2Client, callback, res_authorize);
-            oAuth2Client.setCredentials(JSON.parse(token));
-            // callback(oAuth2Client, res_authorize);
-            return oAuth2Client;
+        const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+        
+        return new Promise((resolve, err) => {
+            fs.readFile(TOKEN_PATH, (err, token) => {
+                if (err) return this.getNewToken(oAuth2Client);
+                oAuth2Client.setCredentials(JSON.parse(token));
+                // callback(oAuth2Client, res_authorize);
+                console.log('authentication in authorize method in callback ---> ' + typeof oAuth2Client);
+                resolve(oAuth2Client);
+            });
         });
     };
-
 
     sendEmail(auth) {
         const gmail = google.gmail({ version: 'v1', auth })
