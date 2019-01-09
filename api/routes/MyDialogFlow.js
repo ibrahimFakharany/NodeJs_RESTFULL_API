@@ -49,7 +49,7 @@ async function gettingMessages() {
     let auth = await gmailOps.authorizeUser()
     try {
         let x = await gmailOps.getMessages(auth);
-        console.log("x --> "+ x);
+        console.log("x --> "+ x.data);
         agent.add();
     } catch (err) {
         agent.add('error in after getting messages'+ err);
