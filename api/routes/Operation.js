@@ -21,7 +21,7 @@ class Operation {
     }
 
 
-    getNewToken(oAuth2Client) {
+    async  getNewToken(oAuth2Client) {
 
         const authUrl = oAuth2Client.generateAuthUrl({
             access_type: 'offline',
@@ -33,24 +33,40 @@ class Operation {
             input: process.stdin,
             output: process.stdout,
         });
-        return rl.question('Enter the code from that page here: ', (code) => {
-            rl.close();
-            return oAuth2Client.getToken(code, (err, token) => {
-                if (err) return console.error('Error retrieving access token', err);
-                oAuth2Client.setCredentials(token);
-                // Store the token to disk for later program executions
-                fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
-                    if (err) console.error(err);
-                    console.log('Token stored to', TOKEN_PATH);
-                });
-                return oAuth2Client;
+        let codePromise = new Promise((resolve, reject) => {
+            rl.question('Enter the code from that page here: ', (code) => {
+                rl.close();
+                resolve(code);
             });
         });
+        let code = await codePromise;
+
+        let tokenPromise = new Promise((resolve, reject) => {
+            oAuth2Client.getToken(code, async (err, token) => {
+
+                if (err) reject('Error retrieving access token');
+                else {
+                    oAuth2Client.setCredentials(token);
+                    // Store the token to disk for later program executions
+                    resolve(token);
+                }
+            });
+        });
+        let token = await tokenPromise;
+        let authPromise = new Promise((resolve, reject) => {
+            fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
+                if (err) reject(error);
+                else {
+                    console.log('Token stored to', TOKEN_PATH);
+                    resolve(oAuth2Client);
+                }
+            });
+        });
+        let auth = await authPromise;
+        return auth;
     }
 
     async authorizeUser() {
-
-
         let promise = new Promise((resolve, reject) => {
             fs.readFile('credentials.json', (err, content) => {
                 if (err) return console.log('Error loading client secret file:', err);
@@ -62,10 +78,10 @@ class Operation {
 
         })
         let con = await promise;
-   
+
 
         let auth = await this.authorize(JSON.parse(con));
-        
+
         return auth;
 
     }
@@ -76,17 +92,15 @@ class Operation {
         const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
 
         return new Promise((resolve, reject) => {
-            fs.readFile(TOKEN_PATH, (err, token) => {
-                if (err) return this.getNewToken(oAuth2Client);
+            fs.readFile(TOKEN_PATH, async (err, token) => {
+                if (err) return resolve(await this.getNewToken(oAuth2Client));
                 oAuth2Client.setCredentials(JSON.parse(token));
-                // callback(oAuth2Client, res_authorize);
                 console.log('authentication in authorize method in callback ---> ' + typeof oAuth2Client);
                 resolve(oAuth2Client);
-                reject(new Error('error in authorize'));
             });
         });
     };
-   makeBody(to, from, subject, message) {
+    makeBody(to, from, subject, message) {
         var str = ["Content-Type: text/plain; charset=\"UTF-8\"\n",
             "MIME-Version: 1.0\n",
             "Content-Transfer-Encoding: 7bit\n",
@@ -95,16 +109,16 @@ class Operation {
             "subject: ", subject, "\n\n",
             message
         ].join('');
-    
+
         var encodedMail = new Buffer(str).toString("base64").replace(/\+/g, '-').replace(/\//g, '_');
         return encodedMail;
     }
-    sendEmail(auth,toEmail, subjectEmail, bodyEmail) {
+    sendEmail(auth, toEmail, subjectEmail, bodyEmail) {
         const gmail = google.gmail({ version: 'v1', auth })
         gmail.users.getProfile({
             userId: 'me'
         }, (err, data) => {
-          
+
             if (err) return console.log('The API returned an error: ' + err)
             var userEmail = data.emailAddress;
             var raw = this.makeBody(toEmail, userEmail, subjectEmail, bodyEmail);
