@@ -141,12 +141,15 @@ class GmailOperations {
     }
     async getMessages(auth) {
         const gmail = google.gmail({ version: 'v1', auth });
-        gmail.users.messages.list({
-            auth: auth,
-            userId: 'me'
-        }, (err, data) => {
-           return data;
+        let promise = new Promise((resolve, reject) => {
+            gmail.users.messages.list({
+                auth: auth,
+                userId: 'me'
+            }, (err, data) => {
+                resolve(data);
+            });
         });
+        return await promise;
     }
 
 
