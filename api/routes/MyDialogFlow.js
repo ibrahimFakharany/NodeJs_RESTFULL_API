@@ -22,6 +22,7 @@ router.post('/', (req, server_response, next) => {
     let intentMap = new Map();
     intentMap.set('email.send.message_full_text', fullAddressEmailSending);
     intentMap.set('email.send.message_contact', messageContactEmailSending);
+    intentMap.set('email.messages', gettingMessages);
     agent.handleRequest(intentMap);
 });
 
@@ -42,6 +43,15 @@ async function messageContactEmailSending() {
         agent.add('sent');
     } catch (err) {
         agent.add('error in after send email catch');
+    }
+}
+async function gettingMessages() {
+    let auth = await gmailOps.authorizeUser()
+    try {
+        const x = await gmailOps.getMessages(auth);
+        agent.add(x);
+    } catch (err) {
+        agent.add('error in after getting messages');
     }
 }
 

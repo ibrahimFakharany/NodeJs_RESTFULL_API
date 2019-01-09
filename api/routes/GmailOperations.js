@@ -115,7 +115,7 @@ class GmailOperations {
     }
 
     sendEmail(auth, toEmail, subjectEmail, bodyEmail) {
-        const gmail = google.gmail({ version: 'v1', auth })
+        const gmail = google.gmail({ version: 'v1', auth });
         gmail.users.getProfile({
             userId: 'me'
         }, (err, data) => {
@@ -137,9 +137,22 @@ class GmailOperations {
         return new Promise((resolve, reject) => {
             resolve('sent');
         });
+
+    }
+    async getMessages(auth) {
+        const gmail = google.gmail({ version: 'v1', auth });
+        gmail.users.messages.list({
+            auth: auth,
+            userId: 'me'
+        }, (err, data) => {
+            console.log(data);
+        });
     }
 
-    
+
+
+
+
 
 }
 module.exports = GmailOperations;
