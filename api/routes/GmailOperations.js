@@ -144,10 +144,7 @@ class GmailOperations {
         let promise = new Promise((resolve, reject) => {
             gmail.users.messages.list({
                 userId: 'me'
-            }, (err, res) => {
-                console.log('data => '+res.data);
-                resolve(res.data);
-            });
+            }).then(res => resolve(res.data));
         });
         return await promise;
     }
