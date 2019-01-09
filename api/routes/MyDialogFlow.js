@@ -52,6 +52,7 @@ async function gettingMessages() {
         agent.add(x);
     } catch (err) {
         agent.add('error in after getting messages');
+        console.log(err);
     }
 }
 
