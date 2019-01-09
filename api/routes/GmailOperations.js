@@ -13,7 +13,7 @@ const SCOPES = ['https://mail.google.com/',
 
 const fs = require('fs');
 const TOKEN_PATH = 'token.json';
-class Operation {
+class GmailOperations {
 
     constructor(serverResponse, agent) {
         this.serverResponse = serverResponse;
@@ -140,4 +140,4 @@ class Operation {
     }
 
 }
-module.exports = Operation;
+module.exports = GmailOperations;

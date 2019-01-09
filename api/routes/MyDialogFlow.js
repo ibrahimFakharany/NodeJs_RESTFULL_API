@@ -1,4 +1,4 @@
-const Operation = require('./Operation');
+const GmailOperation = require('./GmailOperations');
 const express = require('express');
 const bodyParser = require('body-parser');
 const router = express.Router();
@@ -6,7 +6,7 @@ const { WebhookClient } = require('dialogflow-fulfillment');
 
 
 const TOKEN_PATH = 'token.json';
-var op = new Operation();
+var gmailOps = new GmailOperation();
 
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
@@ -28,10 +28,10 @@ router.post('/', (req, server_response, next) => {
 });
 
 async function emailSendingFullAddress() {
-    let auth = await op.authorizeUser()
+    let auth = await gmailOps.authorizeUser()
     try {
 
-        const x = await op.sendEmail(auth, agent.parameters.email, agent.parameters.any, agent.parameters.any1);
+        const x = await gmailOps.sendEmail(auth, agent.parameters.email, agent.parameters.any, agent.parameters.any1);
         agent.add('sent');
     } catch (err) {
         agent.add('error in after send email catch');
