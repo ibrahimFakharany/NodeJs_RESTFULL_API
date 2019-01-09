@@ -50,7 +50,7 @@ async function gettingMessages() {
     try {
         let x = await gmailOps.getMessages(auth);
         console.log("x --> "+ x);
-        agent.add(JSON.stringify(x));
+        agent.add();
     } catch (err) {
         agent.add('error in after getting messages'+ err);
         console.log(err);

@@ -146,6 +146,7 @@ class GmailOperations {
                 auth: auth,
                 userId: 'me'
             }, (err, data) => {
+                console.log('data => '+data);
                 resolve(data);
             });
         });
