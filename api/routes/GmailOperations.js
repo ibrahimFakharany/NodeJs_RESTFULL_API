@@ -143,7 +143,6 @@ class GmailOperations {
         const gmail = google.gmail({ version: 'v1', auth });
         let promise = new Promise((resolve, reject) => {
             gmail.users.messages.list({
-                auth: auth,
                 userId: 'me'
             }, (err, res) => {
                 console.log('data => '+res.data);
