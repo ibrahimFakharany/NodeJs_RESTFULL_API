@@ -139,14 +139,21 @@ class GmailOperations {
         });
 
     }
-    async getMessages(auth) {
+    getMessages(auth) {
         const gmail = google.gmail({ version: 'v1', auth });
-        let promise = new Promise((resolve, reject) => {
-            gmail.users.messages.list({
-                userId: 'me'
-            }).then(res => resolve(res.data));
+        console.log(gmail.users.messages);
+        gmail.users.messages.list({
+            userId: 'me'
+        }, (err, res)=>{
+            console.log(res.data.messages[0].id);
+
+            gmail.users.messages.get({
+                userId : 'me',
+                id: res.data.messages[0].id
+            }, (err, response)=>{
+                console.log(response.data);
+            })
         });
-        return await promise;
     }
 }
 module.exports = GmailOperations;

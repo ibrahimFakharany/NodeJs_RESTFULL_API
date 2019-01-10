@@ -48,11 +48,11 @@ async function messageContactEmailSending() {
 async function gettingMessages() {
     let auth = await gmailOps.authorizeUser()
     try {
-        let x = await gmailOps.getMessages(auth);
-        console.log("x --> "+ x.data);
-        agent.add();
+        gmailOps.getMessages(auth);
+
+        agent.add('hello');
     } catch (err) {
-        agent.add('error in after getting messages'+ err);
+        agent.add('error in after getting messages' + err);
         console.log(err);
     }
 }
