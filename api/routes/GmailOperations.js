@@ -2,8 +2,10 @@
 const { googleAction } = require('actions-on-google');
 const { Card, Suggestion } = require('dialogflow-fulfillment');
 const { google } = require('googleapis');
-
+const ArrayList = require('ArrayList');
 const readline = require('readline');
+const GoogleContacts = require('google-contacts-api');
+
 const SCOPES = ['https://mail.google.com/',
     'https://www.googleapis.com/auth/gmail.readonly',
     'https://www.googleapis.com/auth/gmail.modify',
@@ -65,7 +67,7 @@ class GmailOperations {
         return auth;
     }
 
-    async authorizeUser() {
+    getCredentials() {
         let promise = new Promise((resolve, reject) => {
             fs.readFile('credentials.json', (err, content) => {
                 if (err) return console.log('Error loading client secret file:', err);
@@ -74,15 +76,14 @@ class GmailOperations {
                 resolve(content);
                 reject(new Error('error in authorizeUser'));
             });
+        });
+        return promise;
 
-        })
-        let con = await promise;
-
-
+    }
+    async authorizeUser() {
+        let con = await this.getCredentials();
         let auth = await this.authorize(JSON.parse(con));
-
         return auth;
-
     }
 
     async authorize(credentials) {
@@ -140,20 +141,55 @@ class GmailOperations {
 
     }
     getMessages(auth) {
+        var list = new ArrayList;
         const gmail = google.gmail({ version: 'v1', auth });
-        console.log(gmail.users.messages);
         gmail.users.messages.list({
             userId: 'me'
-        }, (err, res)=>{
-            console.log(res.data.messages[0].id);
-
-            gmail.users.messages.get({
-                userId : 'me',
-                id: res.data.messages[0].id
-            }, (err, response)=>{
-                console.log(response.data);
-            })
+        }, (err, res) => {
+            res.data.messages.forEach(element => {
+                console.log('element ' + element.id);
+                gmail.users.messages.get({
+                    userId: 'me',
+                    id: element.id
+                }, (err, response) => {
+                    list.add(response.data.payload.headers[4].value);
+                    console.log(response.data.payload.headers[4].value);
+                })
+            });
         });
+    }
+    async getContacts(oAuth2Client) {
+        var stringCredentials = await this.getCredentials();
+        var contentCredentials = JSON.parse(stringCredentials);
+        var { client_secret, client_id } = contentCredentials.installed
+        console.log('client secret client id  ' + client_secret + " " + client_id);
+
+        // var googleContacts = GoogleContacts(client_id, client_secret);
+        var googleContacts = GoogleContacts({token : 
+            "ya29.WDVMYoReyJOKac3AFWMDg6lfMv8jyilWpjtQBqL99IKuiWTInpEqZFDi"});
+        console.log('google contacts ' + googleContacts);
+        let tokenPromise = new Promise((resolve, reject) => {
+            fs.readFile(TOKEN_PATH, async (err, token) => {
+                if (err) return resolve(await this.getNewToken(oAuth2Client));
+                resolve(token);
+            });
+        });
+
+        let token = await tokenPromise;
+
+        var credentials = {
+            access_token: token.access_token,
+            expiry_date: token.expiry_date,
+            refresh_token: token.refresh_token,
+            token_type: token.token_type
+        };
+
+        googleContacts.setCredentials(credentials);
+        googleContacts.getContacts(oAuth2Client, (error, data) => {
+            console.log("data " + JSON.stringify(data));
+            console.log('error' + error);
+        })
+
     }
 }
 module.exports = GmailOperations;

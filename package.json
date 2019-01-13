@@ -10,11 +10,16 @@
   "license": "ISC",
   "dependencies": {
     "actions-on-google": "^2.5.0",
+    "arraylist": "^0.1.0",
     "body-parser": "^1.18.3",
     "dialogflow": "^0.7.0",
     "dialogflow-fulfillment": "^0.6.1",
     "express": "^4.16.4",
+    "g-contacts": "^1.0.9",
+    "gcontacts": "^0.1.0",
+    "google-contacts-api": "^1.0.3",
     "googleapis": "^27.0.0",
+    "googlecontacts": "0.0.6",
     "nodemon": "^1.18.9"
   }
 }
