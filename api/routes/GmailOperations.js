@@ -170,6 +170,8 @@ class GmailOperations {
                 var index;
                 var emailIndex;
                 var emailList = new ArrayList;
+                console.log('feed ' + jsonResponse.body);
+
                 for (index in jsonResponse.body.feed.entry) {
                     for (emailIndex in jsonResponse.body.feed.entry[index].gd$email) {
                         console.log(jsonResponse.body.feed.entry[index].gd$email[emailIndex].address);
@@ -183,16 +185,16 @@ class GmailOperations {
 
         });
 
-        let emailList= await promise;
-        if(emailList.length> 1){
+        let emailList = await promise;
+        if (emailList.length > 1) {
             // show emails
-            return {"sent" : 1, "emails": emailList}
-        }else if(emailList.length == 1){
+            return { "sent": 1, "emails": emailList }
+        } else if (emailList.length == 1) {
             // send email to that email
-            return {"sent" : 0, "email": emailList[0]};
-        }else{
+            return { "sent": 0, "email": emailList[0] };
+        } else {
             // this name couldn't recognized
-            return{"sent" : -1, "message": "couldn't recognize this name "}
+            return { "sent": -1, "message": "couldn't recognize this name " }
         }
     }
 
