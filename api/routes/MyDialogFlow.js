@@ -23,6 +23,7 @@ router.post('/', (req, server_response, next) => {
     intentMap.set('email.send.message_full_text', fullAddressEmailSending);
     intentMap.set('email.send.message_contact', messageContactEmailSending);
     intentMap.set('email.send.message_email', messageEmailSending);
+    intentMap.set('email.selecting.index', sendingEmailAfterSelectingIndex);
     intentMap.set('email.messages', gettingMessages);
     agent.handleRequest(intentMap);
 });
@@ -43,8 +44,8 @@ async function messageContactEmailSending() {
         let message = agent.parameters.message;
 
         let ress = await gmailOps.getContacts(agent.parameters.contact_name);
-        
-        console.log("resposne.sent = "+ ress.sent);
+
+        console.log("resposne.sent = " + ress.sent);
         if (ress.sent == 0) {
             console.log("send email ");
             //send email
@@ -53,11 +54,19 @@ async function messageContactEmailSending() {
         } else if (ress.sent == -1) {
             console.log("show not recognize message ");
             agent.add(ress.message);
-        } else if (ress.sent ==1) {
+        } else if (ress.sent == 1) {
             console.log("show emails ");
             // show the message couldn't recognize
             agent.add("which one did you mean?");
+
             agent.add(ress.emails);
+            agent.context.set({
+                'name': 'choose_index_entity',
+                'lifespan': 5,
+                'parameters': {
+                    'name': 'ahmed'
+                }
+            })
         }
 
     } catch (err) {
@@ -67,12 +76,15 @@ async function messageContactEmailSending() {
     }
 }
 
-
-async function messageEmailSending(){
+async function sendingEmailAfterSelectingIndex() {
+    let name = agent.parameters.name;
+    console.log(name);
+}
+async function messageEmailSending() {
     console.log('message Email sending intent');
     let auth = await gmailOps.authorizeUser()
     let x = await gmailOps.sendEmail(auth, agent.parameters.email, "", agent.parameters.message);
-    agent.add("email sent to " +agent.parameters.email);
+    agent.add("email sent to " + agent.parameters.email);
 }
 async function gettingMessages() {
     let auth = await gmailOps.authorizeUser()
