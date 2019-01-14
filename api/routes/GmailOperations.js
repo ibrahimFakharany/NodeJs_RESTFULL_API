@@ -2,7 +2,7 @@
 const { googleAction } = require('actions-on-google');
 const { Card, Suggestion } = require('dialogflow-fulfillment');
 const { google } = require('googleapis');
-const ArrayList = require('ArrayList');
+const ArrayList = require('arraylist');
 const readline = require('readline');
 const GoogleContacts = require("google-contacts-api");
 const request = require('request');
