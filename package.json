@@ -18,8 +18,10 @@
     "g-contacts": "^1.0.9",
     "gcontacts": "^0.1.0",
     "google-contacts-api": "^1.0.3",
+    "google-contacts-crud": "^1.0.6",
     "googleapis": "^27.0.0",
     "googlecontacts": "0.0.6",
-    "nodemon": "^1.18.9"
+    "nodemon": "^1.18.9",
+    "request": "^2.88.0"
   }
 }

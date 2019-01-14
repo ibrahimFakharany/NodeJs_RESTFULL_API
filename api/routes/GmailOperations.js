@@ -4,14 +4,15 @@ const { Card, Suggestion } = require('dialogflow-fulfillment');
 const { google } = require('googleapis');
 const ArrayList = require('ArrayList');
 const readline = require('readline');
-const GoogleContacts = require('google-contacts-api');
-
+const GoogleContacts = require("google-contacts-api");
+const request = require('request');
 const SCOPES = ['https://mail.google.com/',
     'https://www.googleapis.com/auth/gmail.readonly',
     'https://www.googleapis.com/auth/gmail.modify',
     'https://www.googleapis.com/auth/gmail.compose',
     'https://www.googleapis.com/auth/gmail.insert',
-    'https://www.googleapis.com/auth/gmail.send'];
+    'https://www.googleapis.com/auth/gmail.send',
+    'https://www.google.com/m8/feeds'];
 
 const fs = require('fs');
 const TOKEN_PATH = 'token.json';
@@ -158,38 +159,35 @@ class GmailOperations {
             });
         });
     }
-    async getContacts(oAuth2Client) {
-        var stringCredentials = await this.getCredentials();
-        var contentCredentials = JSON.parse(stringCredentials);
-        var { client_secret, client_id } = contentCredentials.installed
-        console.log('client secret client id  ' + client_secret + " " + client_id);
+    async getContacts(contactName) {
+        let token = await this.getToken();
+        console.log(token);
+        request('https://www.google.com/m8/feeds/contacts/default/full?alt=json&q="' + contactName + '"&access_token=' + token, { json: true }, (err, res, body) => {
+            if (err) { return console.log(err); }
+            let stringResponse = JSON.stringify(res);
+            let jsonResponse = JSON.parse(stringResponse);
+            var index;
+            var emailIndex;
+            var emailList= new ArrayList;
+            for (index in jsonResponse.body.feed.entry) {
+                for (emailIndex in jsonResponse.body.feed.entry[index].gd$email) {
+                    emailList.add(jsonResponse.body.feed.entry[index].gd$email[emailIndex].address);
+                    console.log(jsonResponse.body.feed.entry[index].gd$email[emailIndex].address);
+                }
+            }
+        });
+    }
 
-        // var googleContacts = GoogleContacts(client_id, client_secret);
-        var googleContacts = GoogleContacts({token : 
-            "ya29.WDVMYoReyJOKac3AFWMDg6lfMv8jyilWpjtQBqL99IKuiWTInpEqZFDi"});
-        console.log('google contacts ' + googleContacts);
-        let tokenPromise = new Promise((resolve, reject) => {
+
+    async getToken() {
+        let promise = new Promise((resolve, reject) => {
             fs.readFile(TOKEN_PATH, async (err, token) => {
-                if (err) return resolve(await this.getNewToken(oAuth2Client));
-                resolve(token);
+                if (err) { console.log('error in gettoken reading file'); return resolve(await this.getNewToken(oAuth2Client)); }
+                resolve(JSON.parse(token));
             });
         });
-
-        let token = await tokenPromise;
-
-        var credentials = {
-            access_token: token.access_token,
-            expiry_date: token.expiry_date,
-            refresh_token: token.refresh_token,
-            token_type: token.token_type
-        };
-
-        googleContacts.setCredentials(credentials);
-        googleContacts.getContacts(oAuth2Client, (error, data) => {
-            console.log("data " + JSON.stringify(data));
-            console.log('error' + error);
-        })
-
+        let token = await promise;
+        return token.access_token;
     }
 }
 module.exports = GmailOperations;
