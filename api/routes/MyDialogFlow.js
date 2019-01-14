@@ -79,7 +79,7 @@ async function messageContactEmailSending() {
 
 async function sendingEmailAfterSelectingIndex() {
     let name = agent.parameters.name;
-    console.log(name);
+    console.log('the obtained name :'+ name);
 }
 async function messageEmailSending() {
     console.log('message Email sending intent');
