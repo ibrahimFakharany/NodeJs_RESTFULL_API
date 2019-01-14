@@ -161,7 +161,7 @@ class GmailOperations {
     }
     async getContacts(contactName) {
         let token = await this.getToken();
-        console.log(token);
+        
         request('https://www.google.com/m8/feeds/contacts/default/full?alt=json&q="' + contactName + '"&access_token=' + token, { json: true }, (err, res, body) => {
             if (err) { return console.log(err); }
             let stringResponse = JSON.stringify(res);
@@ -182,7 +182,7 @@ class GmailOperations {
     async getToken() {
         let promise = new Promise((resolve, reject) => {
             fs.readFile(TOKEN_PATH, async (err, token) => {
-                if (err) { console.log('error in gettoken reading file'); return resolve(await this.getNewToken(oAuth2Client)); }
+                if (err) {  return resolve(await this.getNewToken(oAuth2Client)); }
                 resolve(JSON.parse(token));
             });
         });

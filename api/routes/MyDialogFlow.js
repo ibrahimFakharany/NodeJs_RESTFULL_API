@@ -39,7 +39,7 @@ async function fullAddressEmailSending() {
 async function messageContactEmailSending() {
     let auth = await gmailOps.authorizeUser()
     try {
-         gmailOps.getContacts("ahmed");
+        gmailOps.getContacts(agent.parameters.contact_name);
         agent.add('sent');
     } catch (err) {
         agent.add('error in after send email catch');
@@ -49,7 +49,6 @@ async function gettingMessages() {
     let auth = await gmailOps.authorizeUser()
     try {
         gmailOps.getMessages(auth);
-
         agent.add('hello');
     } catch (err) {
         agent.add('error in after getting messages' + err);
