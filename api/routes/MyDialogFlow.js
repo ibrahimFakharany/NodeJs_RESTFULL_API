@@ -48,10 +48,10 @@ async function messageContactEmailSending() {
             console.log("send email ");
             //send email
             let x = await gmailOps.sendEmail(auth, ress.email, "", message);
-            agent.add("send email to " + response.email);
+            agent.add("sent email to " + response.email);
         } else if (ress.sent == -1) {
             console.log("show not recognize message ");
-            agent.add(ress.meesage);
+            agent.add(ress.message);
         } else if (ress.sent ==1) {
             console.log("show emails ");
             // show the message couldn't recognize
