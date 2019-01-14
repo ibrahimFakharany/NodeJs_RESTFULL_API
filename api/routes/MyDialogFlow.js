@@ -48,7 +48,7 @@ async function messageContactEmailSending() {
             console.log("send email ");
             //send email
             let x = await gmailOps.sendEmail(auth, ress.email, "", message);
-            agent.add("sent email to " + ress.email);
+            agent.add("email sent to " + ress.email);
         } else if (ress.sent == -1) {
             console.log("show not recognize message ");
             agent.add(ress.message);
