@@ -39,28 +39,30 @@ async function fullAddressEmailSending() {
 async function messageContactEmailSending() {
     let auth = await gmailOps.authorizeUser()
     try {
-        let message = agent.parameters.message; 
+        let message = agent.parameters.message;
 
-        let response = gmailOps.getContacts(agent.parameters.contact_name);
-        switch (response.sent) {
-            case 0:
-                //show emails in the dialogflow
-                agent.add("which one did you mean");
-                agent.add(response.emails);
-                break;
-            case 1:
-                // show sent message
-                gmailOps.sendEmail(auth, response.email, "", message);
-                agent.add("send email to "+response.email);
-                break;
-            case -1:
-                // show the message couldn't recognize
-                
-                break;
+        let ress = await gmailOps.getContacts(agent.parameters.contact_name);
+        
+        console.log("resposne.sent = "+ ress.sent);
+        if (ress.sent == 0) {
+            console.log("send email ");
+            //send email
+            let x = await gmailOps.sendEmail(auth, ress.email, "", message);
+            agent.add("send email to " + response.email);
+        } else if (ress.sent == -1) {
+            console.log("show not recognize message ");
+            agent.add(ress.meesage);
+        } else if (ress.sent ==1) {
+            console.log("show emails ");
+            // show the message couldn't recognize
+            agent.add("which one did you mean?");
+            agent.add(ress.emails);
         }
-        agent.add('sent');
+
     } catch (err) {
         agent.add('error in after send email catch');
+        console.log(err);
+
     }
 }
 async function gettingMessages() {
