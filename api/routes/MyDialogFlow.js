@@ -80,7 +80,7 @@ async function messageContactEmailSending() {
 async function sendingEmailAfterSelectingIndex() {
     console.log("intent sending email after selecting one is called");
 
-    let name = agent.context.parameters.name;
+    let name = agent.context;
     console.log('the obtained name :' + name);
 }
 async function messageEmailSending() {
