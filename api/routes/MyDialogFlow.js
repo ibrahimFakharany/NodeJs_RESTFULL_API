@@ -65,7 +65,7 @@ async function messageContactEmailSending() {
                 'lifespan': 5,
                 'parameters': {
                     'emails': 'emailssssss ',
-                    'name': 'ahmed'
+                    'name': 'hamada'
                 }
             })
         }
