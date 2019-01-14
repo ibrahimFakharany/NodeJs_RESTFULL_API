@@ -62,7 +62,7 @@ async function messageContactEmailSending() {
             agent.add(ress.emails);
             agent.context.set({
                 'name': 'choose_index_entity',
-                'lifespan': 1,
+                'lifespan': 5,
                 'parameters': {
                     'emails': 'emailssssss ',
                     'name': 'ahmed'
