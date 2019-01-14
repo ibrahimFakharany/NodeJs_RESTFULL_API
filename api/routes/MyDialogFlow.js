@@ -78,7 +78,7 @@ async function messageContactEmailSending() {
 }
 
 async function sendingEmailAfterSelectingIndex() {
-    let name = agent.parameters.name;
+    let name = agent.context.parameters.name;
     console.log('the obtained name :'+ name);
 }
 async function messageEmailSending() {
