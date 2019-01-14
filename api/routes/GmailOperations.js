@@ -161,28 +161,45 @@ class GmailOperations {
     }
     async getContacts(contactName) {
         let token = await this.getToken();
-        
-        request('https://www.google.com/m8/feeds/contacts/default/full?alt=json&q="' + contactName + '"&access_token=' + token, { json: true }, (err, res, body) => {
-            if (err) { return console.log(err); }
-            let stringResponse = JSON.stringify(res);
-            let jsonResponse = JSON.parse(stringResponse);
-            var index;
-            var emailIndex;
-            var emailList= new ArrayList;
-            for (index in jsonResponse.body.feed.entry) {
-                for (emailIndex in jsonResponse.body.feed.entry[index].gd$email) {
-                    emailList.add(jsonResponse.body.feed.entry[index].gd$email[emailIndex].address);
-                    console.log(jsonResponse.body.feed.entry[index].gd$email[emailIndex].address);
+
+        let promise = new Promise((resolve, reject) => {
+            request('https://www.google.com/m8/feeds/contacts/default/full?alt=json&q="' + contactName + '"&access_token=' + token, { json: true }, (err, res, body) => {
+                if (err) { return console.log(err); }
+                let stringResponse = JSON.stringify(res);
+                let jsonResponse = JSON.parse(stringResponse);
+                var index;
+                var emailIndex;
+                var emailList = new ArrayList;
+                for (index in jsonResponse.body.feed.entry) {
+                    for (emailIndex in jsonResponse.body.feed.entry[index].gd$email) {
+                        emailList.add(jsonResponse.body.feed.entry[index].gd$email[emailIndex].address);
+                        console.log(jsonResponse.body.feed.entry[index].gd$email[emailIndex].address);
+                    }
                 }
-            }
+
+                resolve(emailList);
+            });
+
         });
+
+        let emailList= await promise;
+        if(emailList.length> 1){
+            // show emails
+            return {sent : 1, emails : emailList}
+        }else if(emailList.length == 1){
+            // send email to that email
+            return {sent :0, email: emailList[0]};
+        }else{
+            // this name couldn't recognized
+            return {sent : -1 , message: "couldn't recognize this name "}
+        }
     }
 
 
     async getToken() {
         let promise = new Promise((resolve, reject) => {
             fs.readFile(TOKEN_PATH, async (err, token) => {
-                if (err) {  return resolve(await this.getNewToken(oAuth2Client)); }
+                if (err) { return resolve(await this.getNewToken(oAuth2Client)); }
                 resolve(JSON.parse(token));
             });
         });
