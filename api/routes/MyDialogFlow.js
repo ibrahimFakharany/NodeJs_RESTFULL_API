@@ -80,8 +80,8 @@ async function messageContactEmailSending() {
 async function sendingEmailAfterSelectingIndex() {
     console.log("intent sending email after selecting one is called");
 
-    let name = agent.context;
-    console.log('the obtained name :' + name);
+    let context = agent.context;
+    console.log('the obtained context :' + JSON.parse(context));
 }
 async function messageEmailSending() {
     console.log('message Email sending intent');
