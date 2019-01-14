@@ -4,6 +4,9 @@ const bodyParser = require('body-parser');
 const router = express.Router();
 const { WebhookClient } = require('dialogflow-fulfillment');
 
+// intents names 
+
+const choose_index_entity = "choose_index_entity";
 
 const TOKEN_PATH = 'token.json';
 var gmailOps = new GmailOperation();
@@ -64,8 +67,7 @@ async function messageContactEmailSending() {
                 'name': 'choose_index_entity',
                 'lifespan': 5,
                 'parameters': {
-                    'emails': 'emailssssss ',
-                    'name': 'hamada'
+                    'emails': ress.emails
                 }
             })
         }
@@ -80,8 +82,9 @@ async function messageContactEmailSending() {
 async function sendingEmailAfterSelectingIndex() {
     console.log("intent sending email after selecting one is called");
 
-    let context = agent.context;
-    console.log('the obtained parameters :' + JSON.stringify(context));
+    let index = parseInt(agent.context.contexts.choose_index_entity.parameters.email_index_entity);
+    console.log("index : "+ index );
+
 }
 async function messageEmailSending() {
     console.log('message Email sending intent');
