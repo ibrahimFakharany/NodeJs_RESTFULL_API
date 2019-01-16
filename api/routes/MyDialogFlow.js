@@ -68,7 +68,8 @@ async function messageContactEmailSending() {
                 'lifespan': 5,
                 'parameters': {
                     'emails': ress.emails,
-                    'message' : message
+                    'message' : message, 
+                    'auth': auth
                 }
             })
         }
@@ -85,7 +86,11 @@ async function sendingEmailAfterSelectingIndex() {
     console.log(JSON.stringify(agent.context));
     let index = parseInt(agent.context.contexts.choose_index_entity.parameters.email_index_entity);
     console.log("index : " + index);
-    gmailOps.sendEmail(agent.context.contexts.choose_index_entity.parameters.emails[index-1]);
+    gmailOps.sendEmail(
+        agent.context.contexts.choose_index_entity.parameters.auth, 
+        agent.context.contexts.choose_index_entity.parameters.emails[index-1],
+        "",
+        agent.context.contexts.choose_index_entity.parameters.message);
     agent.add('email sent to '+agent.context.contexts.choose_index_entity.parameters.emails[index-1]);
    
 }
