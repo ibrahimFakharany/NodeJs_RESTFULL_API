@@ -27,6 +27,7 @@ router.post('/', (req, server_response, next) => {
     intentMap.set('email.send.message_contact', messageContactEmailSending);
     intentMap.set('email.send.message_email', messageEmailSending);
     intentMap.set('email.selecting.index', sendingEmailAfterSelectingIndex);
+    intentMap.set('Default Fallback Intent',handlingDefaultFallbackIntent);
     intentMap.set('email.messages', gettingMessages);
     agent.handleRequest(intentMap);
 });
@@ -110,4 +111,7 @@ async function gettingMessages() {
     }
 }
 
+function handlingDefaultFallbackIntent(){
+    agent.add('I didn\'t get that, do you want to send it?');
+}
 module.exports = router;
