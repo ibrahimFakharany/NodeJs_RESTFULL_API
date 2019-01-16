@@ -81,11 +81,11 @@ async function messageContactEmailSending() {
 
 async function sendingEmailAfterSelectingIndex() {
     console.log("intent sending email after selecting one is called");
-console.log(JSON.stringify(agent.context));
+    console.log(JSON.stringify(agent.context));
     let index = parseInt(agent.context.contexts.choose_index_entity.parameters.email_index_entity);
-    console.log("index : "+ index );
-
+    console.log("index : " + index);
 }
+
 async function messageEmailSending() {
     console.log('message Email sending intent');
     let auth = await gmailOps.authorizeUser()
