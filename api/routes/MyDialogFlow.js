@@ -82,10 +82,9 @@ async function messageContactEmailSending() {
 }
 
 async function sendingEmailAfterSelectingIndex() {
-    console.log("intent sending email after selecting one is called");
-    console.log(JSON.stringify(agent.context));
     let index = parseInt(agent.context.contexts.choose_index_entity.parameters.email_index_entity);
-    console.log("index : " + index);
+    console.log('auth -> '+agent.context.contexts.choose_index_entity.parameters.auth);
+
     let x = await gmailOps.sendEmail(
         agent.context.contexts.choose_index_entity.parameters.auth, 
         agent.context.contexts.choose_index_entity.parameters.emails[index-1],
