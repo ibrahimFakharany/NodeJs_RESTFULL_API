@@ -40,9 +40,9 @@ async function fullAddressEmailSending() {
         agent.add('error in after send email catch');
     }
 }
-
+let auth = null
 async function messageContactEmailSending() {
-    let auth = await gmailOps.authorizeUser()
+     auth = await gmailOps.authorizeUser()
     try {
         let message = agent.parameters.message;
 
@@ -68,8 +68,7 @@ async function messageContactEmailSending() {
                 'lifespan': 5,
                 'parameters': {
                     'emails': ress.emails,
-                    'message' : message, 
-                    'auth': auth
+                    'message' : message
                 }
             })
         }
@@ -86,7 +85,7 @@ async function sendingEmailAfterSelectingIndex() {
     console.log('auth -> '+agent.context.contexts.choose_index_entity.parameters.auth);
 
     let x = await gmailOps.sendEmail(
-        agent.context.contexts.choose_index_entity.parameters.auth, 
+        auth,
         agent.context.contexts.choose_index_entity.parameters.emails[index-1],
         "",
         agent.context.contexts.choose_index_entity.parameters.message);
