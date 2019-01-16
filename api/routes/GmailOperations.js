@@ -170,7 +170,7 @@ class GmailOperations {
                 var index;
                 var emailIndex;
                 var emailList = new ArrayList;
-                console.log('feed ' + jsonResponse.body);
+                console.log('feed ' + JSON.stringify(jsonResponse.body));
 
                 for (index in jsonResponse.body.feed.entry) {
                     for (emailIndex in jsonResponse.body.feed.entry[index].gd$email) {
@@ -198,6 +198,10 @@ class GmailOperations {
         }
     }
 
+
+    async deleteContact(emailAddress){
+        let link  ="https://www.google.com/m8/feeds/contacts/\'ibraheemelfakharany@gmail.com\'/full/\"http://www.google.com/m8/feeds/contacts/ibraheemelfakharany%40gmail.com/base/675fa7e18b28859c\'?access_token=ya29.GluTBkKph4xYXdvxuDM_QX8yEQCiqmrwZqmDA3ivcwdYC_DwszB71gJrYGHQEPtPsyHRWnQ1DtSR3-oHj4GDI2hgzqhY50Nc5hqeTMVzG6OLjSvTzEIgOJAWs5SB"
+    }
 
     async getToken() {
         let promise = new Promise((resolve, reject) => {

@@ -42,7 +42,7 @@ async function fullAddressEmailSending() {
 }
 let auth = null
 async function messageContactEmailSending() {
-     auth = await gmailOps.authorizeUser()
+    auth = await gmailOps.authorizeUser()
     try {
         let message = agent.parameters.message;
 
@@ -68,7 +68,7 @@ async function messageContactEmailSending() {
                 'lifespan': 5,
                 'parameters': {
                     'emails': ress.emails,
-                    'message' : message
+                    'message': message
                 }
             })
         }
@@ -82,15 +82,15 @@ async function messageContactEmailSending() {
 
 async function sendingEmailAfterSelectingIndex() {
     let index = parseInt(agent.context.contexts.choose_index_entity.parameters.email_index_entity);
-    console.log('auth -> '+agent.context.contexts.choose_index_entity.parameters.auth);
+    console.log('auth -> ' + agent.context.contexts.choose_index_entity.parameters.auth);
 
     let x = await gmailOps.sendEmail(
         auth,
-        agent.context.contexts.choose_index_entity.parameters.emails[index-1],
+        agent.context.contexts.choose_index_entity.parameters.emails[index - 1],
         "",
         agent.context.contexts.choose_index_entity.parameters.message);
-    agent.add('email sent to '+agent.context.contexts.choose_index_entity.parameters.emails[index-1]);
-   
+    agent.add('email sent to ' + agent.context.contexts.choose_index_entity.parameters.emails[index - 1]);
+
 }
 
 async function messageEmailSending() {
