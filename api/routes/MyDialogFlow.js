@@ -119,12 +119,15 @@ async function emailMessagesGet() {
 
     try {
 
-        let messages=await gmailOps.getMessages(auth, -1);
-        agent.add('you want to limit it or you want all ? ');
-        agent.context.set({
-            'name': 'limit_getting_messages',
-            'lifespan': 5
-        })
+        let jsonResult=await gmailOps.getMessages(auth, -1);
+        switch(jsonResult.success){
+            case 0:
+            agent.add(jsonResult.message); 
+            break;
+            case 1: 
+            agent.add(jsonResult.result);
+            break;
+        }
     } catch (err) {
         agent.add('error in after getting messages' + err);
         console.log(err);
