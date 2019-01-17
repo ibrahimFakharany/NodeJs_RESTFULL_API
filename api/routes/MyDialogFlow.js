@@ -27,8 +27,10 @@ router.post('/', (req, server_response, next) => {
     intentMap.set('email.send.message_contact', messageContactEmailSending);
     intentMap.set('email.send.message_email', messageEmailSending);
     intentMap.set('email.selecting.index', sendingEmailAfterSelectingIndex);
-    intentMap.set('Default Fallback Intent',handlingDefaultFallbackIntent);
-    intentMap.set('email.messages', gettingMessages);
+    intentMap.set('Default Fallback Intent', handlingDefaultFallbackIntent);
+
+    // getting messages
+    intentMap.set('email.messages.get', emailMessagesGet);
     agent.handleRequest(intentMap);
 });
 
@@ -100,8 +102,18 @@ async function messageEmailSending() {
     let x = await gmailOps.sendEmail(auth, agent.parameters.email, "", agent.parameters.message);
     agent.add("email sent to " + agent.parameters.email);
 }
-async function gettingMessages() {
-    let auth = await gmailOps.authorizeUser()
+
+function handlingDefaultFallbackIntent() {
+    agent.add('I didn\'t get that, do you want to send it?');
+}
+
+
+// getting messages
+
+
+async function emailMessagesGet() {
+    let auth = await gmailOps.authorizeUser();
+
     try {
         gmailOps.getMessages(auth);
         agent.add('hello');
@@ -109,9 +121,6 @@ async function gettingMessages() {
         agent.add('error in after getting messages' + err);
         console.log(err);
     }
-}
 
-function handlingDefaultFallbackIntent(){
-    agent.add('I didn\'t get that, do you want to send it?');
 }
 module.exports = router;

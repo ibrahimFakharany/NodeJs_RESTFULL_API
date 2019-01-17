@@ -1,4 +1,4 @@
-
+const base64url = require('base64url');
 const { googleAction } = require('actions-on-google');
 const { Card, Suggestion } = require('dialogflow-fulfillment');
 const { google } = require('googleapis');
@@ -145,19 +145,25 @@ class GmailOperations {
         var list = new ArrayList;
         const gmail = google.gmail({ version: 'v1', auth });
         gmail.users.messages.list({
-            userId: 'me'
+            userId: 'me',
+            maxResults: 1
         }, (err, res) => {
             res.data.messages.forEach(element => {
-                console.log('element ' + element.id);
+               
                 gmail.users.messages.get({
                     userId: 'me',
                     id: element.id
                 }, (err, response) => {
-                    list.add(response.data.payload.headers[4].value);
-                    console.log(response.data.payload.headers[4].value);
+                    var bodyData = response.data.payload.body.data;
+                    var str = this.decodeMessageBody(bodyData);
+                    console.log(str);
                 })
             });
         });
+    }
+
+    decodeMessageBody(encodedBody) {
+        return base64url.decode(encodedBody);
     }
     async getContacts(contactName) {
         let token = await this.getToken();
@@ -199,8 +205,8 @@ class GmailOperations {
     }
 
 
-    async deleteContact(emailAddress){
-        let link  ="https://www.google.com/m8/feeds/contacts/\'ibraheemelfakharany@gmail.com\'/full/\"http://www.google.com/m8/feeds/contacts/ibraheemelfakharany%40gmail.com/base/675fa7e18b28859c\'?access_token=ya29.GluTBkKph4xYXdvxuDM_QX8yEQCiqmrwZqmDA3ivcwdYC_DwszB71gJrYGHQEPtPsyHRWnQ1DtSR3-oHj4GDI2hgzqhY50Nc5hqeTMVzG6OLjSvTzEIgOJAWs5SB"
+    async deleteContact(emailAddress) {
+        let link = "https://www.google.com/m8/feeds/contacts/\'ibraheemelfakharany@gmail.com\'/full/\"http://www.google.com/m8/feeds/contacts/ibraheemelfakharany%40gmail.com/base/675fa7e18b28859c\'?access_token=ya29.GluTBkKph4xYXdvxuDM_QX8yEQCiqmrwZqmDA3ivcwdYC_DwszB71gJrYGHQEPtPsyHRWnQ1DtSR3-oHj4GDI2hgzqhY50Nc5hqeTMVzG6OLjSvTzEIgOJAWs5SB"
     }
 
     async getToken() {
