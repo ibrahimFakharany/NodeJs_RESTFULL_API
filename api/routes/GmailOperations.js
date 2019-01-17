@@ -146,7 +146,6 @@ class GmailOperations {
         const gmail = google.gmail({ version: 'v1', auth });
         gmail.users.messages.list({
             userId: 'me',
-            maxResults: 1
         }, (err, res) => {
             res.data.messages.forEach(element => {
                

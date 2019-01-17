@@ -115,7 +115,7 @@ async function emailMessagesGet() {
     let auth = await gmailOps.authorizeUser();
 
     try {
-        gmailOps.getMessages(auth);
+        let messages= gmailOps.getMessages(auth);
         agent.add('hello');
     } catch (err) {
         agent.add('error in after getting messages' + err);
