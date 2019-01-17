@@ -119,14 +119,20 @@ async function emailMessagesGet() {
 
     try {
 
-        let jsonResult=await gmailOps.getMessages(auth, -1);
-        switch(jsonResult.success){
+        let jsonResult = await gmailOps.getMessages(auth, -1);
+
+        console.log(jsonResult.result);
+        switch (jsonResult.success) {
             case 0:
-            agent.add(jsonResult.message); 
-            break;
-            case 1: 
-            agent.add(jsonResult.result);
-            break;
+                agent.add(jsonResult.message);
+                break;
+            case 1:
+                var list = jsonResult.result;
+                list.forEach(element => {
+                    agent.add(element.subject);
+                });
+                
+                break;
         }
     } catch (err) {
         agent.add('error in after getting messages' + err);
@@ -134,17 +140,17 @@ async function emailMessagesGet() {
     }
 
 }
-async function getMessagesLimitToNumber(){
+async function getMessagesLimitToNumber() {
     var numberMaxResults = agent.parameters.number;
-    let jsonResult =await gmailOps.getMessages(auth, numberMaxResults);
+    let jsonResult = await gmailOps.getMessages(auth, numberMaxResults);
 
-    switch(jsonResult.success){
+    switch (jsonResult.success) {
         case 0:
-        agent.add(jsonResult.message); 
-        break;
-        case 1: 
-        agent.add(jsonResult.result);
-        break;
+            agent.add(jsonResult.message);
+            break;
+        case 1:
+            agent.add(jsonResult.result.subject);
+            break;
     }
 }
 

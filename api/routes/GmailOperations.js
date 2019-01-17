@@ -142,34 +142,51 @@ class GmailOperations {
 
     }
     async getMessages(auth, maxResult) {
-        var list = new ArrayList;
+
         const gmail = google.gmail({ version: 'v1', auth });
+
         if (maxResult == -1) {
-            let promise = new Promise((resolve, reject) => {
+
+            let promiseGlobal = new Promise((resolveGlobal, reject) => {
                 gmail.users.messages.list({
                     userId: 'me',
-                    maxResults: 1
+                    maxResults: 5
                 }, (err, res) => {
-                    let list = new ArrayList;
-
-                    res.data.messages.forEach(element => {
-                        var messageId = element.id;
-                        gmail.users.messages.get({
-                            userId: 'me',
-                            id: messageId
-                        }, (err, response) => {
-                           
-                            var subject = response.data.payload.headers[20].value;
-                            if(subject ==="undefined")
-                            subject= "no subject";
-                            list.add({"id": messageId, "subject": subject});
-
-                        })
-                    });
-                    resolve(list);
+                    resolveGlobal(res);
                 });
             });
+
+            let res = await promiseGlobal;
+            let list = new ArrayList;
+            var complete = 0 
+            let promise = new Promise((resolve, reject)=>{
+                console.log(res.data.messages.length);
+                res.data.messages.forEach(element => {
+                    var messageId = element.id;
+                    gmail.users.messages.get({
+                        userId: 'me',
+                        id: messageId
+                    }, (err, response) => {
+                        console.log(response);
+                        complete++;
+                        var subject = response.data.payload.headers[20].value;
+                        if (subject === '') {
+                            subject = "no subject";
+                        }
+                        list.add({ "id": messageId, "subject": subject });
+
+                        if(complete ==res.data.messages.length ){
+                            resolve(list);
+                        }
+
+                    });
+                    
+                });
+                
+            });
+            
             let result = await promise;
+            
             return {
                 "success": 1,
                 "result": result
