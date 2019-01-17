@@ -141,26 +141,81 @@ class GmailOperations {
         });
 
     }
-    getMessages(auth) {
+    async getMessages(auth, maxResult) {
         var list = new ArrayList;
         const gmail = google.gmail({ version: 'v1', auth });
-        gmail.users.messages.list({
-            userId: 'me',
-        }, (err, res) => {
-            res.data.messages.forEach(element => {
-               
-                gmail.users.messages.get({
+        if (maxResult == -1) {
+            let promise = new Promise((resolve, reject) => {
+                gmail.users.messages.list({
                     userId: 'me',
-                    id: element.id
-                }, (err, response) => {
-                    var bodyData = response.data.payload.body.data;
-                    var str = this.decodeMessageBody(bodyData);
-                    console.log(str);
-                })
-            });
-        });
-    }
+                    maxResults: 1
+                }, (err, res) => {
+                    let list = new ArrayList;
 
+                    res.data.messages.forEach(element => {
+                        var messageId = element.id;
+                        gmail.users.messages.get({
+                            userId: 'me',
+                            id: messageId
+                        }, (err, response) => {
+                           
+                            var subject = response.data.payload.headers[20].value;
+                            if(subject ==="undefined")
+                            subject= "no subject";
+                            list.add({"id": messageId, "subject": subject});
+
+                        })
+                    });
+                    resolve(list);
+                });
+            });
+            let result = await promise;
+            return {
+                "success": 1,
+                "result": result
+            }
+
+        } else if (maxResult > 0) {
+            let result = this.getMessagesWithLimit(gmail, maxResult)
+            return {
+                "success": 1,
+                "result": result
+            };
+
+        } else {
+
+            return {
+                "success": 0,
+                "message": "limit number cannot be less than or equal 0"
+            }
+        }
+
+    }
+    async getMessagesWithLimit(gmail, limit) {
+
+        let promise = new Promise((resolve, reject) => {
+            gmail.users.messages.list({
+                userId: 'me',
+                maxResults: limit
+            }, (err, res) => {
+                let list = new ArrayList;
+                res.data.messages.forEach(element => {
+
+                    gmail.users.messages.get({
+                        userId: 'me',
+                        id: element.id
+                    }, (err, response) => {
+                        var bodyData = response.data.payload.body.data;
+                        var str = this.decodeMessageBody(bodyData);
+                        list.add(str);
+                    })
+                });
+            });
+
+        });
+        let result = await promise;
+        return result;
+    }
     decodeMessageBody(encodedBody) {
         return base64url.decode(encodedBody);
     }

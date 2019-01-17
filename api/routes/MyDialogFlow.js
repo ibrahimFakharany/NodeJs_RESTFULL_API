@@ -27,6 +27,9 @@ router.post('/', (req, server_response, next) => {
     intentMap.set('email.send.message_contact', messageContactEmailSending);
     intentMap.set('email.send.message_email', messageEmailSending);
     intentMap.set('email.selecting.index', sendingEmailAfterSelectingIndex);
+
+    intentMap.set('email.messages.get.limit.number', getMessagesLimitToNumber);
+
     intentMap.set('Default Fallback Intent', handlingDefaultFallbackIntent);
 
     // getting messages
@@ -115,12 +118,32 @@ async function emailMessagesGet() {
     let auth = await gmailOps.authorizeUser();
 
     try {
-        let messages= gmailOps.getMessages(auth);
-        agent.add('hello');
+
+        let messages=await gmailOps.getMessages(auth, -1);
+        agent.add('you want to limit it or you want all ? ');
+        agent.context.set({
+            'name': 'limit_getting_messages',
+            'lifespan': 5
+        })
     } catch (err) {
         agent.add('error in after getting messages' + err);
         console.log(err);
     }
 
 }
+async function getMessagesLimitToNumber(){
+    var numberMaxResults = agent.parameters.number;
+    let jsonResult =await gmailOps.getMessages(auth, numberMaxResults);
+
+    switch(jsonResult.success){
+        case 0:
+        agent.add(jsonResult.message); 
+        break;
+        case 1: 
+        agent.add(jsonResult.result);
+        break;
+    }
+}
+
+
 module.exports = router;
