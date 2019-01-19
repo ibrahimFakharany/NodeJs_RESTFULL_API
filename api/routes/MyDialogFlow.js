@@ -178,7 +178,7 @@ async function emailMessagesGetDateInBetween() {
     if (end) {
         end = end.split("T")[0];
     }
-    var operation = new Operation();
+    var operation = new Operations();
     let jsonResult = await gmailOps.getMessagesByDateInBetween(start, end);
     jsonResult = operation.prepareGettingIdsResposne(jsonResult);
     let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
