@@ -3,7 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const router = express.Router();
 const { WebhookClient } = require('dialogflow-fulfillment');
-
+const Operations = require('./Operations');
 // intents names 
 
 const choose_index_entity = "choose_index_entity";
@@ -34,6 +34,7 @@ router.post('/', (req, server_response, next) => {
 
     // getting messages
     intentMap.set('email.messages.get', emailMessagesGet);
+    intentMap.set('email.messages.get.date', emailMessagesGetDate);
     agent.handleRequest(intentMap);
 });
 
@@ -112,8 +113,6 @@ function handlingDefaultFallbackIntent() {
 
 
 // getting messages
-
-
 async function emailMessagesGet() {
     let auth = await gmailOps.authorizeUser();
 
@@ -131,7 +130,7 @@ async function emailMessagesGet() {
                 list.forEach(element => {
                     agent.add(element.subject);
                 });
-                
+
                 break;
         }
     } catch (err) {
@@ -140,6 +139,40 @@ async function emailMessagesGet() {
     }
 
 }
+
+
+async function emailMessagesGetDate() {
+    let auth = await gmailOps.authorizeUser();
+    try {
+        var date = agent.parameters.date.toLowerCase();
+        switch (date) {
+            case 'today':
+                var operation = new Operations();
+                var date = operation.gettingTodayDate();
+                break;
+            case 'this week':
+                var operation = new Operations();
+                var date = operation.getThisWeekDate();
+                break;
+        }
+        let jsonResult = await gmailOps.getMessagesByDate(date);
+        let gmail = gmailOps.getGmailObjFromAuth(auth);
+        jsonResult = operation.prepareGettingIdsResposne(jsonResult);
+        let result = await gmailOps.gettingListSubjectFromMessageId(gmail, jsonResult);
+        if(result.length> 0){
+            result.forEach(element =>{
+                agent.add(element.subject);
+            });
+        }else {
+            agent("there is no message with specified date");
+        }
+    } catch (err) {
+        agent.add('error in after getting messages' + err);
+        console.log(err);
+    }
+
+}
+
 async function getMessagesLimitToNumber() {
     var numberMaxResults = agent.parameters.number;
     let jsonResult = await gmailOps.getMessages(auth, numberMaxResults);

@@ -157,43 +157,16 @@ class GmailOperations {
             });
 
             let res = await promiseGlobal;
-            let list = new ArrayList;
-            var complete = 0 
-            let promise = new Promise((resolve, reject)=>{
-                console.log(res.data.messages.length);
-                res.data.messages.forEach(element => {
-                    var messageId = element.id;
-                    gmail.users.messages.get({
-                        userId: 'me',
-                        id: messageId
-                    }, (err, response) => {
-                        console.log(response);
-                        complete++;
-                        var subject = response.data.payload.headers[20].value;
-                        if (subject === '') {
-                            subject = "no subject";
-                        }
-                        list.add({ "id": messageId, "subject": subject });
+            let result = await this.gettingListSubjectFromMessageId(gmail, res);
+            console.log(result);
 
-                        if(complete ==res.data.messages.length ){
-                            resolve(list);
-                        }
-
-                    });
-                    
-                });
-                
-            });
-            
-            let result = await promise;
-            
             return {
                 "success": 1,
                 "result": result
             }
 
         } else if (maxResult > 0) {
-            let result = this.getMessagesWithLimit(gmail, maxResult)
+            let result = await this.getMessagesWithLimit(gmail, maxResult)
             return {
                 "success": 1,
                 "result": result
@@ -208,6 +181,47 @@ class GmailOperations {
         }
 
     }
+    getGmailObjFromAuth(auth) {
+        return google.gmail({ version: 'v1', auth });
+    }
+    async gettingListSubjectFromMessageId(gmail, response) {
+        let list = new ArrayList;
+        var complete = 0;
+        let token = await this.getToken();
+        let promise = new Promise((resolve, reject) => {
+            response.data.messages.forEach(element => {
+                var messageId = element.id;
+                request('https://www.googleapis.com/gmail/v1/users/me/messages/' + messageId + '?access_token=' + token, { json: true }, (err, res, body) => {
+                    if (err) { return console.log(err); }
+                    let stringResponse = JSON.stringify(res);
+                    let jsonResponse = JSON.parse(stringResponse);
+                    complete++;
+
+                    for (var i = 0; i < jsonResponse.body.payload.headers.length; i++) {
+                        if (jsonResponse.body.payload.headers[i].name == "Subject") {
+                            var subject = jsonResponse.body.payload.headers[i].value;
+                            if (subject === '') {
+                                subject = "no subject";
+                            }
+                            list.add({ "id": messageId, "subject": subject });
+                            break;
+                        }
+                    }
+                    if (complete == response.data.messages.length) {
+                        resolve(list);
+                    }
+                });
+
+            });
+
+        });
+
+        let result = await promise;
+        return result;
+    }
+
+    //TODO : MAKE NEW METHOD FOR GETTING MESSAGE ID FROM RESPOSNE
+
     async getMessagesWithLimit(gmail, limit) {
 
         let promise = new Promise((resolve, reject) => {
@@ -217,7 +231,6 @@ class GmailOperations {
             }, (err, res) => {
                 let list = new ArrayList;
                 res.data.messages.forEach(element => {
-
                     gmail.users.messages.get({
                         userId: 'me',
                         id: element.id
@@ -225,13 +238,28 @@ class GmailOperations {
                         var bodyData = response.data.payload.body.data;
                         var str = this.decodeMessageBody(bodyData);
                         list.add(str);
-                    })
+                    });
                 });
             });
 
         });
         let result = await promise;
         return result;
+    }
+    async getMessagesByDate(date) {
+        let token = await this.getToken();
+        let promise = new Promise((resolve, reject) => {
+            request('https://www.googleapis.com/gmail/v1/users/me/messages?q=after:' + date + '&access_token=' + token, { json: true }, (err, res, body) => {
+                if (err) { return console.log(err); }
+                let stringResponse = JSON.stringify(res);
+                let jsonResponse = JSON.parse(stringResponse);
+
+                resolve(jsonResponse);
+            });
+
+        });
+        let response = await promise;
+        return response;
     }
     decodeMessageBody(encodedBody) {
         return base64url.decode(encodedBody);
