@@ -181,12 +181,13 @@ async function emailMessagesGetDateInBetween() {
     let jsonResult = await gmailOps.getMessagesByDateInBetween(start, end);
     jsonResult = operation.prepareGettingIdsResposne(jsonResult);
     let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
-
-
-    console.log(result);
-
-
-
+    if (result.length > 0) {
+        result.forEach(element => {
+            agent.add(element.subject);
+        });
+    } else {
+        agent("there is no message with specified date");
+    }
 }
 
 async function getMessagesLimitToNumber() {
