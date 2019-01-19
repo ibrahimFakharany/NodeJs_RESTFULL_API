@@ -75,7 +75,6 @@ class GmailOperations {
 
                 // Authorize a client with credentials, then call the Gmail API
                 resolve(content);
-                reject(new Error('error in authorizeUser'));
             });
         });
         return promise;
@@ -278,6 +277,7 @@ class GmailOperations {
         let response = await promise;
         return response;
 
+
     }
 
 
@@ -286,10 +286,10 @@ class GmailOperations {
         let token = await this.getToken();
         let link = null
         if (state == "by") {
-            link = "https://www.googleapis.com/gmail/v1/users/me/messages?q=from:"+contactName+"&access_token="+ token;
+            link = "https://www.googleapis.com/gmail/v1/users/me/messages?q=from:" + contactName + "&access_token=" + token;
 
         } else if (state == "to") {
-            link = "https://www.googleapis.com/gmail/v1/users/me/messages?q=to:"+contactName+"&access_token="+ token;
+            link = "https://www.googleapis.com/gmail/v1/users/me/messages?q=to:" + contactName + "&access_token=" + token;
         }
 
         let promise = new Promise((resolve, reject) => {
@@ -297,16 +297,13 @@ class GmailOperations {
                 if (err) { return console.log(err); }
                 let stringResponse = JSON.stringify(res);
                 let jsonResponse = JSON.parse(stringResponse);
+
                 resolve(jsonResponse);
             });
 
         });
-        
         let response = await promise;
-
-        
-        
-
+        return response;
     }
 
     decodeMessageBody(encodedBody) {
@@ -323,15 +320,12 @@ class GmailOperations {
                 var index;
                 var emailIndex;
                 var emailList = new ArrayList;
-
                 for (index in jsonResponse.body.feed.entry) {
                     for (emailIndex in jsonResponse.body.feed.entry[index].gd$email) {
                         console.log(jsonResponse.body.feed.entry[index].gd$email[emailIndex].address);
                         emailList.add(jsonResponse.body.feed.entry[index].gd$email[emailIndex].address);
-
                     }
                 }
-
                 resolve(emailList);
             });
 
@@ -356,6 +350,10 @@ class GmailOperations {
     }
 
     async getToken() {
+        let con = await this.getCredentials();
+        con = JSON.parse(con);
+        const { client_secret, client_id, redirect_uris } = con.installed;
+        const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
         let promise = new Promise((resolve, reject) => {
             fs.readFile(TOKEN_PATH, async (err, token) => {
                 if (err) { return resolve(await this.getNewToken(oAuth2Client)); }
