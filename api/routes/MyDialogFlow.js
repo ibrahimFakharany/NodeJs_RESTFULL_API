@@ -35,6 +35,8 @@ router.post('/', (req, server_response, next) => {
     // getting messages
     intentMap.set('email.messages.get', emailMessagesGet);
     intentMap.set('email.messages.get.date', emailMessagesGetDate);
+    intentMap.set('email.messages.get.date.between', emailMessagesGetDateInBetween);
+
     agent.handleRequest(intentMap);
 });
 
@@ -150,10 +152,9 @@ async function emailMessagesGetDate() {
         if (date) {
             todayDate = date.split("T")[0];
         }
-        let jsonResult = await gmailOps.getMessagesByDate(todayDate);
-        let gmail = gmailOps.getGmailObjFromAuth(auth);
+        let jsonResult = await gmailOps.getMessagesByDate(date);
         jsonResult = operation.prepareGettingIdsResposne(jsonResult);
-        let result = await gmailOps.gettingListSubjectFromMessageId(gmail, jsonResult);
+        let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
         if (result.length > 0) {
             result.forEach(element => {
                 agent.add(element.subject);
@@ -165,6 +166,26 @@ async function emailMessagesGetDate() {
         agent.add('error in after getting messages' + err);
         console.log(err);
     }
+
+}
+
+async function emailMessagesGetDateInBetween() {
+    var start = agent.parameters.start;
+    var end = agent.parameters.end;
+    if (start) {
+        start = start.split("T")[0];
+    }
+    if (end) {
+        end = end.split("T")[0];
+    }
+    let jsonResult = await gmailOps.getMessagesByDateInBetween(start, end);
+    jsonResult = operation.prepareGettingIdsResposne(jsonResult);
+    let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
+
+
+    console.log(result);
+
+
 
 }
 

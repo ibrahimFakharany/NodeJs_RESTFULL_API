@@ -184,7 +184,7 @@ class GmailOperations {
     getGmailObjFromAuth(auth) {
         return google.gmail({ version: 'v1', auth });
     }
-    async gettingListSubjectFromMessageId(gmail, response) {
+    async gettingListSubjectFromMessageId( response) {
         let list = new ArrayList;
         var complete = 0;
         let token = await this.getToken();
@@ -262,6 +262,26 @@ class GmailOperations {
         let response = await promise;
         return response;
     }
+
+    async getMessagesByDateInBetween(start, end) {
+        let token = await this.getToken();
+        let promise = new Promise((resolve, reject) => {
+            request('https://www.googleapis.com/gmail/v1/users/me/messages?q=after:' + start + ' before:'+end+'&access_token=' + token, { json: true }, (err, res, body) => {
+                if (err) { return console.log(err); }
+                let stringResponse = JSON.stringify(res);
+                let jsonResponse = JSON.parse(stringResponse);
+
+                resolve(jsonResponse);
+            });
+
+        });
+        let response = await promise;
+        return response;
+    }
+
+
+    
+
     decodeMessageBody(encodedBody) {
         return base64url.decode(encodedBody);
     }
