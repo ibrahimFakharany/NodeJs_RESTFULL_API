@@ -7,6 +7,7 @@ const Operations = require('./Operations');
 // intents names 
 
 const choose_index_entity = "choose_index_entity";
+const selecting_email_to_show_messages= "selecting_email_to_show_messages";
 
 const TOKEN_PATH = 'token.json';
 var gmailOps = new GmailOperation();
@@ -36,6 +37,8 @@ router.post('/', (req, server_response, next) => {
     intentMap.set('email.messages.get', emailMessagesGet);
     intentMap.set('email.messages.get.date', emailMessagesGetDate);
     intentMap.set('email.messages.get.date.between', emailMessagesGetDateInBetween);
+    intentMap.set('email.messages.get.contact_name', emailMessagesGetContactName);
+    intentMap.set('email.selecting.to.show.message', emailSelectingForShowMessages);
 
     agent.handleRequest(intentMap);
 });
@@ -91,8 +94,7 @@ async function messageContactEmailSending() {
 
 async function sendingEmailAfterSelectingIndex() {
     let index = parseInt(agent.context.contexts.choose_index_entity.parameters.email_index_entity);
-    console.log('auth -> ' + agent.context.contexts.choose_index_entity.parameters.auth);
-
+    
     let x = await gmailOps.sendEmail(
         auth,
         agent.context.contexts.choose_index_entity.parameters.emails[index - 1],
@@ -188,6 +190,61 @@ async function emailMessagesGetDateInBetween() {
         });
     } else {
         agent("there is no message with specified date");
+    }
+}
+
+
+async function emailMessagesGetContactName() {
+    var state = agent.parameters.state;
+    var contact_name = agent.parameters.contact_name;
+    let response = await gmailOps.getContacts(contact_name);
+    var operation = new Operations();
+    switch (response.sent) {
+        case 0:
+            // get messages by this email
+            let jsonResult =await  gmailOps.getMessagesByContactName(state, contact_name);
+            jsonResult = operation.prepareGettingIdsResposne(jsonResult);
+            let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
+            if (result.length > 0) {
+                result.forEach(element => {
+                    agent.add(element.subject);
+                });
+            }else{
+                agent.add("there is no messages for specified contact");
+            }
+            break;
+        case 1:
+            // show these emails to user to select one
+            let emails = response.emails;
+            agent.add("which one did you mean?\n.. choose one by copy and pasting it in the message!");
+            agent.add(emails);
+            agent.context.set({
+                'name': 'selecting_email_to_show_messages',
+                'lifespan': 5,
+                'parameters': {
+                    'state': state
+                }
+            })
+            break;
+
+        case -1:
+            // show there is no contact with this name
+            agent.add('there is no contact with this name');
+            break;
+    }   
+}
+async function emailSelectingForShowMessages(){
+    let state = agent.context.contexts.choose_index_entity.parameters.state
+    let email = agent.parameters.email;
+    let jsonResult =await  gmailOps.getMessagesByContactName(state, contact_name);
+    jsonResult = operation.prepareGettingIdsResposne(jsonResult);
+    let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
+    if (result.length > 0) {
+        result.forEach(element => {
+            agent.add(element.subject);
+        });
+    }else{
+        agent.add("there is no messages for specified contact");
     }
 }
 
