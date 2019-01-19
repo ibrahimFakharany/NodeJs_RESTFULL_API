@@ -189,6 +189,7 @@ class GmailOperations {
         var complete = 0;
         let token = await this.getToken();
         let promise = new Promise((resolve, reject) => {
+            console.log(response);
             response.data.messages.forEach(element => {
                 var messageId = element.id;
                 request('https://www.googleapis.com/gmail/v1/users/me/messages/' + messageId + '?access_token=' + token, { json: true }, (err, res, body) => {
