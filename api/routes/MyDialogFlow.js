@@ -144,27 +144,21 @@ async function emailMessagesGet() {
 async function emailMessagesGetDate() {
     let auth = await gmailOps.authorizeUser();
     try {
-        var date = agent.parameters.date.toLowerCase();
+        var date = agent.parameters.date;
+        var todayDate = null;
         var operation = new Operations();
-        switch (date) {
-            case 'today':
-                
-                var date = operation.gettingTodayDate();
-                break;
-            case 'this week'|| 'week':
-                
-                var date = operation.getThisWeekDate();
-                break;
+        if (date) {
+            todayDate = date.toISOString().split("T")[0];
         }
-        let jsonResult = await gmailOps.getMessagesByDate(date);
+        let jsonResult = await gmailOps.getMessagesByDate(todayDate);
         let gmail = gmailOps.getGmailObjFromAuth(auth);
         jsonResult = operation.prepareGettingIdsResposne(jsonResult);
         let result = await gmailOps.gettingListSubjectFromMessageId(gmail, jsonResult);
-        if(result.length> 0){
-            result.forEach(element =>{
+        if (result.length > 0) {
+            result.forEach(element => {
                 agent.add(element.subject);
             });
-        }else {
+        } else {
             agent("there is no message with specified date");
         }
     } catch (err) {
