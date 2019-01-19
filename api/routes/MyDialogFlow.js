@@ -145,13 +145,14 @@ async function emailMessagesGetDate() {
     let auth = await gmailOps.authorizeUser();
     try {
         var date = agent.parameters.date.toLowerCase();
+        var operation = new Operations();
         switch (date) {
             case 'today':
-                var operation = new Operations();
+                
                 var date = operation.gettingTodayDate();
                 break;
             case 'this week':
-                var operation = new Operations();
+                
                 var date = operation.getThisWeekDate();
                 break;
         }
