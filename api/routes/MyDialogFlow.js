@@ -148,7 +148,7 @@ async function emailMessagesGetDate() {
         var todayDate = null;
         var operation = new Operations();
         if (date) {
-            todayDate = date.toISOString().split("T")[0];
+            todayDate = date.split("T")[0];
         }
         let jsonResult = await gmailOps.getMessagesByDate(todayDate);
         let gmail = gmailOps.getGmailObjFromAuth(auth);
