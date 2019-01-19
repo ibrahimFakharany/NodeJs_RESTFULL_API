@@ -151,7 +151,7 @@ async function emailMessagesGetDate() {
                 
                 var date = operation.gettingTodayDate();
                 break;
-            case 'this week':
+            case 'this week'|| 'week':
                 
                 var date = operation.getThisWeekDate();
                 break;
