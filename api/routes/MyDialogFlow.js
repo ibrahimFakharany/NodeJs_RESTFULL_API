@@ -152,7 +152,7 @@ async function emailMessagesGetDate() {
         if (date) {
             todayDate = date.split("T")[0];
         }
-        let jsonResult = await gmailOps.getMessagesByDate(date);
+        let jsonResult = await gmailOps.getMessagesByDate(todayDate);
         jsonResult = operation.prepareGettingIdsResposne(jsonResult);
         let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
         if (result.length > 0) {
