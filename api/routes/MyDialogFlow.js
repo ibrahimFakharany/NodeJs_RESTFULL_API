@@ -236,7 +236,7 @@ async function emailMessagesGetContactName() {
 async function emailSelectingForShowMessages(){
     let state = agent.context.contexts.choose_index_entity.parameters.state
     let email = agent.parameters.email;
-    let jsonResult =await  gmailOps.getMessagesByContactName(state, contact_name);
+    let jsonResult =await  gmailOps.getMessagesByContactName(state, email);
     jsonResult = operation.prepareGettingIdsResposne(jsonResult);
     let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
     if (result.length > 0) {
