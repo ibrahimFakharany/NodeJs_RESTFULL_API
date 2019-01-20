@@ -496,10 +496,7 @@ class GmailOperations {
         auth.setCredentials(token);
         let gmail = this.getGmailObjFromAuth(auth);
         let encodedResponse = this.makeBodyForReplying(to, from, messageId, subject, reply);
-       
-
         let promise = new Promise((resolve, reject) => {
-
             gmail.users.messages.send({
                 auth: auth,
                 userId: 'me',
@@ -507,10 +504,8 @@ class GmailOperations {
                     raw: encodedResponse
                 }
             }, function (err, response) {
-
-                if (err) resolve(err); 
+                if (err) reject(err); 
                 else resolve('this is response '+response);
-
             });
         });
         let result = await promise;
