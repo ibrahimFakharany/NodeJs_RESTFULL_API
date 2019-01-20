@@ -465,6 +465,7 @@ class GmailOperations {
             }
             else if (element.name == 'Reply-To') {
                 to = element.value
+                console.log('to '+ to );
                 to.replace('\\u003C', '');
                 to.replace('\\u003E', '');
             }
@@ -507,7 +508,10 @@ class GmailOperations {
             message
         ].join('');
 
-        var encodedMail = new Buffer(str).toString("base64").replace(/\+/g, '-').replace(/\//g, '_');
+        var encodedMail = new Buffer(str)
+        .toString("base64")
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_');
         return encodedMail;
     }
 
