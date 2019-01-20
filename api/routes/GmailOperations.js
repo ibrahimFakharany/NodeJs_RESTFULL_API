@@ -389,7 +389,7 @@ class GmailOperations {
         let promise = new Promise((resolve, reject) => {
             request('https://www.googleapis.com/gmail/v1/users/me/messages?q=subject:\"' + subject + '\"&access_token=' + token, { json: true }, (err, res, body) => {
                 if (err) { return console.log(err); }
-                resolve(body );
+                resolve(body);
 
             });
 
@@ -509,7 +509,7 @@ class GmailOperations {
             }, function (err, response) {
 
                 if (err) resolve(err); 
-                else resolve(response);
+                else resolve('this is response '+response);
 
             });
         });
