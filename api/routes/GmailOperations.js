@@ -81,6 +81,14 @@ class GmailOperations {
 
     }
 
+    getAuthObject() {
+        let con = await this.getCredentials();
+        con = JSON.parse(con);
+        const { client_secret, client_id, redirect_uris } = con.installed;
+        const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+        return oAuth2Client;
+    }
+
     async authorizeUser() {
         let con = await this.getCredentials();
         let auth = await this.authorize(JSON.parse(con));
@@ -464,17 +472,17 @@ class GmailOperations {
             else if (element.name == 'Subject') {
                 subject = element.value;
             }
-            else if(element.name == 'From'){
+            else if (element.name == 'From') {
                 to = element.value
                 to = to.replace('<', '');
                 to = to.replace('>', '');
                 let list = to.split(' ');
-                to = list[list.length-1];
+                to = list[list.length - 1];
 
             }
             else if (element.name == 'Reply-To') {
                 to = element.value
-                console.log('to '+ to );
+                console.log('to ' + to);
                 to.replace('\\u003C', '');
                 to.replace('\\u003E', '');
             }
@@ -482,25 +490,40 @@ class GmailOperations {
                 messageId = element.value;
             }
         });
-        console.log('from '+from +' to '+to);
+        console.log('from ' + from + ' to ' + to);
         let token = await this.getToken();
+        let auth = this.getAuthObject();
+        let gmail = this.getGmailObjFromAuth(auth);
         let encodedResponse = this.makeBodyForReplying(to, from, messageId, subject, reply);
+        //     request.post({
+        //         contentType: "application/json",
+        //         url: 'https://www.googleapis.com/gmail/v1/users/me/messages/send?access_token=' + token,
+        //         data: JSON.stringify({
+        //             raw: encodedResponse
+        //         })
+        //     }, function (error, response, body) {
+        //         // console.log(body);
+        //         // console.log(response);
+        //         // console.log(error.code);
+        //         resolve(body);
+
+        //     });
+
         let promise = new Promise((resolve, reject) => {
-            request.post({
-                contentType: "application/json",
-                url: 'https://www.googleapis.com/gmail/v1/users/me/messages/send?access_token=' + token,
-                data: JSON.stringify({
-                    raw: encodedResponse
-                })
-            }, function (error, response, body) {
-                // console.log(body);
-                // console.log(response);
-                // console.log(error.code);
-                resolve(body);
+
+            gmail.users.messages.send({
+                auth: auth,
+                userId: 'me',
+                resource: {
+                    raw: raw
+                }
+            }, function (err, response) {
+
+                if (err) resolve(err); 
+                else resolve(response);
 
             });
         });
-
         let result = await promise;
         return result;
 
@@ -518,9 +541,9 @@ class GmailOperations {
         ].join('');
 
         var encodedMail = new Buffer(str)
-        .toString("base64")
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_');
+            .toString("base64")
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_');
         return encodedMail;
     }
 
