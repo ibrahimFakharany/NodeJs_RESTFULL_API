@@ -472,7 +472,7 @@ class GmailOperations {
                 messageId = element.value;
             }
         });
-        console.log('from '+from +'to '+to);
+        console.log('from '+from +' to '+to);
         let token = await this.getToken();
         let encodedResponse = this.makeBodyForReplying(to, from, messageId, subject, reply);
         let promise = new Promise((resolve, reject) => {
