@@ -284,7 +284,7 @@ async function getMessagesFromSubject() {
                 body = element.body.data 
             }
         })
-        agent.add(body);
+        agent.add(gmailOps.decodeMessageBody(body));
 
     }
 }
