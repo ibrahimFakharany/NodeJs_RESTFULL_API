@@ -446,7 +446,7 @@ class GmailOperations {
     }
 
 
-    sendingReply(message) {
+    async sendingReply(message) {
         let message = agent.context.contexts.send_reply_to_the_email.parameters.message
         let id = message.id;
         let threadId = message.threadId;
