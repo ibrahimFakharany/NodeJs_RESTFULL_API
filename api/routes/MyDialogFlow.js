@@ -215,7 +215,7 @@ async function emailMessagesGetContactName() {
                 'name': 'selecting_email_to_show_messages',
                 'lifespan': 5,
                 'parameters': {
-                    'state': state
+                    'state': state,
                 }
             });
             agent.add(emails);
@@ -240,14 +240,25 @@ async function emailSelectingForShowMessages() {
     if (result.length > 0) {
         result.forEach(element => {
             agent.add(element.subject);
+            agent.context.set({
+                'name': 'get_body_of_message_by_subject',
+                'lifespan': 5,
+                'parameters': {
+                    'state': state,
+                    'email': email
+                }
+            })
         });
     } else {
         agent.add("there is no messages for specified contact");
     }
+
 }
 async function getMessagesFromSubject() {
+    let state = agent.context.contexts.get_body_of_message_by_subject.parameters.state
+    let email=  agent.context.contexts.get_body_of_message_by_subject.parameters.email
     let subject = agent.parameters.subject;
-    let result = await gmailOps.getMessagesBySubject(subject);
+    let result = await gmailOps.getMessagesBySubject(subject, state , email);
     let size = result.messages.length;
     let msgs = result.messages;
 
@@ -266,9 +277,9 @@ async function getMessagesFromSubject() {
         });
 
         let thisResult = await promise;
-        
+
         console.log(thisResult);
-        
+
         agent.add("please select message by typing its index number! ");
         thisResult.forEach(element => {
             agent.add(element.date);
