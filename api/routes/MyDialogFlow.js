@@ -285,7 +285,12 @@ async function getMessagesFromSubject() {
             }
         })
         agent.add(gmailOps.decodeMessageBody(body));
-
+        agent.context.set({
+            'lifespan': 5,
+            'parameters': {
+                'message': message
+            }
+        });
     }
 }
 async function getMessagesLimitToNumber() {
