@@ -384,15 +384,20 @@ class GmailOperations {
         return result;
     }
 
-    async getMessagesBySubject(subject) {
+    async getMessagesBySubject(subject, state, email ) {
         let token = await this.getToken();
+        let link = null; 
+        if (state == "by") {
+            link = 'https://www.googleapis.com/gmail/v1/users/me/messages?q=from:\"' + contactName + '\"'+subject+'\"&access_token='+ token;
+        } else if (state == "to") {
+            link = 'https://www.googleapis.com/gmail/v1/users/me/messages?q=to:\"' + contactName + '\"'+subject+'\"&access_token='+ token;
+        }
         let promise = new Promise((resolve, reject) => {
             request('https://www.googleapis.com/gmail/v1/users/me/messages?q=subject:\"' + subject + '\"&access_token=' + token, { json: true }, (err, res, body) => {
                 if (err) { return console.log(err); }
                 resolve(body);
 
             });
-
         });
         let result = await promise;
         return result;
@@ -506,7 +511,6 @@ class GmailOperations {
             }, function (err, response) {
                 if (err) resolve('this is error '+err); 
                 else resolve('sent ');
-
             });
         });
         let result = await promise;
