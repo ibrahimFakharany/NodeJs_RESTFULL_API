@@ -470,7 +470,7 @@ class GmailOperations {
                 to.replace('<', '');
                 to.replace('>', '');
                 let list = to.split(' ');
-                console.log('length '+list.length());
+                console.log('length '+list.length);
                 console.log('to before '+to);
             }
             else if (element.name == 'Reply-To') {
