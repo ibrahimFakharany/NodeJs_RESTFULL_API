@@ -518,8 +518,8 @@ class GmailOperations {
         var str = ["Content-Type: text/plain; charset=\"UTF-8\"\n",
             "MIME-Version: 1.0\n",
             "Content-Transfer-Encoding: 7bit\n",
-            "to: ", to, "\n",
-            "from: ", from, "\n",
+            "to: ", from, "\n",
+            "from: ", to, "\n",
             "In-Reply-To : ", messageId, "\n",
             "subject: ", subject, "\n\n",
             message
