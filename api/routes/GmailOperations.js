@@ -467,8 +467,8 @@ class GmailOperations {
             else if(element.name == 'From'){
                 to = element.value
                 console.log('to after '+ to );
-                to.replace('<', '');
-                to.replace('>', '');
+                to = to.replace('<', '');
+                to = to.replace('>', '');
                 let list = to.split(' ');
                 console.log('length '+list.length);
                 console.log('to before '+to);
