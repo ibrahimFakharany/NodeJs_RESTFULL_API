@@ -464,6 +464,13 @@ class GmailOperations {
             else if (element.name == 'Subject') {
                 subject = element.value;
             }
+            else if(element.name == 'From'){
+                to = element.value
+                console.log('to after '+ to );
+                to.replace('\\u003C', '');
+                to.replace('\\u003E', '');
+                console.log('to before '+to);
+            }
             else if (element.name == 'Reply-To') {
                 to = element.value
                 console.log('to '+ to );
