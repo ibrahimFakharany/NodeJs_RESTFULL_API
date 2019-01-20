@@ -240,15 +240,16 @@ async function emailSelectingForShowMessages() {
     if (result.length > 0) {
         result.forEach(element => {
             agent.add(element.subject);
-            agent.context.set({
-                'name': 'get_body_of_message_by_subject',
-                'lifespan': 5,
-                'parameters': {
-                    'state': state,
-                    'email': email
-                }
-            })
+            
         });
+        agent.context.set({
+            'name': 'get_body_of_message_by_subject',
+            'lifespan': 5,
+            'parameters': {
+                'state': state,
+                'email': email
+            }
+        })
     } else {
         agent.add("there is no messages for specified contact");
     }
