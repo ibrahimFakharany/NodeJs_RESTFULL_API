@@ -471,7 +471,8 @@ class GmailOperations {
             else if (element.name == 'Message-ID') {
                 messageId = element.value;
             }
-        })
+        });
+        console.log('from '+from +'to '+to);
         let token = await this.getToken();
         let encodedResponse = this.makeBodyForReplying(to, from, messageId, subject, reply);
         let promise = new Promise((resolve, reject) => {
@@ -482,10 +483,11 @@ class GmailOperations {
                     raw: encodedResponse
                 })
             }, function (error, response, body) {
-                console.log(body);
-                console.log(response);
-                console.log(error.code);
-                resolve(response);
+                // console.log(body);
+                // console.log(response);
+                // console.log(error.code);
+                resolve(body);
+
             });
         });
 
@@ -496,6 +498,7 @@ class GmailOperations {
 
     makeBodyForReplying(to, from, messageId, subject, message) {
         var str = ["Content-Type: text/plain; charset=\"UTF-8\"\n",
+            "MIME-Version: 1.0\n",
             "Content-Transfer-Encoding: 7bit\n",
             "to: ", to, "\n",
             "from: ", from, "\n",
