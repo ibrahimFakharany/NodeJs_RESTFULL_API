@@ -515,7 +515,7 @@ class GmailOperations {
                 auth: auth,
                 userId: 'me',
                 resource: {
-                    raw: raw
+                    raw: encodedResponse
                 }
             }, function (err, response) {
 
