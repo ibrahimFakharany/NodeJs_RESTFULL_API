@@ -456,7 +456,8 @@ class GmailOperations {
             request.post({
                 headers: { 'content-type': 'application/x-www-form-urlencoded' },
                 url: 'https://www.googleapis.com/gmail/v1/users/me/messages/send?access_token=' + token,
-                body: "mes=heydude"
+                body: "mes=heydude", 
+                json : true
             }, function (error, response, body) {
                 console.log(body);
                 console.log(response);
