@@ -506,7 +506,7 @@ class GmailOperations {
                     raw: encodedResponse
                 }
             }, function (err, response) {
-                if (err) resolve(err); 
+                if (err) resolve('this is error '+err); 
                 else resolve('response '+response);
 
             });
