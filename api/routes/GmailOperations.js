@@ -417,7 +417,7 @@ class GmailOperations {
         let result = await promise;
         return result;
     }
-    async getDateEmailSubjectWithMessageId(msgs) {
+    async getDateEmailSubjectWithMessageId(id) {
         let token = await this.getToken();
         let promise = new Promise((resolve, reject) => {
             request('https://www.googleapis.com/gmail/v1/users/me/messages/' + id + '?access_token=' + token, { json: true }, (err, res, body) => {
