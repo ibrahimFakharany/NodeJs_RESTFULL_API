@@ -457,6 +457,7 @@ class GmailOperations {
         let subject = null;
 
         headers.forEach(element => {
+            console.log(element.name);
             if (element.name == 'Delivered-To') {
                 from = element.value
             }
