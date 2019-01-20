@@ -446,18 +446,42 @@ class GmailOperations {
     }
 
 
-    async sendingReply(message) {
+    async sendingReply(reply, message) {
         let message = agent.context.contexts.send_reply_to_the_email.parameters.message
         let id = message.id;
         let threadId = message.threadId;
+        let messageId = null;
+
         let headers = message.payload.headers;
+        let to = null;
+        let from = null;
+        let subject = null;
+
+        headers.forEach(element => {
+            if (element.name == 'Delivered-To') {
+                to = element.value
+            }
+            if (element.name == 'Subject') {
+                subject = element.value;
+            }
+            if (element.name == 'Reply-To') {
+                from = element.value
+                from.replace('\\u003C', '');
+                from.replace('\\u003E', '');
+            }
+            if (element.name == 'Message-ID') {
+                messageId = element.value;
+            }
+        })
         let token = this.getToken();
+        let encodedResponse = this.makeBodyForReplying(to, from, messageId, subject, reply);
         let promise = new Promise((resolve, reject) => {
             request.post({
-                headers: { 'content-type': 'application/x-www-form-urlencoded' },
+                contentType: "application/json",
                 url: 'https://www.googleapis.com/gmail/v1/users/me/messages/send?access_token=' + token,
-                body: "mes=heydude", 
-                json : true
+                data: JSON.stringify({
+                    raw: encodedResponse
+                })
             }, function (error, response, body) {
                 console.log(body);
                 console.log(response);
@@ -466,9 +490,24 @@ class GmailOperations {
             });
         });
 
-        let result= await promise;
-        return result; 
+        let result = await promise;
+        return result;
 
+    }
+
+    makeBodyForReplying(to, from, messageId, subject, message) {
+        var str = ["Content-Type: text/plain; charset=\"UTF-8\"\n",
+            "MIME-Version: 1.0\n",
+            "Content-Transfer-Encoding: 7bit\n",
+            "to: ", to, "\n",
+            "from: ", from, "\n",
+            "In-Reply-To : ", messageId, "\n",
+            "subject: ", subject, "\n\n",
+            message
+        ].join('');
+
+        var encodedMail = new Buffer(str).toString("base64").replace(/\+/g, '-').replace(/\//g, '_');
+        return encodedMail;
     }
 
 
