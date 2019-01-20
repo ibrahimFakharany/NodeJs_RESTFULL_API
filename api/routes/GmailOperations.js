@@ -492,22 +492,10 @@ class GmailOperations {
         });
         console.log('from ' + from + ' to ' + to);
         let token = await this.getToken();
-        let auth = this.getAuthObject();
+        let auth = await this.authorizeUser()
         let gmail = this.getGmailObjFromAuth(auth);
         let encodedResponse = this.makeBodyForReplying(to, from, messageId, subject, reply);
-        //     request.post({
-        //         contentType: "application/json",
-        //         url: 'https://www.googleapis.com/gmail/v1/users/me/messages/send?access_token=' + token,
-        //         data: JSON.stringify({
-        //             raw: encodedResponse
-        //         })
-        //     }, function (error, response, body) {
-        //         // console.log(body);
-        //         // console.log(response);
-        //         // console.log(error.code);
-        //         resolve(body);
-
-        //     });
+       
 
         let promise = new Promise((resolve, reject) => {
 
