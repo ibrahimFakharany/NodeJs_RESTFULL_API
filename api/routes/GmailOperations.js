@@ -492,7 +492,8 @@ class GmailOperations {
         });
         console.log('from ' + from + ' to ' + to);
         let token = await this.getToken();
-        let auth = await this.authorizeUser()
+        let auth = await this.getAuthObject();
+        auth.setCredentials(token);
         let gmail = this.getGmailObjFromAuth(auth);
         let encodedResponse = this.makeBodyForReplying(to, from, messageId, subject, reply);
        
