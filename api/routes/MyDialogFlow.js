@@ -249,7 +249,7 @@ async function getMessagesFromSubject() {
     let subject = agent.parameters.subject;
     let result = await gmailOps.getMessagesBySubject(subject);
     let size = result.messages.length;
-    let messages = result.messages;
+    let msgs = result.messages;
 
     if (size > 1) {
         // show to user 
@@ -257,27 +257,28 @@ async function getMessagesFromSubject() {
 
         let listOfPossibleMessages = new ArrayList()
         let promise = new Promise(async (resolve, reject) => {
-            messages.forEach(async element => {
+            msgs.forEach(async element => {
                 let id = element.id;
                 let possibleMessageWithThisSubject = await gmailOps.getDateEmailSubjectWithMessageId(id);
                 listOfPossibleMessages.add(possibleMessageWithThisSubject);
             });
             resolve(listOfPossibleMessages);
-
         });
 
         let thisResult = await promise;
+        
+        console.log(thisResult);
+        
         agent.add("please select message by typing its index number! ");
         thisResult.forEach(element => {
             agent.add(element.date);
             agent.add(element.email);
             agent.add(element.subject);
-
         })
 
     } else {
         // get body with this id 
-        let id = messages[0].id
+        let id = msgs[0].id
         let message = await gmailOps.getMessagesByMessageId(id);
         console.log(message);
         let body = null;
