@@ -525,7 +525,7 @@ class GmailOperations {
             "to: ", to, "\n",
             "from: ", from, "\n",
             "In-Reply-To : ", messageId, "\n",
-            "subject: ", subject, "\n\n",
+            "subject: ", "Re : "+subject, "\n\n",
             message
         ].join('');
 
