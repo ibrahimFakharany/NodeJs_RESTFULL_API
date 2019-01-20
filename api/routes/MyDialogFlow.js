@@ -312,9 +312,10 @@ async function getMessagesLimitToNumber() {
 }
 
 async function emailMessageSendingReply() {
+    let auth = await gmailOps.authorizeUser()
     let message = agent.context.contexts.send_reply_to_the_email.parameters.message
     let userReply = agent.parameters.reply;
-    let reply = await gmailOps.sendingReply(userReply, message);
+    let reply = await gmailOps.sendingReply(auth, userReply, message);
     agent.add(reply);
 }
 

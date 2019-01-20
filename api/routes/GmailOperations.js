@@ -454,7 +454,7 @@ class GmailOperations {
     }
 
 
-    async sendingReply(reply, message) {
+    async sendingReply(auth, reply, message) {
         let id = message.id;
         let threadId = message.threadId;
         let messageId = null;
@@ -492,10 +492,10 @@ class GmailOperations {
         });
         console.log('from ' + from + ' to ' + to);
         let token = await this.getToken();
-        let auth = await this.getAuthObject();
-        auth.setCredentials(token);
-        let gmail = this.getGmailObjFromAuth(auth);
+        
+        let gmail = google.gmail({ version: 'v1', auth });
         let encodedResponse = this.makeBodyForReplying(to, from, messageId, subject, reply);
+
         let promise = new Promise((resolve, reject) => {
             gmail.users.messages.send({
                 auth: auth,
@@ -505,7 +505,7 @@ class GmailOperations {
                 }
             }, function (err, response) {
                 if (err) resolve('this is error '+err); 
-                else resolve('response '+response);
+                else resolve('sent ');
 
             });
         });
@@ -518,8 +518,8 @@ class GmailOperations {
         var str = ["Content-Type: text/plain; charset=\"UTF-8\"\n",
             "MIME-Version: 1.0\n",
             "Content-Transfer-Encoding: 7bit\n",
-            "to: ", from, "\n",
-            "from: ", to, "\n",
+            "to: ", to, "\n",
+            "from: ", from, "\n",
             "In-Reply-To : ", messageId, "\n",
             "subject: ", subject, "\n\n",
             message
