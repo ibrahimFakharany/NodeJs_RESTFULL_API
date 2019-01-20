@@ -390,11 +390,11 @@ class GmailOperations {
         return result;
     }
 
-    
+
     async getMessagesByMessageId(id) {
         let token = await this.getToken();
         let promise = new Promise((resolve, reject) => {
-            request('https://www.googleapis.com/gmail/v1/users/me/messages/'+id+'?access_token=' + token, { json: true }, (err, res, body) => {
+            request('https://www.googleapis.com/gmail/v1/users/me/messages/' + id + '?access_token=' + token, { json: true }, (err, res, body) => {
                 if (err) { return console.log(err); }
                 resolve(body);
 
@@ -436,7 +436,7 @@ class GmailOperations {
             "email": email
         });
 
-        let result =await promise; 
+        let result = await promise;
         return result;
     }
 
@@ -444,6 +444,32 @@ class GmailOperations {
     decodeMessageBody(encodedBody) {
         return base64url.decode(encodedBody);
     }
+
+
+    sendingReply(message) {
+        let message = agent.context.contexts.send_reply_to_the_email.parameters.message
+        let id = message.id;
+        let threadId = message.threadId;
+        let headers = message.payload.headers;
+        let token = this.getToken();
+        let promise = new Promise((resolve, reject) => {
+            request.post({
+                headers: { 'content-type': 'application/x-www-form-urlencoded' },
+                url: 'https://www.googleapis.com/gmail/v1/users/me/messages/send?access_token=' + token,
+                body: "mes=heydude"
+            }, function (error, response, body) {
+                console.log(body);
+                console.log(response);
+                console.log(error);
+                resolve(response);
+            });
+        });
+
+        let result= await promise;
+        return result; 
+
+    }
+
 
 }
 module.exports = GmailOperations;

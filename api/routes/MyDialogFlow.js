@@ -36,6 +36,7 @@ router.post('/', (req, server_response, next) => {
     intentMap.set('email.messages.get.limit.number', getMessagesLimitToNumber);
     intentMap.set('email.messages.get.contact_name.subject', getMessagesFromSubject);
     intentMap.set('email.selecting.to.show.message', emailSelectingForShowMessages);
+    intentMap.set('email.messages.send_reply', emailMessageSendingReply);
     agent.handleRequest(intentMap);
 });
 
@@ -218,7 +219,7 @@ async function emailMessagesGetContactName() {
                 }
             });
             agent.add(emails);
-            
+
             break;
 
         case -1:
@@ -279,15 +280,15 @@ async function getMessagesFromSubject() {
         let id = messages[0].id
         let message = await gmailOps.getMessagesByMessageId(id);
         console.log(message);
-        let body = null; 
-        message.payload.parts.forEach(element =>{
-            if(element.mimeType== "text/plain"){
-                body = element.body.data 
+        let body = null;
+        message.payload.parts.forEach(element => {
+            if (element.mimeType == "text/plain") {
+                body = element.body.data
             }
         })
         agent.add(gmailOps.decodeMessageBody(body));
         agent.context.set({
-            'name' :"send_reply_to_the_email" ,
+            'name': "send_reply_to_the_email",
             'lifespan': 5,
             'parameters': {
                 'message': message
@@ -309,5 +310,10 @@ async function getMessagesLimitToNumber() {
     }
 }
 
+async function emailMessageSendingReply() {
+    let message = agent.context.contexts.send_reply_to_the_email.parameters.message
+    let reply = gmailOps.sendingReply(message);
+    agent.add(reply);
+}
 
 module.exports = router;
