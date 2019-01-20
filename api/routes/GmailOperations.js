@@ -22,7 +22,7 @@ class GmailOperations {
         this.serverResponse = serverResponse;
         this.agent = agent;
     }
-
+    // authroization
     async  getNewToken(oAuth2Client) {
 
         const authUrl = oAuth2Client.generateAuthUrl({
@@ -80,6 +80,7 @@ class GmailOperations {
         return promise;
 
     }
+
     async authorizeUser() {
         let con = await this.getCredentials();
         let auth = await this.authorize(JSON.parse(con));
@@ -101,6 +102,26 @@ class GmailOperations {
         });
     };
 
+    getGmailObjFromAuth(auth) {
+        return google.gmail({ version: 'v1', auth });
+    }
+
+    async getToken() {
+        let con = await this.getCredentials();
+        con = JSON.parse(con);
+        const { client_secret, client_id, redirect_uris } = con.installed;
+        const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+        let promise = new Promise((resolve, reject) => {
+            fs.readFile(TOKEN_PATH, async (err, token) => {
+                if (err) { return resolve(await this.getNewToken(oAuth2Client)); }
+                resolve(JSON.parse(token));
+            });
+        });
+        let token = await promise;
+        return token.access_token;
+    }
+
+    // sending email
     makeBody(to, from, subject, message) {
         var str = ["Content-Type: text/plain; charset=\"UTF-8\"\n",
             "MIME-Version: 1.0\n",
@@ -140,24 +161,33 @@ class GmailOperations {
         });
 
     }
+
+    // getting messages
     async getMessages(auth, maxResult) {
 
         const gmail = google.gmail({ version: 'v1', auth });
-
+        let token = await this.getToken();
         if (maxResult == -1) {
 
             let promiseGlobal = new Promise((resolveGlobal, reject) => {
-                gmail.users.messages.list({
-                    userId: 'me',
-                    maxResults: 5
-                }, (err, res) => {
-                    resolveGlobal(res);
+                request('https://www.googleapis.com/gmail/v1/users/me/messages?access_token=' + token, { json: true }, (err, res, body) => {
+
+                    // gmail.users.messages.list({
+                    //     userId: 'me',
+                    //     maxResults: 5
+                    // }, (err, res) => {
+
+                    resolveGlobal(body);
+                    // });
                 });
             });
 
             let res = await promiseGlobal;
-            let result = await this.gettingListSubjectFromMessageId(gmail, res);
-            console.log(result);
+            console.log(res);
+            res = {
+                "data": res
+            };
+            let result = await this.gettingListSubjectFromMessageId(res);
 
             return {
                 "success": 1,
@@ -180,72 +210,8 @@ class GmailOperations {
         }
 
     }
-    getGmailObjFromAuth(auth) {
-        return google.gmail({ version: 'v1', auth });
-    }
-    async gettingListSubjectFromMessageId(response) {
-        let list = new ArrayList;
-        var complete = 0;
-        let token = await this.getToken();
-        let promise = new Promise((resolve, reject) => {
-            console.log(response);
-            response.data.messages.forEach(element => {
-                var messageId = element.id;
-                request('https://www.googleapis.com/gmail/v1/users/me/messages/' + messageId + '?access_token=' + token, { json: true }, (err, res, body) => {
-                    if (err) { return console.log(err); }
-                    let stringResponse = JSON.stringify(res);
-                    let jsonResponse = JSON.parse(stringResponse);
-                    complete++;
 
-                    for (var i = 0; i < jsonResponse.body.payload.headers.length; i++) {
-                        if (jsonResponse.body.payload.headers[i].name == "Subject") {
-                            var subject = jsonResponse.body.payload.headers[i].value;
-                            if (subject === '') {
-                                subject = "no subject";
-                            }
-                            list.add({ "id": messageId, "subject": subject });
-                            break;
-                        }
-                    }
-                    if (complete == response.data.messages.length) {
-                        resolve(list);
-                    }
-                });
-
-            });
-
-        });
-
-        let result = await promise;
-        return result;
-    }
-
-    //TODO : MAKE NEW METHOD FOR GETTING MESSAGE ID FROM RESPOSNE
-
-    async getMessagesWithLimit(gmail, limit) {
-
-        let promise = new Promise((resolve, reject) => {
-            gmail.users.messages.list({
-                userId: 'me',
-                maxResults: limit
-            }, (err, res) => {
-                let list = new ArrayList;
-                res.data.messages.forEach(element => {
-                    gmail.users.messages.get({
-                        userId: 'me',
-                        id: element.id
-                    }, (err, response) => {
-                        var bodyData = response.data.payload.body.data;
-                        var str = this.decodeMessageBody(bodyData);
-                        list.add(str);
-                    });
-                });
-            });
-
-        });
-        let result = await promise;
-        return result;
-    }
+    // by date 
     async getMessagesByDate(date) {
         let token = await this.getToken();
         let promise = new Promise((resolve, reject) => {
@@ -280,6 +246,30 @@ class GmailOperations {
 
     }
 
+    async getMessagesWithLimit(gmail, limit) {
+
+        let promise = new Promise((resolve, reject) => {
+            gmail.users.messages.list({
+                userId: 'me',
+                maxResults: limit
+            }, (err, res) => {
+                let list = new ArrayList;
+                res.data.messages.forEach(element => {
+                    gmail.users.messages.get({
+                        userId: 'me',
+                        id: element.id
+                    }, (err, response) => {
+                        var bodyData = response.data.payload.body.data;
+                        var str = this.decodeMessageBody(bodyData);
+                        list.add(str);
+                    });
+                });
+            });
+
+        });
+        let result = await promise;
+        return result;
+    }
 
     // getting messages by contact name 
     async getMessagesByContactName(state, contactName) {
@@ -306,9 +296,10 @@ class GmailOperations {
         return response;
     }
 
-    decodeMessageBody(encodedBody) {
-        return base64url.decode(encodedBody);
+    async getBodyOfMessage(message) {
     }
+
+    // getting contacts
     async getContacts(contactName) {
         let token = await this.getToken();
 
@@ -344,26 +335,115 @@ class GmailOperations {
         }
     }
 
-    async getBodyOfMessage(message){
-        
-    }
     async deleteContact(emailAddress) {
         let link = "https://www.google.com/m8/feeds/contacts/\'ibraheemelfakharany@gmail.com\'/full/\"http://www.google.com/m8/feeds/contacts/ibraheemelfakharany%40gmail.com/base/675fa7e18b28859c\'?access_token=ya29.GluTBkKph4xYXdvxuDM_QX8yEQCiqmrwZqmDA3ivcwdYC_DwszB71gJrYGHQEPtPsyHRWnQ1DtSR3-oHj4GDI2hgzqhY50Nc5hqeTMVzG6OLjSvTzEIgOJAWs5SB"
     }
 
-    async getToken() {
-        let con = await this.getCredentials();
-        con = JSON.parse(con);
-        const { client_secret, client_id, redirect_uris } = con.installed;
-        const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+    // helper methods
+    async gettingListSubjectFromMessageId(response) {
+        let list = new ArrayList;
+        var complete = 0;
+        let token = await this.getToken();
         let promise = new Promise((resolve, reject) => {
-            fs.readFile(TOKEN_PATH, async (err, token) => {
-                if (err) { return resolve(await this.getNewToken(oAuth2Client)); }
-                resolve(JSON.parse(token));
+            console.log(response);
+            response.data.messages.forEach(element => {
+                var messageId = element.id;
+                request('https://www.googleapis.com/gmail/v1/users/me/messages/' + messageId + '?access_token=' + token, { json: true }, (err, res, body) => {
+                    if (err) { return console.log(err); }
+                    let stringResponse = JSON.stringify(res);
+                    let jsonResponse = JSON.parse(stringResponse);
+                    complete++;
+                    for (var i = 0; i < jsonResponse.body.payload.headers.length; i++) {
+                        if (jsonResponse.body.payload.headers[i].name == "Subject") {
+                            var subject = jsonResponse.body.payload.headers[i].value;
+                            if (subject === '') {
+                                subject = "no subject";
+                            }
+                            list.add({ "id": messageId, "subject": subject });
+                            break;
+                        }
+                    }
+                    if (complete == response.data.messages.length) {
+                        resolve(list);
+                    }
+                });
+
+            });
+
+        });
+
+        let result = await promise;
+        return result;
+    }
+
+    async getMessagesBySubject(subject) {
+        let token = await this.getToken();
+        let promise = new Promise((resolve, reject) => {
+            request('https://www.googleapis.com/gmail/v1/users/me/messages/?q=subject:\"' + subject + '\"access_token=' + token, { json: true }, (err, res, body) => {
+                if (err) { return console.log(err); }
+                resolve(body);
+
+            });
+
+        });
+        let result = await promise;
+        return result;
+    }
+
+    
+    async getMessagesByMessageId(id) {
+        let token = await this.getToken();
+        let promise = new Promise((resolve, reject) => {
+            request('https://www.googleapis.com/gmail/v1/users/me/messages/'+id+'?access_token=' + token, { json: true }, (err, res, body) => {
+                if (err) { return console.log(err); }
+                resolve(body);
+
+            });
+
+        });
+        let result = await promise;
+        return result;
+    }
+    async getDateEmailSubjectWithMessageId(id) {
+        let token = await this.getToken();
+        let promise = new Promise((resolve, reject) => {
+            request('https://www.googleapis.com/gmail/v1/users/me/messages/' + id + '?access_token=' + token, { json: true }, (err, res, body) => {
+                if (err) { return console.log(err); }
+                resolve(body);
+
             });
         });
-        let token = await promise;
-        return token.access_token;
+        let result = await promise;
+        let subject = null;
+        let date = null;
+        let email = null;
+        result.payload.headers.forEach(element => {
+            if (element.name == "Subject") {
+                subject = element.value;
+            }
+
+            if (element.name == "date") {
+                date = element.value
+            }
+            if (element.name == "From") {
+                email = element.value
+            }
+        });
+        resolve({
+            "id": id,
+            "date": date,
+            "subject": subject,
+            "email": email
+        });
+
+        let result =await promise; 
+        return result;
     }
+
+
+    decodeMessageBody(encodedBody) {
+        return base64url.decode(encodedBody);
+    }
+
 }
 module.exports = GmailOperations;

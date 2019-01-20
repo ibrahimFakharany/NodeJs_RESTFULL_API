@@ -1,21 +1,20 @@
 const GmailOperation = require('./GmailOperations');
 const express = require('express');
 const bodyParser = require('body-parser');
+const ArrayList = require('arraylist');
 const router = express.Router();
 const { WebhookClient } = require('dialogflow-fulfillment');
 const Operations = require('./Operations');
+const TOKEN_PATH = 'token.json';
+var gmailOps = new GmailOperation();
+let auth = null
+var agent = null;
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({ extended: true }));
 // intents names 
-
 const choose_index_entity = "choose_index_entity";
 const selecting_email_to_show_messages = "selecting_email_to_show_messages";
 
-const TOKEN_PATH = 'token.json';
-var gmailOps = new GmailOperation();
-
-router.use(bodyParser.json());
-router.use(bodyParser.urlencoded({ extended: true }));
-
-var agent = null;
 router.post('/', (req, server_response, next) => {
 
     agent = new WebhookClient({
@@ -28,18 +27,15 @@ router.post('/', (req, server_response, next) => {
     intentMap.set('email.send.message_contact', messageContactEmailSending);
     intentMap.set('email.send.message_email', messageEmailSending);
     intentMap.set('email.selecting.index', sendingEmailAfterSelectingIndex);
-
-    intentMap.set('email.messages.get.limit.number', getMessagesLimitToNumber);
-
     intentMap.set('Default Fallback Intent', handlingDefaultFallbackIntent);
-
     // getting messages
     intentMap.set('email.messages.get', emailMessagesGet);
     intentMap.set('email.messages.get.date', emailMessagesGetDate);
     intentMap.set('email.messages.get.date.between', emailMessagesGetDateInBetween);
     intentMap.set('email.messages.get.contact_name', emailMessagesGetContactName);
+    intentMap.set('email.messages.get.limit.number', getMessagesLimitToNumber);
+    intentMap.set('email.messages.get.contact_name.subject', getMessagesFromSubject);
     intentMap.set('email.selecting.to.show.message', emailSelectingForShowMessages);
-
     agent.handleRequest(intentMap);
 });
 
@@ -52,7 +48,7 @@ async function fullAddressEmailSending() {
         agent.add('error in after send email catch');
     }
 }
-let auth = null
+
 async function messageContactEmailSending() {
     auth = await gmailOps.authorizeUser()
     try {
@@ -115,7 +111,6 @@ function handlingDefaultFallbackIntent() {
     agent.add('I didn\'t get that, do you want to send it?');
 }
 
-
 // getting messages
 async function emailMessagesGet() {
     let auth = await gmailOps.authorizeUser();
@@ -124,12 +119,12 @@ async function emailMessagesGet() {
 
         let jsonResult = await gmailOps.getMessages(auth, -1);
 
-        console.log(jsonResult.result);
         switch (jsonResult.success) {
             case 0:
                 agent.add(jsonResult.message);
                 break;
             case 1:
+                console.log(jsonResult.result);
                 var list = jsonResult.result;
                 list.forEach(element => {
                     agent.add(element.subject);
@@ -143,7 +138,6 @@ async function emailMessagesGet() {
     }
 
 }
-
 
 async function emailMessagesGetDate() {
     let auth = await gmailOps.authorizeUser();
@@ -193,7 +187,6 @@ async function emailMessagesGetDateInBetween() {
     }
 }
 
-
 async function emailMessagesGetContactName() {
     var state = agent.parameters.state;
     var contact_name = agent.parameters.contact_name;
@@ -233,11 +226,12 @@ async function emailMessagesGetContactName() {
             break;
     }
 }
+
 async function emailSelectingForShowMessages() {
     let state = agent.context.contexts.selecting_email_to_show_messages.parameters.state
     console.log('state ' + state);
     let email = agent.parameters.email;
-    var operation= new Operations();
+    var operation = new Operations();
     let jsonResult = await gmailOps.getMessagesByContactName(state, email);
     jsonResult = operation.prepareGettingIdsResposne(jsonResult);
     let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
@@ -249,7 +243,44 @@ async function emailSelectingForShowMessages() {
         agent.add("there is no messages for specified contact");
     }
 }
+async function getMessagesFromSubject() {
+    let subject = agent.parameters.subject;
+    let result = await gmailOps.getMessagesBySubject(subject);
+    let size = result.messages.length;
+    let messages = result.messages;
 
+    if (size > 1) {
+        // show to user 
+        console.log("#of messages returned by subject is greater than one");
+
+        let listOfPossibleMessages = new ArrayList()
+        let promise = new Promise(async (resolve, reject) => {
+            messages.forEach(async element => {
+                let id = element.id;
+                let possibleMessageWithThisSubject = await gmailOps.getDateEmailSubjectWithMessageId(id);
+                listOfPossibleMessages.add(possibleMessageWithThisSubject);
+            });
+            resolve(listOfPossibleMessages);
+
+        });
+
+        let thisResult = await promise;
+        agent.add("please select message by typing its index number! ");
+        thisResult.forEach(element => {
+            agent.add(element.date);
+            agent.add(element.email);
+            agent.add(element.subject);
+
+        })
+
+    } else {
+        // get body with this id 
+        let id = messages[0].id
+        let message = await gmailOps.getMessagesByMessageId(id);
+        console.log('message '+message);
+
+    }
+}
 async function getMessagesLimitToNumber() {
     var numberMaxResults = agent.parameters.number;
     let jsonResult = await gmailOps.getMessages(auth, numberMaxResults);
