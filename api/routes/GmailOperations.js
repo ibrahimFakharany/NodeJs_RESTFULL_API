@@ -81,7 +81,7 @@ class GmailOperations {
 
     }
 
-    getAuthObject() {
+    async getAuthObject() {
         let con = await this.getCredentials();
         con = JSON.parse(con);
         const { client_secret, client_id, redirect_uris } = con.installed;
