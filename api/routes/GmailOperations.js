@@ -484,7 +484,7 @@ class GmailOperations {
             }, function (error, response, body) {
                 console.log(body);
                 console.log(response);
-                console.log(error);
+                console.log(error.code);
                 resolve(response);
             });
         });
