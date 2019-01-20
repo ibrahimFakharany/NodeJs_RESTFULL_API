@@ -458,15 +458,15 @@ class GmailOperations {
 
         headers.forEach(element => {
             if (element.name == 'Delivered-To') {
-                to = element.value
+                from = element.value
             }
             else if (element.name == 'Subject') {
                 subject = element.value;
             }
             else if (element.name == 'Reply-To') {
-                from = element.value
-                from.replace('\\u003C', '');
-                from.replace('\\u003E', '');
+                to = element.value
+                to.replace('\\u003C', '');
+                to.replace('\\u003E', '');
             }
             else if (element.name == 'Message-ID') {
                 messageId = element.value;
