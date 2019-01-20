@@ -277,7 +277,8 @@ async function getMessagesFromSubject() {
         // get body with this id 
         let id = messages[0].id
         let message = await gmailOps.getMessagesByMessageId(id);
-        console.log('message '+message);
+        console.log('message '+JSON.parse(message.payload));
+        agent.add(messages.payload);
 
     }
 }
