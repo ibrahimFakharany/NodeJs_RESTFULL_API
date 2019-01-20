@@ -210,14 +210,15 @@ async function emailMessagesGetContactName() {
             // show these emails to user to select one
             let emails = response.emails;
             agent.add("which one did you mean?\n.. choose one by copy and pasting it in the message!");
-            agent.add(emails);
             agent.context.set({
                 'name': 'selecting_email_to_show_messages',
                 'lifespan': 5,
                 'parameters': {
                     'state': state
                 }
-            })
+            });
+            agent.add(emails);
+            
             break;
 
         case -1:
