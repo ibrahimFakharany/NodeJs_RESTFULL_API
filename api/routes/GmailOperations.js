@@ -460,15 +460,15 @@ class GmailOperations {
             if (element.name == 'Delivered-To') {
                 to = element.value
             }
-            if (element.name == 'Subject') {
+            else if (element.name == 'Subject') {
                 subject = element.value;
             }
-            if (element.name == 'Reply-To') {
+            else if (element.name == 'Reply-To') {
                 from = element.value
                 from.replace('\\u003C', '');
                 from.replace('\\u003E', '');
             }
-            if (element.name == 'Message-ID') {
+            else if (element.name == 'Message-ID') {
                 messageId = element.value;
             }
         })
@@ -498,8 +498,8 @@ class GmailOperations {
         var str = ["Content-Type: text/plain; charset=\"UTF-8\"\n",
             "MIME-Version: 1.0\n",
             "Content-Transfer-Encoding: 7bit\n",
-            "to: ", to, "\n",
-            "from: ", from, "\n",
+            "to: ", from, "\n",
+            "from: ", to, "\n",
             "In-Reply-To : ", messageId, "\n",
             "subject: ", subject, "\n\n",
             message
