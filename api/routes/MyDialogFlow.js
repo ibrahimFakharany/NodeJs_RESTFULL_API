@@ -282,7 +282,6 @@ async function getMessagesFromSubject() {
         message.payload.parts.forEach(element =>{
             if(element.mimeType== "text/plain"){
                 body = element.body.data 
-                break; 
             }
         })
         agent.add(body);
