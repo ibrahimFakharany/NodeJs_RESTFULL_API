@@ -287,6 +287,7 @@ async function getMessagesFromSubject() {
         })
         agent.add(gmailOps.decodeMessageBody(body));
         agent.context.set({
+            'neme' :"send_reply_to_the_email" ,
             'lifespan': 5,
             'parameters': {
                 'message': message
