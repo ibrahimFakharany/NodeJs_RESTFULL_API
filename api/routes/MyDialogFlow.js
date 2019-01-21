@@ -164,7 +164,6 @@ async function emailMessagesGettingLastSingleMail() {
             messageId = header.value;
         }
     });
-    let body = null;
     if (message.payload.mimeType == "text/html") {
         body = null;
     } else if (message.payload.mimeType == "multipart/alternative") {
