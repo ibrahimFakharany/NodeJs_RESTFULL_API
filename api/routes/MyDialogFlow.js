@@ -38,6 +38,8 @@ router.post('/', (req, server_response, next) => {
     intentMap.set('email.selecting.to.show.message', emailSelectingForShowMessages);
     intentMap.set('email.messages.send_reply', emailMessageSendingReply);
     intentMap.set('email.messages.get.count.single', emailMessagesGettingLastSingleMail);
+    intentMap.set('email.message.show_body', emailMessageShowBody);
+
     agent.handleRequest(intentMap);
 });
 
@@ -92,14 +94,12 @@ async function messageContactEmailSending() {
 
 async function sendingEmailAfterSelectingIndex() {
     let index = parseInt(agent.context.contexts.choose_index_entity.parameters.email_index_entity);
-
     let x = await gmailOps.sendEmail(
         auth,
         agent.context.contexts.choose_index_entity.parameters.emails[index - 1],
         "",
         agent.context.contexts.choose_index_entity.parameters.message);
     agent.add('email sent to ' + agent.context.contexts.choose_index_entity.parameters.emails[index - 1]);
-
 }
 
 async function messageEmailSending() {
@@ -172,7 +172,13 @@ async function emailMessagesGettingLastSingleMail() {
         "date": date,
         "messageId": messageId
     }
-
+    agent.context.set({
+        'name': 'handling_mail_context',
+        'lifespan': 3,
+        'parameters': {
+            'msg': msg
+        }
+    });
     agent.add(subject);
 }
 
@@ -359,6 +365,11 @@ async function emailMessageSendingReply() {
     let userReply = agent.parameters.reply;
     let reply = await gmailOps.sendingReply(auth, userReply, message);
     agent.add(reply);
+}
+
+
+async function emailMessageShowBody(){
+
 }
 
 
