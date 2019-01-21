@@ -143,7 +143,7 @@ async function emailMessagesGet() {
 async function emailMessagesGettingLastSingleMail(){
     let auth = await gmailOps.authorizeUser();
     let jsonResult = await gmailOps.getMessagesWithLimit(1);
-console.log('messagse with limit result :'+jsonResult);
+console.log('messagse with limit result :'+JSON.stringify(jsonResult));
 }
 
 async function emailMessagesGetDate() {
