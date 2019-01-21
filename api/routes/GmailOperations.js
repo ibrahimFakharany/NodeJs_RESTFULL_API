@@ -256,12 +256,12 @@ class GmailOperations {
 
     async getMessagesWithLimit(limit) {
         var count = 0;
+        var token= await this.getToken();
         let promise = new Promise((resolve, reject) => {
             request('https://www.googleapis.com/gmail/v1/users/me/messages?maxResults='+limit+'&access_token=' + token, { json: true }, (err, res, body) => {
                 if (err) { return console.log(err); }
                 let stringResponse = JSON.stringify(res);
                 let jsonResponse = JSON.parse(stringResponse);
-
                 resolve(jsonResponse);
             });
 
