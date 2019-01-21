@@ -37,6 +37,7 @@ router.post('/', (req, server_response, next) => {
     intentMap.set('email.messages.get.contact_name.subject', getMessagesFromSubject);
     intentMap.set('email.selecting.to.show.message', emailSelectingForShowMessages);
     intentMap.set('email.messages.send_reply', emailMessageSendingReply);
+    intentMap.set('email.messages.get.count.single', emailMessagesGettingLastSingleMail);
     agent.handleRequest(intentMap);
 });
 
@@ -130,7 +131,6 @@ async function emailMessagesGet() {
                 list.forEach(element => {
                     agent.add(element.subject);
                 });
-
                 break;
         }
     } catch (err) {
@@ -138,6 +138,12 @@ async function emailMessagesGet() {
         console.log(err);
     }
 
+}
+
+async function emailMessagesGettingLastSingleMail(){
+    let auth = await gmailOps.authorizeUser();
+    let jsonResult = await gmailOps.getMessages(auth, 1);
+    console.log(jsonResult);
 }
 
 async function emailMessagesGetDate() {
@@ -324,5 +330,6 @@ async function emailMessageSendingReply() {
     let reply = await gmailOps.sendingReply(auth, userReply, message);
     agent.add(reply);
 }
+
 
 module.exports = router;

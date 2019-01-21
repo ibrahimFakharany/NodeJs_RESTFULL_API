@@ -255,7 +255,7 @@ class GmailOperations {
     }
 
     async getMessagesWithLimit(gmail, limit) {
-
+var count = 0;
         let promise = new Promise((resolve, reject) => {
             gmail.users.messages.list({
                 userId: 'me',
@@ -267,9 +267,14 @@ class GmailOperations {
                         userId: 'me',
                         id: element.id
                     }, (err, response) => {
+                        count++
                         var bodyData = response.data.payload.body.data;
                         var str = this.decodeMessageBody(bodyData);
                         list.add(str);
+                        console.log("string "+ str);
+                        if(count == res.data.messages.length ){
+                            resolve(list);
+                        }
                     });
                 });
             });
