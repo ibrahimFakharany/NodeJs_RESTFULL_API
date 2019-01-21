@@ -164,6 +164,17 @@ async function emailMessagesGettingLastSingleMail() {
             messageId = header.value;
         }
     });
+    let body = null;
+    if (message.payload.mimeType == "text/html") {
+        body = null;
+    } else if (message.payload.mimeType == "multipart/alternative") {
+        message.payload.parts.forEach(element => {
+            if (element.mimeType == "text/plain") {
+                body = element.body.data;
+            }
+        });
+
+    }
     var msgData = {
         "id": jsonResult.body.messages[0].id,
         "deliveredTo": deliveredTo,
@@ -171,7 +182,7 @@ async function emailMessagesGettingLastSingleMail() {
         "subject": subject,
         "date": date,
         "messageId": messageId,
-        "payload": message.payload
+        "body": body
     }
     agent.context.set({
         'name': 'handling_mail_context',
@@ -372,34 +383,20 @@ async function emailMessageSendingReply() {
 async function emailMessageShowBody() {
 
     let msg = agent.context.contexts.handling_mail_context.parameters.msg
-    let payload = msg.payload;
-    let mimeType = payload.mimeType;
-    let body = null;
-    if (mimeType == "text/html") {
-        agent.add("sorry, This body is html page and i couldn't render it right now")
-    }
-    else if (mimeType == "multipart/alternative") {
-        payload.parts.forEach(element => {
-            if (element.mimeType == "text/plain") {
-                body = element.body.data;
+    let body = msg.body;
+    if (body == null) {
+        agent.add("No body to show, this might because the body is html page that couldn't or there is no body in the message");
+    } else {
+        agent.add(body);
+        msg.body = body;
+        agent.context.set({
+            'name': 'handling_mail_context',
+            'lifespan': 5,
+            'parameters': {
+                'msg': msg
             }
-        });
-        if (body == null) {
-            agent.add("sorry couldn't find text in the body to show");
-        } else {
-        
-            agent.add(body);
-            msg.body = body;
-            agent.context.set({
-                'name': 'handling_mail_context',
-                'lifespan': 5,
-                'parameters': {
-                    'msg': msg
-                }
-            })
-        }
+        })
     }
-
 
 }
 
