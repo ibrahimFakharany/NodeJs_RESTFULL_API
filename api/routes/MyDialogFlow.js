@@ -394,6 +394,7 @@ async function emailMessageShowBody() {
             'name': 'handling_mail_context',
             'lifespan': 5,
             'parameters': {
+                'msg' : msg,
                 'message': message
             }
         })
