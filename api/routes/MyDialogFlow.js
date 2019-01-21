@@ -154,25 +154,26 @@ async function emailMessagesGettingLastSingleMail() {
     message.payload.headers.forEach((header) => {
         if (header.name == "Delivered-To") {
             deliveredTo = header.value;
-        }else if(header.name == "From"){
-            from= header.value;
-        }else if(header.name == "Subject"){
+        } else if (header.name == "From") {
+            from = header.value;
+        } else if (header.name == "Subject") {
             subject = header.value;
-        }else if(header.name == "Date"){
-            date  = header.value;
-        }else if(header.name == "Message-ID"){
-            messageId  = header.value;
+        } else if (header.name == "Date") {
+            date = header.value;
+        } else if (header.name == "Message-ID") {
+            messageId = header.value;
         }
     });
-    var msgData= {
-        "deliveredTo" : deliveredTo,
+    var msgData = {
+        "id": jsonResult.body.messages[0].id,
+        "deliveredTo": deliveredTo,
         "from": from,
         "subject": subject,
         "date": date,
-        "messageId":messageId
+        "messageId": messageId
     }
-    var agentResponse = `${date}\r\n${subject}`;
-    agent.add(agentResponse);
+
+    agent.add(subject);
 }
 
 async function emailMessagesGetDate() {
