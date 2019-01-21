@@ -262,12 +262,13 @@ class GmailOperations {
                 if (err) { return console.log(err); }
                 let stringResponse = JSON.stringify(res);
                 let jsonResponse = JSON.parse(stringResponse);
-                console.log(body);
+                
                 resolve(body);
             });
 
         });
         let result = await promise;
+
         return result;
     }
 
