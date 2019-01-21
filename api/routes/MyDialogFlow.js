@@ -172,7 +172,7 @@ async function emailMessagesGettingLastSingleMail() {
         "date": date,
         "messageId": messageId
     }
-    agent.context.add({
+    agent.context.set({
         'name': 'handling_mail_context',
         'lifespan': 3,
         'parameters': {
