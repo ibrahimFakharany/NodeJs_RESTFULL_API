@@ -263,11 +263,13 @@ var count = 0;
             }, (err, res) => {
                 let list = new ArrayList;
                 res.data.messages.forEach(element => {
+                    console.log("message id "+ element.id);
                     gmail.users.messages.get({
                         userId: 'me',
                         id: element.id
                     }, (err, response) => {
                         count++
+
                         var bodyData = response.data.payload.body.data;
                         var str = this.decodeMessageBody(bodyData);
                         list.add(str);
