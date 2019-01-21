@@ -406,6 +406,7 @@ async function emailMessageForward(){
     let message = agent.context.contexts.handling_mail_context.parameters.message
 
     let email= agent.parameters.email;
+    console.log(email);
 
     let contacts = gmailOps.getContacts(email);
 
