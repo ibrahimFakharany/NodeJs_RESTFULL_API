@@ -143,6 +143,7 @@ async function emailMessagesGet() {
 async function emailMessagesGettingLastSingleMail() {
     let auth = await gmailOps.authorizeUser();
     let jsonResult = await gmailOps.getMessagesWithLimit(1);
+    console.log(JSON.stringify(jsonResult));
     var message = gmailOps.getMessagesByMessageId(jsonResult.messages[0].id);
     var deliveredTo = null;
     var from = null;
