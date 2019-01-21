@@ -189,9 +189,8 @@ async function emailMessagesGettingLastSingleMail() {
         'name': 'handling_mail_context',
         'lifespan': 5,
         'parameters': {
-            'msg': msgData
-            // ,
-            // 'message': message
+            'msg': msgData,
+            'message':message
         }
     });
     agent.add(subject);
