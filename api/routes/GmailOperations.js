@@ -203,7 +203,7 @@ class GmailOperations {
             }
 
         } else if (maxResult > 0) {
-            let result = await this.getMessagesWithLimit(gmail, maxResult)
+            let result = await this.getMessagesWithLimit( maxResult)
             return {
                 "success": 1,
                 "result": result
@@ -254,34 +254,15 @@ class GmailOperations {
 
     }
 
-    async getMessagesWithLimit(gmail, limit) {
-var count = 0;
+    async getMessagesWithLimit(limit) {
+        var count = 0;
         let promise = new Promise((resolve, reject) => {
-            gmail.users.messages.list({
-                userId: 'me',
-                maxResults: limit
-            }, (err, res) => {
-                let list = new ArrayList;
-                res.data.messages.forEach(element => {
-                    console.log("message id "+ element.id);
-                    gmail.users.messages.get({
-                        userId: 'me',
-                        id: element.id
-                    }, (err, response) => {
-                        console.log("response "+response);
-                        console.log("response "+JSON.stringify(response));
+            request('https://www.googleapis.com/gmail/v1/users/me/messages?maxResults='+limit+'&access_token=' + token, { json: true }, (err, res, body) => {
+                if (err) { return console.log(err); }
+                let stringResponse = JSON.stringify(res);
+                let jsonResponse = JSON.parse(stringResponse);
 
-                        count++
-
-                        var bodyData = response.data.payload.body.data;
-                        var str = this.decodeMessageBody(bodyData);
-                        list.add(str);
-                        console.log("string "+ str);
-                        if(count == res.data.messages.length ){
-                            resolve(list);
-                        }
-                    });
-                });
+                resolve(jsonResponse);
             });
 
         });
@@ -394,13 +375,13 @@ var count = 0;
         return result;
     }
 
-    async getMessagesBySubject(subject, state, email ) {
+    async getMessagesBySubject(subject, state, email) {
         let token = await this.getToken();
-        let link = null; 
+        let link = null;
         if (state == "by") {
-            link = 'https://www.googleapis.com/gmail/v1/users/me/messages?q=from:\"' + email + '\"'+subject+'\"&access_token='+ token;
+            link = 'https://www.googleapis.com/gmail/v1/users/me/messages?q=from:\"' + email + '\"' + subject + '\"&access_token=' + token;
         } else if (state == "to") {
-            link = 'https://www.googleapis.com/gmail/v1/users/me/messages?q=to:\"' + email + '\"'+subject+'\"&access_token='+ token;
+            link = 'https://www.googleapis.com/gmail/v1/users/me/messages?q=to:\"' + email + '\"' + subject + '\"&access_token=' + token;
         }
         let promise = new Promise((resolve, reject) => {
             request('https://www.googleapis.com/gmail/v1/users/me/messages?q=subject:\"' + subject + '\"&access_token=' + token, { json: true }, (err, res, body) => {
@@ -504,7 +485,7 @@ var count = 0;
         });
         console.log('from ' + from + ' to ' + to);
         let token = await this.getToken();
-        
+
         let gmail = google.gmail({ version: 'v1', auth });
         let encodedResponse = this.makeBodyForReplying(to, from, messageId, subject, reply);
 
@@ -516,7 +497,7 @@ var count = 0;
                     raw: encodedResponse
                 }
             }, function (err, response) {
-                if (err) resolve('this is error '+err); 
+                if (err) resolve('this is error ' + err);
                 else resolve('sent ');
             });
         });
@@ -532,7 +513,7 @@ var count = 0;
             "to: ", to, "\n",
             "from: ", from, "\n",
             "In-Reply-To : ", messageId, "\n",
-            "subject: ", "Re : "+subject, "\n\n",
+            "subject: ", "Re : " + subject, "\n\n",
             message
         ].join('');
 
