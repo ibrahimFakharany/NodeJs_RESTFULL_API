@@ -170,11 +170,12 @@ async function emailMessagesGettingLastSingleMail() {
         "from": from,
         "subject": subject,
         "date": date,
-        "messageId": messageId
+        "messageId": messageId,
+        "payload": message.payload
     }
     agent.context.set({
         'name': 'handling_mail_context',
-        'lifespan': 3,
+        'lifespan': 5,
         'parameters': {
             'msg': msgData
         }
@@ -368,7 +369,35 @@ async function emailMessageSendingReply() {
 }
 
 
-async function emailMessageShowBody(){
+async function emailMessageShowBody() {
+
+    let msg = agent.context.contexts.handling_mail_context.parameters.msg
+    let payload = msg.payload;
+    let mimeType = payload.mimeType;
+    let body = null;
+    if (mimeType == "text/html") {
+        agent.add("sorry, This body is html page and i couldn't render it right now")
+    }
+    else if (mimeType == "multipart/alternative") {
+        payload.parts.forEach(element => {
+            if (element.mimeType == "text/plain") {
+                body = element.body.data;
+            }
+        });
+        if (body == null) {
+            agent.add("sorry couldn't find text in the body to show");
+        } else {
+            agent.add(body);
+            agent.context.set({
+                'name': 'handling_mail_context',
+                'lifespan': 5,
+                'parameters': {
+                    'msg': msgData
+                }
+            })
+        }
+    }
+
 
 }
 
