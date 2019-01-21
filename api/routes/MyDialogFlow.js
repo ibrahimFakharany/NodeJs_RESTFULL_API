@@ -141,7 +141,6 @@ async function emailMessagesGet() {
 }
 
 async function emailMessagesGettingLastSingleMail() {
-    let auth = await gmailOps.authorizeUser();
     let jsonResult = await gmailOps.getMessagesWithLimit(1);
     console.log(JSON.stringify(jsonResult));
     var message = await gmailOps.getMessagesByMessageId(jsonResult.body.messages[0].id);
@@ -166,6 +165,7 @@ async function emailMessagesGettingLastSingleMail() {
     });
     if (message.payload.mimeType == "text/html") {
         body = null;
+        message= null;
     } else if (message.payload.mimeType == "multipart/alternative") {
         message.payload.parts.forEach(element => {
             if (element.mimeType == "text/plain") {
@@ -183,6 +183,7 @@ async function emailMessagesGettingLastSingleMail() {
         "messageId": messageId,
         "body": body
     }
+    
     agent.context.set({
         'name': 'handling_mail_context',
         'lifespan': 5,

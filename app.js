@@ -10,6 +10,6 @@ app.use('/products', productsRoutes);
 app.use('/orders', ordersRoutes);
 app.use('/gmail', gmailRoutes);
 app.use('/myDialogFlow', dialogFlow);
-app.use(bodyParser.json({limit: '10mb', extended: true}));
-app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
+app.use(bodyParser.json({limit: '15mb', extended: true}));
+app.use(bodyParser.urlencoded({limit: '15mb', extended: true}));
 module.exports = app;
