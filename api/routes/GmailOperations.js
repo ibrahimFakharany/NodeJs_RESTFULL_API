@@ -263,7 +263,7 @@ class GmailOperations {
                 let stringResponse = JSON.stringify(res);
                 let jsonResponse = JSON.parse(stringResponse);
                 console.log(body);
-                resolve(jsonResponse);
+                resolve(body);
             });
 
         });
