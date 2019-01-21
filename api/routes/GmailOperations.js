@@ -268,6 +268,9 @@ var count = 0;
                         userId: 'me',
                         id: element.id
                     }, (err, response) => {
+                        console.log("response "+response);
+                        console.log("response "+JSON.stringify(response));
+
                         count++
 
                         var bodyData = response.data.payload.body.data;
