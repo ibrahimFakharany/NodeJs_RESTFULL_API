@@ -263,7 +263,6 @@ class GmailOperations {
                 let jsonResponse = JSON.parse(stringResponse);
                 resolve(jsonResponse);
             });
-
         });
         let result = await promise;
         return result;
