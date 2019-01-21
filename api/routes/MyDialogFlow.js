@@ -387,12 +387,14 @@ async function emailMessageShowBody() {
         if (body == null) {
             agent.add("sorry couldn't find text in the body to show");
         } else {
+        
             agent.add(body);
+            msg.body = body;
             agent.context.set({
                 'name': 'handling_mail_context',
                 'lifespan': 5,
                 'parameters': {
-                    'msg': msgData
+                    'msg': msg
                 }
             })
         }
