@@ -187,7 +187,8 @@ async function emailMessagesGettingLastSingleMail() {
         'name': 'handling_mail_context',
         'lifespan': 5,
         'parameters': {
-            'msg': msgData
+            'msg': msgData,
+            'message': message
         }
     });
     agent.add(subject);
@@ -382,6 +383,7 @@ async function emailMessageSendingReply() {
 async function emailMessageShowBody() {
 
     let msg = agent.context.contexts.handling_mail_context.parameters.msg
+    let message = agent.context.contexts.handling_mail_context.parameters.message
     let body = msg.body;
     if (body == null) {
         agent.add("No body to show, this might because the body is html page that couldn't or there is no body in the message");
@@ -393,6 +395,7 @@ async function emailMessageShowBody() {
             'lifespan': 5,
             'parameters': {
                 'msg': msg
+                'message': message
             }
         })
     }
