@@ -163,6 +163,7 @@ async function emailMessagesGettingLastSingleMail() {
             messageId = header.value;
         }
     });
+    console.log('mimeType '+ message.payload.mimeType);
     if (message.payload.mimeType == "text/html") {
         body = null;
         message= null;
