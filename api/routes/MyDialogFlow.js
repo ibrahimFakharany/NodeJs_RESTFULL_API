@@ -39,7 +39,7 @@ router.post('/', (req, server_response, next) => {
     intentMap.set('email.messages.send_reply', emailMessageSendingReply);
     intentMap.set('email.messages.get.count.single', emailMessagesGettingLastSingleMail);
     intentMap.set('email.message.show_body', emailMessageShowBody);
-
+    intentMap.set('email.message.forward', emailMessageForward);
     agent.handleRequest(intentMap);
 });
 
@@ -398,6 +398,20 @@ async function emailMessageShowBody() {
                 'message': message
             }
         })
+    }
+
+}
+
+async function emailMessageForward(){
+    let msg = agent.context.contexts.handling_mail_context.parameters.msg
+    let message = agent.context.contexts.handling_mail_context.parameters.message
+
+    let email= agent.parameters.email;
+
+    let contacts = gmailOps.getContacts(email);
+
+    if(contacts.size > 0){
+        
     }
 
 }
