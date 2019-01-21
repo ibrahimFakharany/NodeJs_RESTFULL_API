@@ -381,7 +381,6 @@ async function emailMessageSendingReply() {
 
 
 async function emailMessageShowBody() {
-
     let msg = agent.context.contexts.handling_mail_context.parameters.msg
     let message = agent.context.contexts.handling_mail_context.parameters.message
     let body = msg.body;
@@ -410,7 +409,13 @@ async function emailMessageForward(){
 
     let contacts = gmailOps.getContacts(email);
 
-    if(contacts.size > 0){
+    if(contacts.sent == 1){
+        contacts.emails.forEach(element =>{
+            agent.add(element);
+        })
+    }else if(contacts.sent == 0){
+        
+    }else {
         
     }
 
