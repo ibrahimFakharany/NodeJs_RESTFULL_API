@@ -171,7 +171,8 @@ async function emailMessagesGettingLastSingleMail() {
         "date": date,
         "messageId":messageId
     }
-    agent.add(`here is the messages\n${date}\n${subject}`);
+    var agentResponse = `${date}\n${subject}`;
+    agent.add(agentResponse);
 }
 
 async function emailMessagesGetDate() {
