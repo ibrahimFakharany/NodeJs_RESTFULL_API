@@ -176,7 +176,7 @@ async function emailMessagesGettingLastSingleMail() {
         'name': 'handling_mail_context',
         'lifespan': 3,
         'parameters': {
-            'msg': msg
+            'msg': msgData
         }
     });
     agent.add(subject);
