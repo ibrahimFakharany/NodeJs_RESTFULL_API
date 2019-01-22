@@ -155,7 +155,7 @@ async function emailMessagesGettingLastSingleMail() {
     var body = null;
     console.log('message '+ message);
     message.payload.headers.forEach((header) => {
-        console.log('header '+header);
+        console.log('header '+JSON.stringify(header));
         if (header.name == "Delivered-To") {
             deliveredTo = header.value;
         } else if (header.name == "From") {
