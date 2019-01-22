@@ -425,7 +425,7 @@ async function emailMessageShowBody() {
 
 async function emailMessageForward() {
     let from = agent.context.contexts.handling_mail_context.parameters.from
-
+    let auth = await gmailOps.authorizeUser()
     if (from == selecting_email_context) {
         let email = agent.context.contexts.handling_mail_context.parameters.email;
         let msg = agent.context.contexts.handling_mail_context.parameters.msg;
@@ -471,7 +471,7 @@ async function emailMessageForward() {
             } else {
                 returnedMessage = message;
             }
-            let agentMessage = await gmailOps.forwardMessage(returnedMessage, foundEmail, msg.deliveredTo);
+            let agentMessage = await gmailOps.forwardMessage(auth,returnedMessage, foundEmail, msg.deliveredTo);
             agent.add(agentMessage);
         } else {
             // show contact couldn't found      

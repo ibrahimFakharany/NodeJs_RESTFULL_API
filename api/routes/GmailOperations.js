@@ -486,10 +486,10 @@ class GmailOperations {
         });
         console.log('from ' + from + ' to ' + to);
         let encodedResponse = this.makeBodyForReplying(to, from, messageId, subject, reply);
-        let result = await sendMessage(encodedResponse);
+        let result = await sendMessage(auth, encodedResponse);
         return result;
     }
-    async forwardMessage(message, emailTo, emailFrom) {
+    async forwardMessage(auth, message, emailTo, emailFrom) {
         console.log("this is message ");
         let subject = null;
         message.payload.headers.forEach(element => {
@@ -500,12 +500,12 @@ class GmailOperations {
         let part = message.payload.parts[0];
         let body = part.body.data;
         let encodedMessage = this.makeBodyForForwarding(emailTo, emailFrom, subject, body);
-        let result = await this.sendMessage(encodedMessage);
+        let result = await this.sendMessage(auth,encodedMessage);
         return result;
 
 
     }
-    async sendMessage(message) {
+    async sendMessage(auth, message) {
         let gmail = google.gmail({ version: 'v1', auth });
         let promise = new Promise((resolve, reject) => {
             gmail.users.messages.send({
