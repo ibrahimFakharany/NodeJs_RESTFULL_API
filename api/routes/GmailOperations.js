@@ -490,6 +490,7 @@ class GmailOperations {
         return result;
     }
     async forwardMessage(message, emailTo, emailFrom) {
+        console.log("this is message ");
         let subject = null;
         message.payload.headers.forEach(element => {
             if (element.name == 'Subject') {

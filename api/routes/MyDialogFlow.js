@@ -445,7 +445,7 @@ async function emailMessageForward() {
         let email = agent.parameters.email;
         console.log(email);
 
-        let contacts = gmailOps.getContacts(email);
+        let contacts = await gmailOps.getContacts(email);
 
         if (contacts.sent == 1) {
             contacts.emails.forEach(element => {
