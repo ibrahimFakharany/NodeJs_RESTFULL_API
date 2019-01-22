@@ -15,6 +15,9 @@ router.use(bodyParser.urlencoded({ extended: true }));
 const choose_index_entity = "choose_index_entity";
 const selecting_email_context = "selecting_email_context";
 const handling_mail_context = "handling_mail_context";
+const get_messages_context = "get_messages_context";
+const default_context_life_span = 5
+
 router.post('/', (req, server_response, next) => {
 
     agent = new WebhookClient({
@@ -35,7 +38,7 @@ router.post('/', (req, server_response, next) => {
     intentMap.set('email.messages.get.contact_name', emailMessagesGetContactName);
     intentMap.set('email.messages.get.limit.number', getMessagesLimitToNumber);
     intentMap.set('email.messages.get.contact_name.subject', getMessagesFromSubject);
-    intentMap.set('email.selecting', emailSelectingForShowMessages);
+    intentMap.set('email.selecting', emailSelecting);
     intentMap.set('email.messages.send_reply', emailMessageSendingReply);
     intentMap.set('email.messages.get.count.single', emailMessagesGettingLastSingleMail);
     intentMap.set('email.message.show_body', emailMessageShowBody);
@@ -76,8 +79,8 @@ async function messageContactEmailSending() {
 
             agent.add(ress.emails);
             agent.context.set({
-                'name': 'choose_index_entity',
-                'lifespan': 5,
+                'name': choose_index_entity,
+                'lifespan': lifespan,
                 'parameters': {
                     'emails': ress.emails,
                     'message': message
@@ -188,8 +191,8 @@ async function emailMessagesGettingLastSingleMail() {
     }
 
     agent.context.set({
-        'name': 'handling_mail_context',
-        'lifespan': 5,
+        'name': handling_mail_context,
+        'lifespan': default_context_life_span,
         'parameters': {
             'msg': msgData,
             'message': message
@@ -270,9 +273,10 @@ async function emailMessagesGetContactName() {
             let emails = response.emails;
             agent.add("which one did you mean?\n.. choose one by copy and pasting it in the message!");
             agent.context.set({
-                'name': 'selecting_email_context',
-                'lifespan': 5,
+                'name': selecting_email_context,
+                'lifespan': default_context_life_span,
                 'parameters': {
+                    'from': get_messages_context,
                     'state': state,
                 }
             });
@@ -287,25 +291,40 @@ async function emailMessagesGetContactName() {
     }
 }
 
-async function emailSelectingForShowMessages() {
-    let state = agent.context.contexts.selecting_email_context.parameters.state
-    console.log('state ' + state);
-    let email = agent.parameters.email;
-    var operation = new Operations();
-    let jsonResult = await gmailOps.getMessagesByContactName(state, email);
-    jsonResult = operation.prepareGettingIdsResposne(jsonResult);
-    let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
-    if (result.length > 0) {
-        result.forEach(element => {
-            agent.add(element.subject);
+async function emailSelecting() {
+    let fromContext = agent.context.contexts.selecting_email_context.parameters.from
+    if (fromContext == get_messages_context) {
+        let state = agent.context.contexts.selecting_email_context.parameters.state
+        let email = agent.parameters.email;
+        var operation = new Operations();
+        let jsonResult = await gmailOps.getMessagesByContactName(state, email);
+        jsonResult = operation.prepareGettingIdsResposne(jsonResult);
+        let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
+        if (result.length > 0) {
+            result.forEach(element => {
+                agent.add(element.subject);
+            });
+        } else {
+            agent.add("there is no messages for specified contact");
+        }
+    } else if (fromContext == handling_mail_context) {
+        let email = agent.parameters.email;
+        agent.context.set({
+            'name': handling_mail_context,
+            'lifespan': default_context_life_span,
+            'parameters': {
+                'from': selecting_email_context,
+                'email': email,
+                'msg': agent.context.contexts.selecting_email_context.parameters.msg,
+                'message': agent.context.contexts.selecting_email_context.parameters.messasge
+            }
+        })
 
-        });
-
-    } else {
-        agent.add("there is no messages for specified contact");
     }
 
+
 }
+
 async function getMessagesFromSubject() {
     let state = agent.context.contexts.get_body_of_message_by_subject.parameters.state
     let email = agent.context.contexts.get_body_of_message_by_subject.parameters.email
@@ -353,14 +372,15 @@ async function getMessagesFromSubject() {
         })
         agent.add(gmailOps.decodeMessageBody(body));
         agent.context.set({
-            'name': "send_reply_to_the_email",
-            'lifespan': 5,
+            'name': send_reply_to_the_email,
+            'lifespan': default_context_life_span,
             'parameters': {
                 'message': message
             }
         });
     }
 }
+
 async function getMessagesLimitToNumber() {
     var numberMaxResults = agent.parameters.number;
     let jsonResult = await gmailOps.getMessages(auth, numberMaxResults);
@@ -383,7 +403,6 @@ async function emailMessageSendingReply() {
     agent.add(reply);
 }
 
-
 async function emailMessageShowBody() {
     let msg = agent.context.contexts.handling_mail_context.parameters.msg
     let message = agent.context.contexts.handling_mail_context.parameters.message
@@ -394,8 +413,8 @@ async function emailMessageShowBody() {
         agent.add(gmailOps.decodeMessageBody(body));
         msg.body = body;
         agent.context.set({
-            'name': 'handling_mail_context',
-            'lifespan': 5,
+            'name': handling_mail_context,
+            'lifespan': default_context_life_span,
             'parameters': {
                 'msg': msg,
                 'message': message
@@ -405,37 +424,58 @@ async function emailMessageShowBody() {
 }
 
 async function emailMessageForward() {
-    let msg = agent.context.contexts.handling_mail_context.parameters.msg
-    let message = agent.context.contexts.handling_mail_context.parameters.message
+    let from = agent.context.contexts.handling_mail_context.parameters.from
 
-    let email = agent.parameters.email;
-    console.log(email);
-
-    let contacts = gmailOps.getContacts(email);
-
-    if (contacts.sent == 1) {
-        contacts.emails.forEach(element => {
-            agent.add(element);
-        });
-        agent.context.set({
-            'name': '',
-            'lifespan': 5,
-            'parameters': {
-                'from': ''
-            }
-        });
-    } else if (contacts.sent == 0) {
-        let foundEmail = contacts.email;
-
-        if (message == null) {
-            // get the message and send it
-
+    if (from == selecting_email_context) {
+        let email = agent.context.contexts.handling_mail_context.parameters.email;
+        let msg = agent.context.contexts.handling_mail_context.parameters.msg;
+        let message = agent.context.contexts.handling_mail_context.parameters.message;
+        if (message == null || typeof message === 'undefined') {
+            // getting the message by the id
+            let id = msg.id;
+            let message = await gmailOps.getMessagesByMessageId(id);
         }
     } else {
-        // show contact couldn't found      
+        //from is undefined or from another context 
+        let msg = agent.context.contexts.handling_mail_context.parameters.msg
+        let message = agent.context.contexts.handling_mail_context.parameters.message
+
+        let email = agent.parameters.email;
+        console.log(email);
+
+        let contacts = gmailOps.getContacts(email);
+
+        if (contacts.sent == 1) {
+            contacts.emails.forEach(element => {
+                agent.add(element);
+            });
+            agent.context.set({
+                'name': selecting_email_context,
+                'lifespan': default_context_life_span,
+                'parameters': {
+                    'from': handling_mail_context,
+                    'msg': msg,
+                    'message': message
+                }
+            });
+
+        } else if (contacts.sent == 0) {
+            let foundEmail = contacts.email;
+            let returnedMessage = null
+            if (message == null || typeof message === 'undefined') {
+                // get the message and send it
+                let id = msg.id;
+                returnedMessage = await gmailOps.getMessagesByMessageId(id);
+            } else {
+                returnedMessage = message;
+            }
+            gmailOps.forwardMessage(returnedMessage, foundEmail, msg.deliveredTo);
+        } else {
+            // show contact couldn't found      
+        }
     }
 
-}
 
+}
 
 module.exports = router;

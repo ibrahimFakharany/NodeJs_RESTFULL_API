@@ -203,7 +203,7 @@ class GmailOperations {
             }
 
         } else if (maxResult > 0) {
-            let result = await this.getMessagesWithLimit( maxResult)
+            let result = await this.getMessagesWithLimit(maxResult)
             return {
                 "success": 1,
                 "result": result
@@ -255,9 +255,9 @@ class GmailOperations {
     }
 
     async getMessagesWithLimit(limit) {
-        var token= await this.getToken();
+        var token = await this.getToken();
         let promise = new Promise((resolve, reject) => {
-            request('https://www.googleapis.com/gmail/v1/users/me/messages?maxResults='+limit+'&access_token=' + token, { json: true }, (err, res, body) => {
+            request('https://www.googleapis.com/gmail/v1/users/me/messages?maxResults=' + limit + '&access_token=' + token, { json: true }, (err, res, body) => {
                 if (err) { return console.log(err); }
                 let stringResponse = JSON.stringify(res);
                 let jsonResponse = JSON.parse(stringResponse);
@@ -325,9 +325,10 @@ class GmailOperations {
             return { "sent": 1, "emails": emailList }
         } else if (emailList.length == 1) {
             // send email to that email
-            return { 
+            return {
                 "sent": 0,
-                 "email": emailList[0] };
+                "email": emailList[0]
+            };
         } else {
             // this name couldn't recognized
             return { "sent": -1, "message": "couldn't recognize this name " }
@@ -504,6 +505,63 @@ class GmailOperations {
         let result = await promise;
         return result;
 
+    }
+    async forwardMessage(message, emailTo, emailFrom) {
+        let subject = null;
+        message.payload.headers.forEach(element => {
+            if (element.name == 'Subject') {
+                subject = element.value;
+            }
+        });
+        let body = null;
+        let contentType  = null;
+        let Content_TransferEncoding=null;
+        message.payload.parts.forEach(element => {
+            body = `${element.body.data}`;
+           element.headers.forEach(element =>{
+            if(element.name == 'Content-Type'){
+                contentType = element.value;
+            }
+            if(element.name == 'Content-Transfer-Encoding'){
+                Content_TransferEncoding = element.value;
+            }
+           });
+        });
+        let encodedMessage = this.makeBodyForForwarding(emailTo, emailFrom, subject, body);
+        let gmail = google.gmail({ version: 'v1', auth });
+
+        let promise = new Promise((resolve, reject) => {
+            gmail.users.messages.send({
+                auth: auth,
+                userId: 'me',
+                resource: {
+                    raw: encodedMessage
+                }
+            }, function (err, response) {
+                if (err) resolve('this is error ' + err);
+                else resolve('sent ');
+            });
+        });
+
+        let result = await promise;
+        return result;
+
+    }
+    makeBodyForForwarding(contentType,encodingTransfer, to, from, subject, message) {
+        var str = ['Content-Type: '+contentType+'; charset=\"UTF-8\"\n',
+            "MIME-Version: 1.0\n",
+            'Content-Transfer-Encoding: '+encodingTransfer+'\n',
+            "to: ", to, "\n",
+            "from: ", from, "\n",
+            "subject: ", subject, "\n\n",
+            message
+        ].join('');
+
+        var encodedMail = new Buffer(str)
+            .toString("base64")
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_');
+        return encodedMail;
     }
 
     makeBodyForReplying(to, from, messageId, subject, message) {
