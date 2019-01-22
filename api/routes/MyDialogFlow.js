@@ -157,7 +157,7 @@ async function emailMessagesGettingLastSingleMail() {
     message.payload.headers.forEach((header) => {
         console.log('header '+JSON.stringify(header));
         let key = header.name.toString().toUpperCase();
-        if (key == "Delivered-To") {
+        if (key == "Delivered-To".toUpperCase()) {
             deliveredTo = header.value;
         } else if (key == "From") {
             from = header.value;
