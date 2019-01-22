@@ -498,9 +498,9 @@ class GmailOperations {
             }
         });
         let part = message.payload.parts[0];
-        let body = part.body.data;
+        let body =this.decodeMessageBody( part.body.data);
         let encodedMessage = this.makeBodyForForwarding(emailTo, emailFrom, subject, body);
-        let result = await this.sendMessage(auth,encodedMessage);
+        let result = await this.sendMessage(auth, encodedMessage);
         return result;
 
 
@@ -525,7 +525,7 @@ class GmailOperations {
     makeBodyForForwarding(to, from, subject, message) {
         var str = ['Content-Type: ' + 'text/plain' + '; charset=\"UTF-8\"\n',
             "MIME-Version: 1.0\n",
-            'Content-Transfer-Encoding: ' + '7bit' + '\n',
+        'Content-Transfer-Encoding: ' + '7bit' + '\n',
             "to: ", to, "\n",
             "from: ", from, "\n",
             "subject: ", subject, "\n\n",
