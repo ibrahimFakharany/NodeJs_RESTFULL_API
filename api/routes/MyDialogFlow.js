@@ -158,11 +158,11 @@ async function emailMessagesGettingLastSingleMail() {
         console.log('key ' + key + ' ' + 'Subject'.toUpperCase());
         if (key == "Delivered-To".toUpperCase()) {
             deliveredTo = header.value;
-        } else if (key === "From".toUpperCase()) {
+        } else if (key == "From".toUpperCase()) {
             from = header.value;
-        } else if (key === 'Subject'.toUpperCase()) {
+        } else if (key == 'Subject'.toUpperCase()) {
             subject = header.value;
-        } else if (key === "Date".toUpperCase()) {
+        } else if (key == "Date".toUpperCase()) {
             date = header.value;
         } else if (key == "Message-ID".toUpperCase()) {
             messageId = header.value;
