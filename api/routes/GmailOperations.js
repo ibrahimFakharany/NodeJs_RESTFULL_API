@@ -497,7 +497,9 @@ class GmailOperations {
                 subject = element.value;
             }
         });
-        console.log(JSON.stringify(message.payload.part));
+        console.log(JSON.stringify(message.payload));
+        console.log(JSON.stringify(message));
+
         let part = message.payload.parts[0];
         let body = this.decodeMessageBody(part.body.data);
         let encodedMessage = this.makeBodyForForwarding(emailTo, emailFrom, subject, body);
