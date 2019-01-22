@@ -156,15 +156,16 @@ async function emailMessagesGettingLastSingleMail() {
     console.log('message '+ message);
     message.payload.headers.forEach((header) => {
         console.log('header '+JSON.stringify(header));
-        if (header.name == "Delivered-To") {
+        let key = header.name;
+        if (key == "Delivered-To") {
             deliveredTo = header.value;
-        } else if (header.name == "From") {
+        } else if (key == "From") {
             from = header.value;
-        } else if (header.name == "Subject") {
+        } else if (key == "Subject") {
             subject = header.value;
-        } else if (header.name == "Date") {
+        } else if (key == "Date") {
             date = header.value;
-        } else if (header.name == "Message-ID") {
+        } else if (key == "Message-ID") {
             messageId = header.value;
         }
     });
