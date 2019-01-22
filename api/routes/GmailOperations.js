@@ -498,6 +498,7 @@ class GmailOperations {
             }
         });
         let part = null;
+        console.log(message.payload)
         if (message.payload.parts instanceof Array) {
             part = message.payload.parts[0];
         } else {
