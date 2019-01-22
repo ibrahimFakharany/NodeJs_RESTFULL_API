@@ -508,8 +508,8 @@ class GmailOperations {
             body  = message.payload.body;
         }
         console.log('body '+ body);
-       
-         encodedMessage = this.makeBodyForForwarding(emailTo, emailFrom, subject, body);
+    
+        encodedMessage = this.makeBodyForForwarding(emailTo, emailFrom, subject, body);
         let result = await this.sendMessage(auth, encodedMessage);
         return result;
 
