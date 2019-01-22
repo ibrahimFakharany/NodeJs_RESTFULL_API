@@ -325,7 +325,9 @@ class GmailOperations {
             return { "sent": 1, "emails": emailList }
         } else if (emailList.length == 1) {
             // send email to that email
-            return { "sent": 0, "email": emailList[0] };
+            return { 
+                "sent": 0,
+                 "email": emailList[0] };
         } else {
             // this name couldn't recognized
             return { "sent": -1, "message": "couldn't recognize this name " }
