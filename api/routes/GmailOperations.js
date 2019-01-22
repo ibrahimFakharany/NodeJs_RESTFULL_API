@@ -485,26 +485,9 @@ class GmailOperations {
             }
         });
         console.log('from ' + from + ' to ' + to);
-        let token = await this.getToken();
-
-        let gmail = google.gmail({ version: 'v1', auth });
         let encodedResponse = this.makeBodyForReplying(to, from, messageId, subject, reply);
-
-        let promise = new Promise((resolve, reject) => {
-            gmail.users.messages.send({
-                auth: auth,
-                userId: 'me',
-                resource: {
-                    raw: encodedResponse
-                }
-            }, function (err, response) {
-                if (err) resolve('this is error ' + err);
-                else resolve('sent ');
-            });
-        });
-        let result = await promise;
+        let result = await sendMessage(encodedResponse);
         return result;
-
     }
     async forwardMessage(message, emailTo, emailFrom) {
         let subject = null;
@@ -513,44 +496,35 @@ class GmailOperations {
                 subject = element.value;
             }
         });
-        let body = null;
-        let contentType  = null;
-        let Content_TransferEncoding=null;
-        message.payload.parts.forEach(element => {
-            body = `${element.body.data}`;
-           element.headers.forEach(element =>{
-            if(element.name == 'Content-Type'){
-                contentType = element.value;
-            }
-            if(element.name == 'Content-Transfer-Encoding'){
-                Content_TransferEncoding = element.value;
-            }
-           });
-        });
+        let part = message.payload.parts[0];
+        let body = part.body.data;
         let encodedMessage = this.makeBodyForForwarding(emailTo, emailFrom, subject, body);
-        let gmail = google.gmail({ version: 'v1', auth });
+        let result = await sendMessage(encodedMessage);
+        return result;
 
+
+    }
+    async sendMessage(message) {
+        let gmail = google.gmail({ version: 'v1', auth });
         let promise = new Promise((resolve, reject) => {
             gmail.users.messages.send({
                 auth: auth,
                 userId: 'me',
                 resource: {
-                    raw: encodedMessage
+                    raw: message
                 }
             }, function (err, response) {
                 if (err) resolve('this is error ' + err);
-                else resolve('sent ');
+                else resolve('sent');
             });
         });
-
         let result = await promise;
         return result;
-
     }
-    makeBodyForForwarding(contentType,encodingTransfer, to, from, subject, message) {
-        var str = ['Content-Type: '+contentType+'; charset=\"UTF-8\"\n',
+    makeBodyForForwarding(to, from, subject, message) {
+        var str = ['Content-Type: ' + 'text/plain' + '; charset=\"UTF-8\"\n',
             "MIME-Version: 1.0\n",
-            'Content-Transfer-Encoding: '+encodingTransfer+'\n',
+        'Content-Transfer-Encoding: ' + '7bit' + '\n',
             "to: ", to, "\n",
             "from: ", from, "\n",
             "subject: ", subject, "\n\n",

@@ -434,6 +434,8 @@ async function emailMessageForward() {
             // getting the message by the id
             let id = msg.id;
             let message = await gmailOps.getMessagesByMessageId(id);
+            let agentMessage = await gmailOps.forwardMessage(message, email, msg.deliveredTo);
+            agent.add(agentMessage);
         }
     } else {
         //from is undefined or from another context 
@@ -469,7 +471,8 @@ async function emailMessageForward() {
             } else {
                 returnedMessage = message;
             }
-            gmailOps.forwardMessage(returnedMessage, foundEmail, msg.deliveredTo);
+            let agentMessage = await gmailOps.forwardMessage(returnedMessage, foundEmail, msg.deliveredTo);
+            agent.add(agentMessage);
         } else {
             // show contact couldn't found      
         }
