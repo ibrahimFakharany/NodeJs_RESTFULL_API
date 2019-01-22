@@ -13,8 +13,8 @@ router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 // intents names 
 const choose_index_entity = "choose_index_entity";
-const selecting_email_to_show_messages = "selecting_email_to_show_messages";
-
+const selecting_email_context = "selecting_email_context";
+const handling_mail_context = "handling_mail_context";
 router.post('/', (req, server_response, next) => {
 
     agent = new WebhookClient({
@@ -35,7 +35,7 @@ router.post('/', (req, server_response, next) => {
     intentMap.set('email.messages.get.contact_name', emailMessagesGetContactName);
     intentMap.set('email.messages.get.limit.number', getMessagesLimitToNumber);
     intentMap.set('email.messages.get.contact_name.subject', getMessagesFromSubject);
-    intentMap.set('email.selecting.to.show.message', emailSelectingForShowMessages);
+    intentMap.set('email.selecting', emailSelectingForShowMessages);
     intentMap.set('email.messages.send_reply', emailMessageSendingReply);
     intentMap.set('email.messages.get.count.single', emailMessagesGettingLastSingleMail);
     intentMap.set('email.message.show_body', emailMessageShowBody);
@@ -163,10 +163,11 @@ async function emailMessagesGettingLastSingleMail() {
             messageId = header.value;
         }
     });
-    console.log('mimeType '+ message.payload.mimeType);
+    console.log('mimeType ' + message.payload.mimeType);
+    let mimeType = message.payload.mimeType;
     if (message.payload.mimeType == "text/html") {
         body = null;
-        message= null;
+        message = null;
     } else if (message.payload.mimeType == "multipart/alternative") {
         message.payload.parts.forEach(element => {
             if (element.mimeType == "text/plain") {
@@ -182,15 +183,16 @@ async function emailMessagesGettingLastSingleMail() {
         "subject": subject,
         "date": date,
         "messageId": messageId,
-        "body": body
+        "body": body,
+        "mimeType": mimeType
     }
-    
+
     agent.context.set({
         'name': 'handling_mail_context',
         'lifespan': 5,
         'parameters': {
             'msg': msgData,
-            'message':message
+            'message': message
         }
     });
     agent.add(subject);
@@ -268,7 +270,7 @@ async function emailMessagesGetContactName() {
             let emails = response.emails;
             agent.add("which one did you mean?\n.. choose one by copy and pasting it in the message!");
             agent.context.set({
-                'name': 'selecting_email_to_show_messages',
+                'name': 'selecting_email_context',
                 'lifespan': 5,
                 'parameters': {
                     'state': state,
@@ -286,7 +288,7 @@ async function emailMessagesGetContactName() {
 }
 
 async function emailSelectingForShowMessages() {
-    let state = agent.context.contexts.selecting_email_to_show_messages.parameters.state
+    let state = agent.context.contexts.selecting_email_context.parameters.state
     console.log('state ' + state);
     let email = agent.parameters.email;
     var operation = new Operations();
@@ -395,31 +397,42 @@ async function emailMessageShowBody() {
             'name': 'handling_mail_context',
             'lifespan': 5,
             'parameters': {
-                'msg' : msg,
+                'msg': msg,
                 'message': message
             }
-        })
+        });
     }
-
 }
 
-async function emailMessageForward(){
+async function emailMessageForward() {
     let msg = agent.context.contexts.handling_mail_context.parameters.msg
     let message = agent.context.contexts.handling_mail_context.parameters.message
 
-    let email= agent.parameters.email;
+    let email = agent.parameters.email;
     console.log(email);
 
     let contacts = gmailOps.getContacts(email);
 
-    if(contacts.sent == 1){
-        contacts.emails.forEach(element =>{
+    if (contacts.sent == 1) {
+        contacts.emails.forEach(element => {
             agent.add(element);
-        })
-    }else if(contacts.sent == 0){
-             
-    }else {
-        
+        });
+        agent.context.set({
+            'name': '',
+            'lifespan': 5,
+            'parameters': {
+                'from': ''
+            }
+        });
+    } else if (contacts.sent == 0) {
+        let foundEmail = contacts.email;
+
+        if (message == null) {
+            // get the message and send it
+
+        }
+    } else {
+        // show contact couldn't found      
     }
 
 }
