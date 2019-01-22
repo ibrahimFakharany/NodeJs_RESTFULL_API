@@ -501,7 +501,7 @@ class GmailOperations {
         if(message.payload.parts instanceof Array){
              part = message.payload.parts[0];
         }else {
-             part = message.payload.parts[0];
+             part = message.payload.parts;
         }
         let body = this.decodeMessageBody(part.body.data);
         let encodedMessage = this.makeBodyForForwarding(emailTo, emailFrom, subject, body);
