@@ -155,12 +155,14 @@ async function emailMessagesGettingLastSingleMail() {
     var body = null;
     message.payload.headers.forEach((header) => {
         let key = header.name.toString().toUpperCase();
-        console.log('key ' + key + ' ' + 'Subject'.toUpperCase());
+        console.log('key ' + key + ' ' + 'Subject'.toUpperCase()+' '+' header value '+header.value);
+        
         if (key == "Delivered-To".toUpperCase()) {
             deliveredTo = header.value;
         } else if (key == "From".toUpperCase()) {
             from = header.value;
         } else if (key == 'Subject'.toUpperCase()) {
+            
             subject = header.value;
         } else if (key == "Date".toUpperCase()) {
             date = header.value;
