@@ -500,7 +500,7 @@ class GmailOperations {
         let part = message.payload.parts[0];
         let body = part.body.data;
         let encodedMessage = this.makeBodyForForwarding(emailTo, emailFrom, subject, body);
-        let result = await sendMessage(encodedMessage);
+        let result = await this.sendMessage(encodedMessage);
         return result;
 
 
