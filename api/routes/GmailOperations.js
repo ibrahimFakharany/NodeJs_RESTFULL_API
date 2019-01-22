@@ -503,6 +503,7 @@ class GmailOperations {
         }else {
              part = message.payload.parts;
         }
+        console.log(part);
         let body = this.decodeMessageBody(part.body.data);
         let encodedMessage = this.makeBodyForForwarding(emailTo, emailFrom, subject, body);
         let result = await this.sendMessage(auth, encodedMessage);
