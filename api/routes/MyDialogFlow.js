@@ -417,7 +417,7 @@ async function emailMessageForward(){
             agent.add(element);
         })
     }else if(contacts.sent == 0){
-        
+             
     }else {
         
     }
