@@ -159,13 +159,13 @@ async function emailMessagesGettingLastSingleMail() {
         let key = header.name.toString().toUpperCase();
         if (key == "Delivered-To".toUpperCase()) {
             deliveredTo = header.value;
-        } else if (key == "From") {
+        } else if (key == "From".toUpperCase()) {
             from = header.value;
-        } else if (key == "Subject") {
+        } else if (key == "Subject".toUpperCase()) {
             subject = header.value;
-        } else if (key == "Date") {
+        } else if (key == "Date".toUpperCase()) {
             date = header.value;
-        } else if (key == "Message-ID") {
+        } else if (key == "Message-ID".toUpperCase()) {
             messageId = header.value;
         }
     });
