@@ -167,6 +167,7 @@ async function emailMessagesGettingLastSingleMail() {
         }
     });
     console.log('mimeType ' + message.payload.mimeType);
+    console.log('subject ' +subject  );
     let mimeType = message.payload.mimeType;
     if (message.payload.mimeType == "text/html") {
         body = null;
