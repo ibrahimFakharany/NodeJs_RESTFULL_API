@@ -168,7 +168,7 @@ async function emailMessagesGettingLastSingleMail() {
         }
     });
     console.log('mimeType ' + message.payload.mimeType);
-    console.log('subject ' +subject  );
+    console.log('subject ' + subject);
     let mimeType = message.payload.mimeType;
     if (message.payload.mimeType == "text/html") {
         body = null;
@@ -481,7 +481,7 @@ async function emailMessageForward() {
             } else {
                 returnedMessage = message;
             }
-            let agentMessage = await gmailOps.forwardMessage(auth,returnedMessage, foundEmail, msg.deliveredTo);
+            let agentMessage = await gmailOps.forwardMessage(auth, returnedMessage, foundEmail, msg.deliveredTo);
             agent.add(agentMessage);
         } else {
             // show contact couldn't found      
