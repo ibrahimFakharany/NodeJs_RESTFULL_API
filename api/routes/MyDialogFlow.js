@@ -153,9 +153,7 @@ async function emailMessagesGettingLastSingleMail() {
     var date = null;
     var messageId = null;
     var body = null;
-    console.log('message '+ message);
     message.payload.headers.forEach((header) => {
-        console.log('header '+JSON.stringify(header));
         let key = header.name.toString().toUpperCase();
         if (key == "Delivered-To".toUpperCase()) {
             deliveredTo = header.value;
@@ -413,6 +411,14 @@ async function emailMessageShowBody() {
     let body = msg.body;
     if (body == null) {
         agent.add("No body to show, this might because the body is html page that couldn't or there is no body in the message");
+        agent.context.set({
+            'name': handling_mail_context,
+            'lifespan': default_context_life_span,
+            'parameters': {
+                'msg': msg,
+                'message': message
+            }
+        });
     } else {
         agent.add(gmailOps.decodeMessageBody(body));
         msg.body = body;
