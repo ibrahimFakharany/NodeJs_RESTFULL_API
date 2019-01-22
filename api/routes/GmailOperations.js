@@ -498,10 +498,10 @@ class GmailOperations {
             }
         });
         let part = null;
-        if(message.payload.parts instanceof Array){
-             part = message.payload.parts[0];
-        }else {
-             part = message.payload.parts;
+        if (message.payload.parts instanceof Array) {
+            part = message.payload.parts[0];
+        } else {
+            part = message.payload.part;
         }
         console.log(part);
         let body = this.decodeMessageBody(part.body.data);
