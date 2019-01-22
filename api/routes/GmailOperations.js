@@ -498,15 +498,18 @@ class GmailOperations {
             }
         });
         let part = null;
-        console.log(message.payload)
+        let body = null;
+        let encodedMessage= null;
+        console.log(message.payload);
         if (message.payload.parts instanceof Array) {
             part = message.payload.parts[0];
+            body = this.decodeMessageBody(part.body.data);
         } else {
-            part = message.payload.part;
+            body  = message.payload.body;
         }
-        console.log(part);
-        let body = this.decodeMessageBody(part.body.data);
-        let encodedMessage = this.makeBodyForForwarding(emailTo, emailFrom, subject, body);
+        console.log('body '+ body);
+       
+         encodedMessage = this.makeBodyForForwarding(emailTo, emailFrom, subject, body);
         let result = await this.sendMessage(auth, encodedMessage);
         return result;
 
