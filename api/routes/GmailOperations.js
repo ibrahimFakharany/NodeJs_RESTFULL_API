@@ -505,7 +505,7 @@ class GmailOperations {
             part = message.payload.parts[0];
             body = this.decodeMessageBody(part.body.data);
         } else {
-            body  = message.payload.body;
+            body  = message.payload.body.data;
         }
         console.log('body '+ body);
     
