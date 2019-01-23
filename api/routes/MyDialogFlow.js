@@ -156,54 +156,9 @@ async function emailMessagesGettingLastSingleMail() {
     let jsonResult = await gmailOps.getMessagesWithLimit(1);
     console.log(JSON.stringify(jsonResult));
     var message = await gmailOps.getMessagesByMessageId(jsonResult.body.messages[0].id);
-    var deliveredTo = null;
-    var from = null;
-    var subject = null;
-    var date = null;
-    var messageId = null;
-    var body = null;
-    message.payload.headers.forEach((header) => {
-        let key = header.name.toString().toUpperCase();
-        console.log('key ' + key + ' ' + 'Subject'.toUpperCase() + ' ' + ' header value ' + header.value);
-
-        if (key == "Delivered-To".toUpperCase()) {
-            deliveredTo = header.value;
-        } else if (key == "From".toUpperCase()) {
-            from = header.value;
-        } else if (key == 'Subject'.toUpperCase()) {
-            subject = header.value;
-        } else if (key == "Date".toUpperCase()) {
-            date = header.value;
-        } else if (key == "Message-ID".toUpperCase()) {
-            messageId = header.value;
-        }
-    });
-    if (subject == '') {
-        subject = 'no subject'
-    }
-    console.log('mimeType ' + message.payload.mimeType);
-    console.log('subject ' + subject);
-    let mimeType = message.payload.mimeType;
-    if (message.payload.mimeType == "text/html") {
-        body = null;
-        message = null;
-    } else if (message.payload.mimeType == "multipart/alternative") {
-        message.payload.parts.forEach(element => {
-            if (element.mimeType == "text/plain") {
-                body = element.body.data;
-            }
-        });
-    }
-    var msgData = {
-        "id": jsonResult.body.messages[0].id,
-        "deliveredTo": deliveredTo,
-        "from": from,
-        "subject": subject,
-        "date": date,
-        "messageId": messageId,
-        "body": body,
-        "mimeType": mimeType
-    }
+    let operation = new Operation();
+    let msg = operation.getMsg(message);
+    var msgData = msg
 
     agent.context.set({
         'name': handling_mail_context,
@@ -365,8 +320,18 @@ async function getMessagesFromSubject() {
         });
         if (id != null) {
             let message = await gmailOps.getMessagesByMessageId(id);
+            let operation = new Operation();
+            let msg = operation.getMsg(message);
             console.log(message.snippet);
-            agent.add(message.snippet)
+            agent.add(message.snippet);
+            agent.context.set({
+                'name': handling_mail_context,
+                'lifespan': default_context_life_span,
+                'parameters': {
+                    'msg': msg,
+                    'message': message
+                }
+            })
         } else {
             agent.add("please select one of the following subjects ");
             messages.forEach(element => {
@@ -382,10 +347,10 @@ async function getMessagesFromSubject() {
             });
         }
         agent.context.set({
-            'name':handling_mail_context, 
-            'lifespan':default_context_life_span, 
-            'parameters':{
-                
+            'name': handling_mail_context,
+            'lifespan': default_context_life_span,
+            'parameters': {
+
             }
         })
     } else {
