@@ -303,6 +303,7 @@ class GmailOperations {
         let promise = new Promise((resolve, reject) => {
             request('https://www.google.com/m8/feeds/contacts/default/full?alt=json&q="' + contactName + '"&access_token=' + token, { json: true }, (err, res, body) => {
                 if (err) { return console.log(err); }
+                console.log(JSON.stringify(res));
                 let stringResponse = JSON.stringify(res);
                 let jsonResponse = JSON.parse(stringResponse);
                 var index;
