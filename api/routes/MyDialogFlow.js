@@ -16,6 +16,7 @@ const choose_index_entity = "choose_index_entity";
 const selecting_email_context = "selecting_email_context";
 const handling_mail_context = "handling_mail_context";
 const get_messages_context = "get_messages_context";
+const get_body_of_message_by_subject = "get_body_of_message_by_subject";
 const default_context_life_span = 5
 
 router.post('/', (req, server_response, next) => {
@@ -123,7 +124,10 @@ async function emailMessagesGet() {
     try {
 
         let jsonResult = await gmailOps.getMessages(auth, -1);
-
+        agent.context.set({
+            'name' : get_body_of_message_by_subject, 
+            'lifespan': default_context_life_span,
+        })
         switch (jsonResult.success) {
             case 0:
                 agent.add(jsonResult.message);

@@ -13,7 +13,6 @@ const SCOPES = ['https://mail.google.com/',
     'https://www.googleapis.com/auth/gmail.insert',
     'https://www.googleapis.com/auth/gmail.send',
     'https://www.google.com/m8/feeds'];
-
 const fs = require('fs');
 const TOKEN_PATH = 'token.json';
 class GmailOperations {
