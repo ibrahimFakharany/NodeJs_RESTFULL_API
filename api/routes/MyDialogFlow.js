@@ -332,7 +332,7 @@ async function emailSelecting() {
             'lifespan': default_context_life_span,
             'parameters': {
                 'from': selecting_email_context,
-                'email': email,
+                'email': foundEmail,
                 'msg': msg,
                 'message': messasge
             }
