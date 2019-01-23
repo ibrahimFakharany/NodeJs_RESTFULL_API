@@ -135,15 +135,17 @@ async function emailMessagesGet() {
                 list.forEach(element => {
                     agent.add(element.subject);
                 });
+                agent.context.set({
+                    'name' : get_body_of_message_by_subject, 
+                    'lifespan': default_context_life_span,
+                    'parameters':{
+                        'from':get_messages_context,
+                        'messages': list
+                    }
+                })
                 break;
         }
-        agent.context.set({
-            'name' : get_body_of_message_by_subject, 
-            'lifespan': default_context_life_span,
-            'parameters':{
-                'messages': list
-            }
-        })
+        
     } catch (err) {
         agent.add('error in after getting messages' + err);
         console.log(err);
@@ -353,6 +355,11 @@ async function emailSelecting() {
 }
 
 async function getMessagesFromSubject() {
+    if(agent.context.contexts.get_body_of_message_by_subject.parameters.from == get_messages_context){
+
+    }else {
+        
+    }
     let state = agent.context.contexts.get_body_of_message_by_subject.parameters.state
     let email = agent.context.contexts.get_body_of_message_by_subject.parameters.email
     let subject = agent.parameters.subject;

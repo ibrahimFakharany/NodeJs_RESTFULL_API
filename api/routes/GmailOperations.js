@@ -379,12 +379,12 @@ class GmailOperations {
         let token = await this.getToken();
         let link = null;
         if (state == "by") {
-            link = 'https://www.googleapis.com/gmail/v1/users/me/messages?q=from:\"' + email + '\"' + subject + '\"&access_token=' + token;
+            link = 'https://www.googleapis.com/gmail/v1/users/me/messages?q=from:\"' + email + '\" subject=' + subject + '\"&access_token=' + token;
         } else if (state == "to") {
-            link = 'https://www.googleapis.com/gmail/v1/users/me/messages?q=to:\"' + email + '\"' + subject + '\"&access_token=' + token;
+            link = 'https://www.googleapis.com/gmail/v1/users/me/messages?q=to:\"' + email + '\" subject=' + subject + '\"&access_token=' + token;
         }
         let promise = new Promise((resolve, reject) => {
-            request('https://www.googleapis.com/gmail/v1/users/me/messages?q=subject:\"' + subject + '\"&access_token=' + token, { json: true }, (err, res, body) => {
+            request(link, { json: true }, (err, res, body) => {
                 if (err) { return console.log(err); }
                 resolve(body);
 
