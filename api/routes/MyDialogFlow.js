@@ -126,7 +126,7 @@ async function emailMessagesGet() {
         let jsonResult = await gmailOps.getMessages(auth, -1);
         agent.context.set({
             'name' : get_body_of_message_by_subject, 
-            'lifespan': default_context_life_span,
+            'lifespan': default_context_life_span,gt 
         })
         switch (jsonResult.success) {
             case 0:

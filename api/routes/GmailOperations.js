@@ -177,15 +177,8 @@ class GmailOperations {
         if (maxResult == -1) {
 
             let promiseGlobal = new Promise((resolveGlobal, reject) => {
-                request('https://www.googleapis.com/gmail/v1/users/me/messages?access_token=' + token, { json: true }, (err, res, body) => {
-
-                    // gmail.users.messages.list({
-                    //     userId: 'me',
-                    //     maxResults: 5
-                    // }, (err, res) => {
-
+                request('https://www.googleapis.com/gmail/v1/users/me/messages?maxResults=5&access_token=' + token, { json: true }, (err, res, body) => {
                     resolveGlobal(body);
-                    // });
                 });
             });
 
