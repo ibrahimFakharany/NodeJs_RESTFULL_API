@@ -124,22 +124,26 @@ async function emailMessagesGet() {
     try {
 
         let jsonResult = await gmailOps.getMessages(auth, -1);
-        agent.context.set({
-            'name' : get_body_of_message_by_subject, 
-            'lifespan': default_context_life_span,
-        })
+        let list = null;
         switch (jsonResult.success) {
             case 0:
                 agent.add(jsonResult.message);
                 break;
             case 1:
                 console.log(jsonResult.result);
-                var list = jsonResult.result;
+                list = jsonResult.result;
                 list.forEach(element => {
                     agent.add(element.subject);
                 });
                 break;
         }
+        agent.context.set({
+            'name' : get_body_of_message_by_subject, 
+            'lifespan': default_context_life_span,
+            'parameters':{
+                'messages': list
+            }
+        })
     } catch (err) {
         agent.add('error in after getting messages' + err);
         console.log(err);
