@@ -162,9 +162,7 @@ async function emailMessagesGettingLastSingleMail() {
         } else if (key == "From".toUpperCase()) {
             from = header.value;
         } else if (key == 'Subject'.toUpperCase()) {
-
             subject = header.value;
-            
         } else if (key == "Date".toUpperCase()) {
             date = header.value;
         } else if (key == "Message-ID".toUpperCase()) {

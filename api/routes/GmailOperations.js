@@ -395,11 +395,10 @@ class GmailOperations {
         return result;
     }
 
-
     async getMessagesByMessageId(id) {
         let token = await this.getToken();
         let promise = new Promise((resolve, reject) => {
-            request('https://www.googleapis.com/gmail/v1/users/me/messages/' + id + '?access_token=' + token, { json: true }, (err, res, body) => {
+            request('https://www.googleapis.com/gmail/v1/users/me/messages/' + id + '?q=label:INBOX&access_token=' + token, { json: true }, (err, res, body) => {
                 if (err) { return console.log(err); }
                 resolve(body);
 
@@ -409,6 +408,7 @@ class GmailOperations {
         let result = await promise;
         return result;
     }
+
     async getDateEmailSubjectWithMessageId(id) {
         let token = await this.getToken();
         let promise = new Promise((resolve, reject) => {
@@ -563,7 +563,5 @@ class GmailOperations {
             .replace(/\//g, '_');
         return encodedMail;
     }
-
-
 }
 module.exports = GmailOperations;
