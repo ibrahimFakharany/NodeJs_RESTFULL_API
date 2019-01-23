@@ -381,6 +381,13 @@ async function getMessagesFromSubject() {
                 }
             });
         }
+        agent.context.set({
+            'name':handling_mail_context, 
+            'lifespan':default_context_life_span, 
+            'parameters':{
+                
+            }
+        })
     } else {
         let state = agent.context.contexts.get_body_of_message_by_subject.parameters.state
         let email = agent.context.contexts.get_body_of_message_by_subject.parameters.email

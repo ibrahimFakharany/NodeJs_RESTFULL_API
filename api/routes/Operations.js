@@ -11,7 +11,6 @@ class Operations {
         var da = last.toISOString().split("T");
         console.log(da);
         return da[0];
-
     }
 
     prepareGettingIdsResposne(response) {
@@ -23,8 +22,9 @@ class Operations {
         };
     }
 
-
-
+    getMsg(){
+        
+    }
 }
 
 
