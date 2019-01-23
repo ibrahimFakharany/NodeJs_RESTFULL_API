@@ -387,7 +387,6 @@ class GmailOperations {
             request(link, { json: true }, (err, res, body) => {
                 if (err) { return console.log(err); }
                 resolve(body);
-
             });
         });
         let result = await promise;
