@@ -316,8 +316,8 @@ async function emailSelecting() {
         }
     } else if (fromContext == handling_mail_context) {
         let foundEmail = agent.parameters.email;
-        let msg  = agent.context.contexts.selecting_email_context.parameters.msg;
-        let message= agent.context.contexts.selecting_email_context.parameters.messasge;
+        let msg = agent.context.contexts.selecting_email_context.parameters.msg;
+        let message = agent.context.contexts.selecting_email_context.parameters.messasge;
         let returnedMessage = null
         if (message == null || typeof message === 'undefined') {
             // get the message and send it
@@ -416,8 +416,15 @@ async function getMessagesLimitToNumber() {
 
 async function emailMessageSendingReply() {
     let auth = await gmailOps.authorizeUser()
-    let message = agent.context.contexts.send_reply_to_the_email.parameters.message
+    let msg = agent.context.contexts.handling_mail_context.parameters.msg;
+    let message = agent.context.contexts.handling_mail_context.parameters.message;
+    if (message == null || message == 'undefined') {
+        // getting message with the id
+        let id = msg.id;
+        message = await gmailOps.getMessagesByMessageId(id);
+    }
     let userReply = agent.parameters.reply;
+    console.log('message '+message);
     let reply = await gmailOps.sendingReply(auth, userReply, message);
     agent.add(reply);
 }
