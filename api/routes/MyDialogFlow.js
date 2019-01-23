@@ -368,6 +368,9 @@ async function getMessagesFromSubject() {
             gmailOps.getMessagesByMessageId(id);
         } else {
             agent.add("please select one of the following subjects ");
+            messages.forEach(element => {
+                agent.add(element.subject);
+            });
             agent.context({
                 'name': get_body_of_message_by_subject,
                 'lifespan': default_context_life_span,
