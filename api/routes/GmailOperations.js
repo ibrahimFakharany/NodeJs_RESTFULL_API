@@ -171,11 +171,8 @@ class GmailOperations {
 
     // getting messages
     async getMessages(auth, maxResult) {
-
-        const gmail = google.gmail({ version: 'v1', auth });
         let token = await this.getToken();
         if (maxResult == -1) {
-
             let promiseGlobal = new Promise((resolveGlobal, reject) => {
                 request('https://www.googleapis.com/gmail/v1/users/me/messages?q=label:INBOX&maxResults=5&access_token=' + token, { json: true }, (err, res, body) => {
                     resolveGlobal(body);

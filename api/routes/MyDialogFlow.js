@@ -130,7 +130,6 @@ async function emailMessagesGet() {
                 agent.add(jsonResult.message);
                 break;
             case 1:
-                console.log(jsonResult.result);
                 list = jsonResult.result;
                 list.forEach(element => {
                     agent.add(element.subject);
