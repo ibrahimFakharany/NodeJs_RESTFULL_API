@@ -445,7 +445,6 @@ class GmailOperations {
         return base64url.decode(encodedBody);
     }
 
-
     async sendingReply(auth, reply, message) {
         let id = message.id;
         let threadId = message.threadId;
@@ -487,6 +486,7 @@ class GmailOperations {
         let result = await this.sendMessage(auth, encodedResponse);
         return result;
     }
+    
     async forwardMessage(auth, message, emailTo, emailFrom) {
         console.log("this is message ");
         let subject = null;
@@ -510,6 +510,7 @@ class GmailOperations {
         let result = await this.sendMessage(auth, encodedMessage);
         return result;
     }
+    
     async sendMessage(auth, message) {
         let gmail = google.gmail({ version: 'v1', auth });
         let promise = new Promise((resolve, reject) => {
@@ -527,6 +528,7 @@ class GmailOperations {
         let result = await promise;
         return result;
     }
+    
     makeBodyForForwarding(to, from, subject, message) {
         var str = ['Content-Type: ' + 'text/plain' + '; charset=\"UTF-8\"\n',
             "MIME-Version: 1.0\n",

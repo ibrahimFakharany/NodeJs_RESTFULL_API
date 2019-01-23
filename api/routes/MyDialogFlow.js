@@ -136,16 +136,16 @@ async function emailMessagesGet() {
                     agent.add(element.subject);
                 });
                 agent.context.set({
-                    'name' : get_body_of_message_by_subject, 
+                    'name': get_body_of_message_by_subject,
                     'lifespan': default_context_life_span,
-                    'parameters':{
-                        'from':get_messages_context,
+                    'parameters': {
+                        'from': get_messages_context,
                         'messages': list
                     }
                 })
                 break;
         }
-        
+
     } catch (err) {
         agent.add('error in after getting messages' + err);
         console.log(err);
@@ -355,64 +355,83 @@ async function emailSelecting() {
 }
 
 async function getMessagesFromSubject() {
-    if(agent.context.contexts.get_body_of_message_by_subject.parameters.from == get_messages_context){
-
-    }else {
-        
-    }
-    let state = agent.context.contexts.get_body_of_message_by_subject.parameters.state
-    let email = agent.context.contexts.get_body_of_message_by_subject.parameters.email
-    let subject = agent.parameters.subject;
-    let result = await gmailOps.getMessagesBySubject(subject, state, email);
-    let size = result.messages.length;
-    let msgs = result.messages;
-
-    if (size > 1) {
-        // show to user 
-        console.log("#of messages returned by subject is greater than one");
-
-        let listOfPossibleMessages = new ArrayList()
-        let promise = new Promise(async (resolve, reject) => {
-            msgs.forEach(async element => {
-                let id = element.id;
-                console.log("id " + id);
-                let possibleMessageWithThisSubject = await gmailOps.getDateEmailSubjectWithMessageId(id);
-                listOfPossibleMessages.add(possibleMessageWithThisSubject);
+    if (agent.context.contexts.get_body_of_message_by_subject.parameters.from == get_messages_context) {
+        let messages = agent.context.contexts.get_body_of_message_by_subject.parameters.messages
+        let subject = agent.parameters.subject;
+        let id = null;
+        messages.forEach(element => {
+            if (subject == element.subject) {
+                id = element.id
+            }
+        });
+        if (id != null) {
+            gmailOps.getMessagesByMessageId(id);
+        } else {
+            agent.add("please select one of the following subjects ");
+            agent.context({
+                'name': get_body_of_message_by_subject,
+                'lifespan': default_context_life_span,
+                'parameters': {
+                    'messages': message
+                }
             });
-            resolve(listOfPossibleMessages);
-        });
-
-        let thisResult = await promise;
-
-        console.log(thisResult);
-
-        agent.add("please select message by typing its index number! ");
-        thisResult.forEach(element => {
-            agent.add(element.date);
-            agent.add(element.email);
-            agent.add(element.subject);
-        })
-
+        }
     } else {
-        // get body with this id 
-        let id = msgs[0].id
-        let message = await gmailOps.getMessagesByMessageId(id);
-        console.log(message);
-        let body = null;
-        message.payload.parts.forEach(element => {
-            if (element.mimeType == "text/plain") {
-                body = element.body.data
-            }
-        })
-        agent.add(gmailOps.decodeMessageBody(body));
-        agent.context.set({
-            'name': send_reply_to_the_email,
-            'lifespan': default_context_life_span,
-            'parameters': {
-                'message': message
-            }
-        });
+        let state = agent.context.contexts.get_body_of_message_by_subject.parameters.state
+        let email = agent.context.contexts.get_body_of_message_by_subject.parameters.email
+        let subject = agent.parameters.subject;
+        let result = await gmailOps.getMessagesBySubject(subject, state, email);
+        let size = result.messages.length;
+        let msgs = result.messages;
+
+        if (size > 1) {
+            // show to user 
+            console.log("#of messages returned by subject is greater than one");
+
+            let listOfPossibleMessages = new ArrayList()
+            let promise = new Promise(async (resolve, reject) => {
+                msgs.forEach(async element => {
+                    let id = element.id;
+                    console.log("id " + id);
+                    let possibleMessageWithThisSubject = await gmailOps.getDateEmailSubjectWithMessageId(id);
+                    listOfPossibleMessages.add(possibleMessageWithThisSubject);
+                });
+                resolve(listOfPossibleMessages);
+            });
+
+            let thisResult = await promise;
+
+            console.log(thisResult);
+
+            agent.add("please select message by typing its index number! ");
+            thisResult.forEach(element => {
+                agent.add(element.date);
+                agent.add(element.email);
+                agent.add(element.subject);
+            })
+
+        } else {
+            // get body with this id 
+            let id = msgs[0].id
+            let message = await gmailOps.getMessagesByMessageId(id);
+            console.log(message);
+            let body = null;
+            message.payload.parts.forEach(element => {
+                if (element.mimeType == "text/plain") {
+                    body = element.body.data
+                }
+            })
+            agent.add(gmailOps.decodeMessageBody(body));
+            agent.context.set({
+                'name': send_reply_to_the_email,
+                'lifespan': default_context_life_span,
+                'parameters': {
+                    'message': message
+                }
+            });
+        }
     }
+
 }
 
 async function getMessagesLimitToNumber() {
@@ -439,7 +458,7 @@ async function emailMessageSendingReply() {
         message = await gmailOps.getMessagesByMessageId(id);
     }
     let userReply = agent.parameters.reply;
-    console.log('message '+message);
+    console.log('message ' + message);
     let reply = await gmailOps.sendingReply(auth, userReply, message);
     agent.add(reply);
 }
