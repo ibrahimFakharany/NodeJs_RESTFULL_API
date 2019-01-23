@@ -319,10 +319,16 @@ class GmailOperations {
 
         });
 
+
         let emailList = await promise;
+        console.log('email list : '+emailList.length);
+
         if (emailList.length > 1) {
             // show emails
-            return { "sent": 1, "emails": emailList }
+            return {
+                "sent": 1, 
+                "emails": emailList
+         }
         } else if (emailList.length == 1) {
             // send email to that email
             return {

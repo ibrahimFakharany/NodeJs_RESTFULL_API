@@ -155,8 +155,8 @@ async function emailMessagesGettingLastSingleMail() {
     var body = null;
     message.payload.headers.forEach((header) => {
         let key = header.name.toString().toUpperCase();
-        console.log('key ' + key + ' ' + 'Subject'.toUpperCase()+' '+' header value '+header.value);
-        
+        console.log('key ' + key + ' ' + 'Subject'.toUpperCase() + ' ' + ' header value ' + header.value);
+
         if (key == "Delivered-To".toUpperCase()) {
             deliveredTo = header.value;
         } else if (key == "From".toUpperCase()) {
@@ -169,7 +169,7 @@ async function emailMessagesGettingLastSingleMail() {
             messageId = header.value;
         }
     });
-    if(subject == ''){
+    if (subject == '') {
         subject = 'no subject'
     }
     console.log('mimeType ' + message.payload.mimeType);
@@ -184,7 +184,6 @@ async function emailMessagesGettingLastSingleMail() {
                 body = element.body.data;
             }
         });
-
     }
     var msgData = {
         "id": jsonResult.body.messages[0].id,
@@ -456,12 +455,10 @@ async function emailMessageForward() {
         //from is undefined or from another context 
         let msg = agent.context.contexts.handling_mail_context.parameters.msg
         let message = agent.context.contexts.handling_mail_context.parameters.message
-
         let email = agent.parameters.email;
         console.log(email);
-
         let contacts = await gmailOps.getContacts(email);
-
+        console.log(JSON.stringify(contacts));
         if (contacts.sent == 1) {
             contacts.emails.forEach(element => {
                 agent.add(element);
@@ -489,7 +486,8 @@ async function emailMessageForward() {
             let agentMessage = await gmailOps.forwardMessage(auth, returnedMessage, foundEmail, msg.deliveredTo);
             agent.add(agentMessage);
         } else {
-            // show contact couldn't found      
+            // show contact couldn't found   
+             
         }
     }
 
