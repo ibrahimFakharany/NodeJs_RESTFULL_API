@@ -298,6 +298,7 @@ async function emailMessagesGetContactName() {
 }
 
 async function emailSelecting() {
+    let auth = await gmailOps.authorizeUser();
     let fromContext = agent.context.contexts.selecting_email_context.parameters.from
     if (fromContext == get_messages_context) {
         let state = agent.context.contexts.selecting_email_context.parameters.state
