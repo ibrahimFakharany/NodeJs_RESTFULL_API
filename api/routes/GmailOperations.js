@@ -177,7 +177,7 @@ class GmailOperations {
         if (maxResult == -1) {
 
             let promiseGlobal = new Promise((resolveGlobal, reject) => {
-                request('https://www.googleapis.com/gmail/v1/users/me/messages?maxResults=5&access_token=' + token, { json: true }, (err, res, body) => {
+                request('https://www.googleapis.com/gmail/v1/users/me/messages?access_token=' + token, { json: true }, (err, res, body) => {
                     resolveGlobal(body);
                 });
             });
@@ -353,7 +353,6 @@ class GmailOperations {
                     let jsonResponse = JSON.parse(stringResponse);
                     complete++;
                     for (var i = 0; i < jsonResponse.body.payload.headers.length; i++) {
-                        
                         if (jsonResponse.body.payload.headers[i].name.toString().toUpperCase() == "Subject".toUpperCase()) {
                             var subject = jsonResponse.body.payload.headers[i].value;
                             if (subject === '') {
