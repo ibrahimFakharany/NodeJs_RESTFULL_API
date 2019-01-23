@@ -353,7 +353,8 @@ class GmailOperations {
                     let jsonResponse = JSON.parse(stringResponse);
                     complete++;
                     for (var i = 0; i < jsonResponse.body.payload.headers.length; i++) {
-                        if (jsonResponse.body.payload.headers[i].name == "Subject") {
+                        
+                        if (jsonResponse.body.payload.headers[i].name.toString().toUpperCase() == "Subject".toUpperCase()) {
                             var subject = jsonResponse.body.payload.headers[i].value;
                             if (subject === '') {
                                 subject = "no subject";
