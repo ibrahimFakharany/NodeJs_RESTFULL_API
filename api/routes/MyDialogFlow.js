@@ -365,7 +365,8 @@ async function getMessagesFromSubject() {
             }
         });
         if (id != null) {
-            gmailOps.getMessagesByMessageId(id);
+            let message = await gmailOps.getMessagesByMessageId(id);
+            
         } else {
             agent.add("please select one of the following subjects ");
             messages.forEach(element => {
