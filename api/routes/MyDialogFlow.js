@@ -375,7 +375,8 @@ async function getMessagesFromSubject() {
                 'name': get_body_of_message_by_subject,
                 'lifespan': default_context_life_span,
                 'parameters': {
-                    'messages': message
+                    'from': get_messages_context,
+                    'messages': messages
                 }
             });
         }
