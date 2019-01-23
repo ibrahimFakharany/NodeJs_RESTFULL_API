@@ -334,7 +334,7 @@ async function emailSelecting() {
                 'from': selecting_email_context,
                 'email': foundEmail,
                 'msg': msg,
-                'message': messasge
+                'message': message
             }
         });
         agent.add(agentMessage);
