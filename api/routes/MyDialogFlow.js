@@ -314,17 +314,29 @@ async function emailSelecting() {
             agent.add("there is no messages for specified contact");
         }
     } else if (fromContext == handling_mail_context) {
-        let email = agent.parameters.email;
+        let foundEmail = agent.parameters.email;
+        let msg  = agent.context.contexts.selecting_email_context.parameters.msg;
+        let message= agent.context.contexts.selecting_email_context.parameters.messasge;
+        let returnedMessage = null
+        if (message == null || typeof message === 'undefined') {
+            // get the message and send it
+            let id = msg.id;
+            returnedMessage = await gmailOps.getMessagesByMessageId(id);
+        } else {
+            returnedMessage = message;
+        }
+        let agentMessage = await gmailOps.forwardMessage(auth, returnedMessage, foundEmail, msg.deliveredTo);
         agent.context.set({
             'name': handling_mail_context,
             'lifespan': default_context_life_span,
             'parameters': {
                 'from': selecting_email_context,
                 'email': email,
-                'msg': agent.context.contexts.selecting_email_context.parameters.msg,
-                'message': agent.context.contexts.selecting_email_context.parameters.messasge
+                'msg': msg,
+                'message': messasge
             }
-        })
+        });
+        agent.add(agentMessage);
 
     }
 
@@ -487,7 +499,7 @@ async function emailMessageForward() {
             agent.add(agentMessage);
         } else {
             // show contact couldn't found   
-             
+
         }
     }
 
