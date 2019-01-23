@@ -493,7 +493,7 @@ class GmailOperations {
         });
         console.log('from ' + from + ' to ' + to);
         let encodedResponse = this.makeBodyForReplying(to, from, messageId, subject, reply);
-        let result = await sendMessage(auth, encodedResponse);
+        let result = await this.sendMessage(auth, encodedResponse);
         return result;
     }
     async forwardMessage(auth, message, emailTo, emailFrom) {
