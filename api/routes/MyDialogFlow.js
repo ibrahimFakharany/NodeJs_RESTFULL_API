@@ -169,7 +169,7 @@ async function emailMessagesGettingLastSingleMail() {
             'message': message
         }
     });
-    agent.add(subject);
+    agent.add(msgData.subject);
 }
 
 async function emailMessagesGetDate() {
