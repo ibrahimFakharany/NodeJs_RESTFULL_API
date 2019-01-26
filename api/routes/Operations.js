@@ -31,8 +31,7 @@ class Operations {
         var body = null;
         message.payload.headers.forEach((header) => {
             let key = header.name.toString().toUpperCase();
-            console.log('key ' + key + ' ' + 'Subject'.toUpperCase() + ' ' + ' header value ' + header.value);
-
+                
             if (key == "Delivered-To".toUpperCase()) {
                 deliveredTo = header.value;
             } else if (key == "From".toUpperCase()) {
@@ -48,8 +47,6 @@ class Operations {
         if (subject == '') {
             subject = 'no subject'
         }
-        console.log('mimeType ' + message.payload.mimeType);
-        console.log('subject ' + subject);
         let mimeType = message.payload.mimeType;
         if (message.payload.mimeType == "text/html") {
             body = null;
