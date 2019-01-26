@@ -14,8 +14,10 @@ router.use(bodyParser.urlencoded({ extended: true }));
 // intents names 
 const choose_index_entity = "choose_index_entity";
 const selecting_email_context = "selecting_email_context";
-const handling_mail_context = "handling_mail_context";
-const get_messages_context = "get_messages_context";
+const handling_mail_context = "handling_mails";
+const get_messages_context = "getting_mails";
+const get_contacts_context = "getting_contacts";
+const handling_subject_context = "handling_subject";
 const get_body_of_message_by_subject = "get_body_of_message_by_subject";
 const default_context_life_span = 5
 
@@ -35,19 +37,26 @@ router.post('/', (req, server_response, next) => {
     // getting messages
     intentMap.set('email.messages.get', emailMessagesGet);
     intentMap.set('email.messages.get.date', emailMessagesGetDate);
-    intentMap.set('email.messages.get.date.between', emailMessagesGetDateInBetween);
     intentMap.set('email.messages.get.contact_name', emailMessagesGetContactName);
-    intentMap.set('email.messages.get.limit.number', getMessagesLimitToNumber);
-    // delete this intent 
-    // intentMap.set('email.messages.get.contact_name.subject', getMessagesFromSubject);
+    intentMap.set('email.messages.get.count.single', emailMessagesGetCountSingle);
+    intentMap.set('email.messages.get.count.many', emailMessagesGetCountMany);
+    // unhandeled methods 
+    intentMap.set('email.messages.get.date.contact_name', emailMessagesGetDateContactName);
+    intentMap.set('email.messages.get.contact_name.count.single', emailMessagesGetContactNameCountSingle);
+    intentMap.set('email.messages.get.contact_name.count.many', emailMessagesGetContactNameCountMany);
+    intentMap.set('email.messages.get.date.count.single', emailMessagesGetDateCountSingle);
+    intentMap.set('email.messages.get.date.count.many', emailMessagesGetDateCountMany);
+    intentMap.set('email.messages.get.date.contact_name.count.single', emailMessagesDateContactNameCountSingle);
+    intentMap.set('email.messages.get.date.contact_name.count.many', emailMessagesDateContactNameCountMany);
+
+    intentMap.set('email.messages.get.date.between', emailMessagesGetDateInBetween);
     intentMap.set('email.selecting', emailSelecting);
     intentMap.set('email.messages.send_reply', emailMessageSendingReply);
-    intentMap.set('email.messages.get.count.single', emailMessagesGettingLastSingleMail);
     intentMap.set('email.message.show_body', emailMessageShowBody);
     intentMap.set('email.message.forward', emailMessageForward);
     agent.handleRequest(intentMap);
 });
-
+//sending email
 async function fullAddressEmailSending() {
     let auth = await gmailOps.authorizeUser()
     try {
@@ -118,6 +127,7 @@ function handlingDefaultFallbackIntent() {
     agent.add('I didn\'t get that, do you want to send it?');
 }
 
+
 // getting messages
 async function emailMessagesGet() {
     let auth = await gmailOps.authorizeUser();
@@ -151,73 +161,6 @@ async function emailMessagesGet() {
         console.log(err);
     }
 
-}
-
-async function emailMessagesGettingLastSingleMail() {
-    let jsonResult = await gmailOps.getMessagesWithLimit(1);
-    console.log(JSON.stringify(jsonResult));
-    var message = await gmailOps.getMessagesByMessageId(jsonResult.body.messages[0].id);
-    let operation = new Operations();
-    let msg = operation.getMsg(message);
-    var msgData = msg
-
-    agent.context.set({
-        'name': handling_mail_context,
-        'lifespan': default_context_life_span,
-        'parameters': {
-            'msg': msgData,
-            'message': message
-        }
-    });
-    agent.add(msgData.subject);
-}
-
-async function emailMessagesGetDate() {
-    let auth = await gmailOps.authorizeUser();
-    try {
-        var date = agent.parameters.date;
-        var todayDate = null;
-        var operation = new Operations();
-        if (date) {
-            todayDate = date.split("T")[0];
-        }
-        let jsonResult = await gmailOps.getMessagesByDate(todayDate);
-        jsonResult = operation.prepareGettingIdsResposne(jsonResult);
-        let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
-        if (result.length > 0) {
-            result.forEach(element => {
-                agent.add(element.subject);
-            });
-        } else {
-            agent("there is no message with specified date");
-        }
-    } catch (err) {
-        agent.add('error in after getting messages' + err);
-        console.log(err);
-    }
-
-}
-
-async function emailMessagesGetDateInBetween() {
-    var start = agent.parameters.start;
-    var end = agent.parameters.end;
-    if (start) {
-        start = start.split("T")[0];
-    }
-    if (end) {
-        end = end.split("T")[0];
-    }
-    var operation = new Operations();
-    let jsonResult = await gmailOps.getMessagesByDateInBetween(start, end);
-    jsonResult = operation.prepareGettingIdsResposne(jsonResult);
-    let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
-    if (result.length > 0) {
-        result.forEach(element => {
-            agent.add(element.subject);
-        });
-    } else {
-        agent("there is no message with specified date");
-    }
 }
 
 async function emailMessagesGetContactName() {
@@ -261,7 +204,93 @@ async function emailMessagesGetContactName() {
             break;
     }
 }
+//date
+async function emailMessagesGetDate() {
+    let auth = await gmailOps.authorizeUser();
+    try {
+        var date = agent.parameters.date;
+        var todayDate = null;
+        var operation = new Operations();
+        if (date) {
+            todayDate = date.split("T")[0];
+        }
+        let jsonResult = await gmailOps.getMessagesByDate(todayDate);
+        jsonResult = operation.prepareGettingIdsResposne(jsonResult);
+        let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
+        if (result.length > 0) {
+            result.forEach(element => {
+                agent.add(element.subject);
+            });
+        } else {
+            agent("there is no message with specified date");
+        }
+    } catch (err) {
+        agent.add('error in after getting messages' + err);
+        console.log(err);
+    }
 
+}
+
+//count_single
+async function emailMessagesGetCountSingle() {
+    let jsonResult = await gmailOps.getMessagesWithLimit(1);
+    console.log(JSON.stringify(jsonResult));
+    var message = await gmailOps.getMessagesByMessageId(jsonResult.body.messages[0].id);
+    let operation = new Operations();
+    let msg = operation.getMsg(message);
+    var msgData = msg
+
+    agent.context.set({
+        'name': handling_mail_context,
+        'lifespan': default_context_life_span,
+        'parameters': {
+            'msg': msgData,
+            'message': message
+        }
+    });
+    agent.add(msgData.subject);
+}
+
+
+//count_many
+async function emailMessagesGetCountMany() {
+    var numberMaxResults = agent.parameters.number;
+    let jsonResult = await gmailOps.getMessages(auth, numberMaxResults);
+
+    switch (jsonResult.success) {
+        case 0:
+            agent.add(jsonResult.message);
+            break;
+        case 1:
+            agent.add(jsonResult.result.subject);
+            break;
+    }
+}
+
+//date contact_name
+async function emailMessagesGetDateContactName() {}
+
+//date count_single
+async function emailMessagesGetDateCountSingle() {}
+
+//date count_many
+async function emailMessagesGetDateCountMany() {}
+
+
+// contact_name count_single
+async function emailMessagesGetContactNameCountSingle(){}
+// contact_name count_many
+async function emailMessagesGetContactNameCountMany(){}
+
+
+//date contact_name count_single
+async function emailMessagesDateContactNameCountSingle() {}
+
+
+//date contact_name count_many
+async function emailMessagesDateContactNameCountMany() {}
+
+//handling subject
 async function emailSelecting() {
     let auth = await gmailOps.authorizeUser();
     let fromContext = agent.context.contexts.selecting_email_context.parameters.from
@@ -411,36 +440,7 @@ async function getMessagesFromSubject() {
     }
 
 }
-
-async function getMessagesLimitToNumber() {
-    var numberMaxResults = agent.parameters.number;
-    let jsonResult = await gmailOps.getMessages(auth, numberMaxResults);
-
-    switch (jsonResult.success) {
-        case 0:
-            agent.add(jsonResult.message);
-            break;
-        case 1:
-            agent.add(jsonResult.result.subject);
-            break;
-    }
-}
-
-async function emailMessageSendingReply() {
-    let auth = await gmailOps.authorizeUser()
-    let msg = agent.context.contexts.handling_mail_context.parameters.msg;
-    let message = agent.context.contexts.handling_mail_context.parameters.message;
-    if (message == null || message == 'undefined') {
-        // getting message with the id
-        let id = msg.id;
-        message = await gmailOps.getMessagesByMessageId(id);
-    }
-    let userReply = agent.parameters.reply;
-    console.log('message ' + message);
-    let reply = await gmailOps.sendingReply(auth, userReply, message);
-    agent.add(reply);
-}
-
+// handling mails
 async function emailMessageShowBody() {
     let msg = agent.context.contexts.handling_mail_context.parameters.msg
     let message = agent.context.contexts.handling_mail_context.parameters.message
@@ -524,6 +524,45 @@ async function emailMessageForward() {
     }
 
 
+}
+
+async function emailMessageSendingReply() {
+    let auth = await gmailOps.authorizeUser()
+    let msg = agent.context.contexts.handling_mail_context.parameters.msg;
+    let message = agent.context.contexts.handling_mail_context.parameters.message;
+    if (message == null || message == 'undefined') {
+        // getting message with the id
+        let id = msg.id;
+        message = await gmailOps.getMessagesByMessageId(id);
+    }
+    let userReply = agent.parameters.reply;
+    console.log('message ' + message);
+    let reply = await gmailOps.sendingReply(auth, userReply, message);
+    agent.add(reply);
+}
+
+
+
+async function emailMessagesGetDateInBetween() {
+    var start = agent.parameters.start;
+    var end = agent.parameters.end;
+    if (start) {
+        start = start.split("T")[0];
+    }
+    if (end) {
+        end = end.split("T")[0];
+    }
+    var operation = new Operations();
+    let jsonResult = await gmailOps.getMessagesByDateInBetween(start, end);
+    jsonResult = operation.prepareGettingIdsResposne(jsonResult);
+    let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
+    if (result.length > 0) {
+        result.forEach(element => {
+            agent.add(element.subject);
+        });
+    } else {
+        agent("there is no message with specified date");
+    }
 }
 
 module.exports = router;
