@@ -59,7 +59,7 @@ class Operations {
             });
         }
         return {
-            "id": jsonResult.body.messages[0].id,
+            "id": message.id,
             "deliveredTo": deliveredTo,
             "from": from,
             "subject": subject,
