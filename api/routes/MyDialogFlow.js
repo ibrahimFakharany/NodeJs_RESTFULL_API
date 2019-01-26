@@ -162,7 +162,6 @@ async function emailMessagesGet() {
     }
 
 }
-
 async function emailMessagesGetContactName() {
     var state = agent.parameters.state;
     var contact_name = agent.parameters.contact_name;
@@ -230,7 +229,6 @@ async function emailMessagesGetDate() {
     }
 
 }
-
 //count_single
 async function emailMessagesGetCountSingle() {
     let jsonResult = await gmailOps.getMessagesWithLimit(1);
@@ -250,8 +248,6 @@ async function emailMessagesGetCountSingle() {
     });
     agent.add(msgData.subject);
 }
-
-
 //count_many
 async function emailMessagesGetCountMany() {
     var numberMaxResults = agent.parameters.number;
@@ -266,31 +262,25 @@ async function emailMessagesGetCountMany() {
             break;
     }
 }
-
 //date contact_name
 async function emailMessagesGetDateContactName() {}
-
 //date count_single
 async function emailMessagesGetDateCountSingle() {}
-
 //date count_many
 async function emailMessagesGetDateCountMany() {}
-
-
 // contact_name count_single
 async function emailMessagesGetContactNameCountSingle(){}
 // contact_name count_many
 async function emailMessagesGetContactNameCountMany(){}
-
-
 //date contact_name count_single
 async function emailMessagesDateContactNameCountSingle() {}
-
-
 //date contact_name count_many
 async function emailMessagesDateContactNameCountMany() {}
 
-//handling subject
+
+
+
+//handling contacts
 async function emailSelecting() {
     let auth = await gmailOps.authorizeUser();
     let fromContext = agent.context.contexts.selecting_email_context.parameters.from
@@ -338,6 +328,9 @@ async function emailSelecting() {
 
 }
 
+
+
+//handling subject
 async function getMessagesFromSubject() {
     if (agent.context.contexts.get_body_of_message_by_subject.parameters.from == get_messages_context) {
         let messages = agent.context.contexts.get_body_of_message_by_subject.parameters.messages
@@ -440,6 +433,8 @@ async function getMessagesFromSubject() {
     }
 
 }
+
+
 // handling mails
 async function emailMessageShowBody() {
     let msg = agent.context.contexts.handling_mail_context.parameters.msg
@@ -468,7 +463,6 @@ async function emailMessageShowBody() {
         });
     }
 }
-
 async function emailMessageForward() {
     let from = agent.context.contexts.handling_mail_context.parameters.from
     let auth = await gmailOps.authorizeUser()
@@ -525,7 +519,6 @@ async function emailMessageForward() {
 
 
 }
-
 async function emailMessageSendingReply() {
     let auth = await gmailOps.authorizeUser()
     let msg = agent.context.contexts.handling_mail_context.parameters.msg;
@@ -540,7 +533,6 @@ async function emailMessageSendingReply() {
     let reply = await gmailOps.sendingReply(auth, userReply, message);
     agent.add(reply);
 }
-
 
 
 async function emailMessagesGetDateInBetween() {
