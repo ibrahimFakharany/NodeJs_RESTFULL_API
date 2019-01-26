@@ -38,7 +38,8 @@ router.post('/', (req, server_response, next) => {
     intentMap.set('email.messages.get.date.between', emailMessagesGetDateInBetween);
     intentMap.set('email.messages.get.contact_name', emailMessagesGetContactName);
     intentMap.set('email.messages.get.limit.number', getMessagesLimitToNumber);
-    intentMap.set('email.messages.get.contact_name.subject', getMessagesFromSubject);
+    // delete this intent 
+    // intentMap.set('email.messages.get.contact_name.subject', getMessagesFromSubject);
     intentMap.set('email.selecting', emailSelecting);
     intentMap.set('email.messages.send_reply', emailMessageSendingReply);
     intentMap.set('email.messages.get.count.single', emailMessagesGettingLastSingleMail);
