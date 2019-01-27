@@ -170,7 +170,7 @@ class GmailOperations {
     }
 
     // getting messages
-    async getMessages(auth, maxResult) {
+    async getMessages( maxResult) {
         let token = await this.getToken();
         if (maxResult == -1) {
             let promiseGlobal = new Promise((resolveGlobal, reject) => {
@@ -312,14 +312,14 @@ class GmailOperations {
 
 
         let emailList = await promise;
-        console.log('email list : '+emailList.length);
+        console.log('email list : ' + emailList.length);
 
         if (emailList.length > 1) {
             // show emails
             return {
-                "sent": 1, 
+                "sent": 1,
                 "emails": emailList
-         }
+            }
         } else if (emailList.length == 1) {
             // send email to that email
             return {
@@ -395,7 +395,7 @@ class GmailOperations {
         let token = await this.getToken();
         let promise = new Promise((resolve, reject) => {
             request('https://www.googleapis.com/gmail/v1/users/me/messages/' + id + '?access_token=' + token, { json: true }, (err, res, body) => {
-                if (err) { 
+                if (err) {
                     return console.log(err);
                 }
                 resolve(body);
@@ -484,7 +484,7 @@ class GmailOperations {
         let result = await this.sendMessage(auth, encodedResponse);
         return result;
     }
-    
+
     async forwardMessage(auth, message, emailTo, emailFrom) {
         console.log("this is message ");
         let subject = null;
@@ -495,20 +495,20 @@ class GmailOperations {
         });
         let part = null;
         let body = null;
-        let encodedMessage= null;
+        let encodedMessage = null;
         console.log(message.payload);
         if (message.payload.parts instanceof Array) {
             part = message.payload.parts[0];
             body = this.decodeMessageBody(part.body.data);
         } else {
-            body  =this.decodeMessageBody( message.payload.body.data);
+            body = this.decodeMessageBody(message.payload.body.data);
         }
-        console.log('body '+ body);
+        console.log('body ' + body);
         encodedMessage = this.makeBodyForForwarding(emailTo, emailFrom, subject, body);
         let result = await this.sendMessage(auth, encodedMessage);
         return result;
     }
-    
+
     async sendMessage(auth, message) {
         let gmail = google.gmail({ version: 'v1', auth });
         let promise = new Promise((resolve, reject) => {
@@ -526,7 +526,7 @@ class GmailOperations {
         let result = await promise;
         return result;
     }
-    
+
     makeBodyForForwarding(to, from, subject, message) {
         var str = ['Content-Type: ' + 'text/plain' + '; charset=\"UTF-8\"\n',
             "MIME-Version: 1.0\n",
@@ -560,6 +560,34 @@ class GmailOperations {
             .replace(/\+/g, '-')
             .replace(/\//g, '_');
         return encodedMail;
+    }
+
+    async queryMessages(date, name, state, count) {
+        let token = await this.getToken();
+        let dateParameter = ""
+        let nameParameter = ""
+        let countParameter = ""
+        if (date) {
+            dateParameter = `after:${date} `;
+        }
+        if (name) {
+            nameParameter = ` ${state}:${name}`;
+        }
+        if (count) {
+            countParameter = `&maxResults=${count}`;
+        }
+
+
+        let link= `https://www.googleapis.com/gmail/v1/users/me/messages?q=${dateParameter} ${nameParameter} ${countParameter}&access_token=${token}`;
+        let promise = new Promise((resolve, reject) =>{
+            request(link, { json: true }, (err, res, body) => {
+                if (err) { return console.log(err); }
+                resolve(body);
+            });
+        });
+        let result = await promise;
+        return result
+        
     }
 }
 module.exports = GmailOperations;

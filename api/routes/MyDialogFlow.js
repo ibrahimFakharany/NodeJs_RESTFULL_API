@@ -19,17 +19,25 @@ const handling_subject_context = "handling_subject";
 
 // intents names
 const emailMessagesGetText = 'email.messages.get';
-const emailMessagesGetDateText ='email.messages.get.date';
+const emailMessagesGetDateText = 'email.messages.get.date';
 const emailMessagesGetContactNameText = 'email.messages.get.contact_name';
-const emailMessagesGetCountSingleText= 'email.messages.get.count.single';
+const emailMessagesGetCountSingleText = 'email.messages.get.count.single';
 const emailMessagesGetCountManyText = 'email.messages.get.contact_name.count.many';
 const emailMessagesGetDateContactNameText = 'email.messages.get.date.contact_name'
 const emailMessagesGetContactNameCountSingleText = 'email.messages.get.contact_name.count.single';
 const emailMessagesGetContactNameCountManyText = 'email.messages.get.contact_name.count.many'
-const emailMessagesGetDateCountSingleText ='email.messages.get.date.count.single';
+const emailMessagesGetDateCountSingleText = 'email.messages.get.date.count.single';
 const emailMessagesGetDateCountManyText = 'email.messages.get.date.count.many';
 const emailMessagesGetDateContactNameCountSingleText = 'email.messages.get.date.contact_name.count.single';
-const emailMessagesGetDateContactNameCountManyText ='email.messages.get.date.contact_name.count.many'
+const emailMessagesGetDateContactNameCountManyText = 'email.messages.get.date.contact_name.count.many'
+//getting messages followup intents 
+const emailMessagesGetFollowupDateText = 'email.messages.get.followup.date'
+const emailMessagesGetFollowupContactNameText = ' email.messages.get.followup.contact_name'
+const emailMessagesGetFollowupCountText = 'email.messages.get.followup.count'
+const emailMessagesGetFollowupContactNameCountText = 'email.messages.get.followup.contact_name.count'
+const emailMessagesGetFollowupDateCountText = 'email.messages.get.followup.date.count'
+const emailMessagesGetFollowupDateContactNameText = 'email.messages.get.followup.date.contact_name'
+const emailMessagesGetFollowupDateContactNameCountText = 'email.messages.get.followup.date.contact_name.count'
 
 const default_context_life_span = 5
 const delete_context_life_span = 0
@@ -55,12 +63,22 @@ router.post('/', (req, server_response, next) => {
     intentMap.set(emailMessagesGetCountManyText, emailMessagesGetCountMany);
     // combinations methods
     intentMap.set(emailMessagesGetDateContactNameText, emailMessagesGetDateContactName);
-    intentMap.set(emailMessagesGetContactNameCountSingleText , emailMessagesGetContactNameCountSingle);
+    intentMap.set(emailMessagesGetContactNameCountSingleText, emailMessagesGetContactNameCountSingle);
     intentMap.set(emailMessagesGetContactNameCountManyText, emailMessagesGetContactNameCountMany);
     intentMap.set(emailMessagesGetDateCountSingleText, emailMessagesGetDateCountSingle);
     intentMap.set(emailMessagesGetDateCountManyText, emailMessagesGetDateCountMany);
     intentMap.set(emailMessagesGetDateContactNameCountSingleText, emailMessagesGetDateContactNameCountSingle);
     intentMap.set(emailMessagesGetDateContactNameCountManyText, emailMessagesGetDateContactNameCountMany);
+
+    //followup intents getting messages 
+
+    intentMap.set(emailMessagesGetFollowupDateText, emailMessagesGetFollowupDate);
+    intentMap.set(emailMessagesGetFollowupContactNameText, emailMessagesGetFollowupContactName);
+    intentMap.set(emailMessagesGetFollowupCountText, emailMessagesGetFollowupCount);
+    intentMap.set(emailMessagesGetFollowupContactNameCountText, emailMessagesGetFollowupContactNameCount);
+    intentMap.set(emailMessagesGetFollowupDateCountText, emailMessagesGetFollowupDateCount);
+    intentMap.set(emailMessagesGetFollowupDateContactNameText, emailMessagesGetFollowupDateContactName);
+    intentMap.set(emailMessagesGetFollowupDateContactNameCountText, emailMessagesGetFollowupDateContactNameCount);
 
     intentMap.set('email.messages.get.date.between', emailMessagesGetDateInBetween);
     intentMap.set('email.selecting', emailSelecting);
@@ -142,12 +160,16 @@ function handlingDefaultFallbackIntent() {
 
 
 // getting messages
+function setGetMessagesContext(){
+    agent.context.set({
+        'name': get_messages_context,
+        'lifespan': default_context_life_span,
+        'parameters': {}
+    });
+}
 async function emailMessagesGet() {
-    let auth = await gmailOps.authorizeUser();
-
     try {
-
-        let jsonResult = await gmailOps.getMessages(auth, -1);
+        let jsonResult = await gmailOps.getMessages(-1);
         let list = null;
         switch (jsonResult.success) {
             case 0:
@@ -167,7 +189,7 @@ async function emailMessagesGet() {
                     }
                 });
                 agent.context.set({
-                    'name':get_messages_context,
+                    'name': get_messages_context,
                     'lifespan': default_context_life_span,
                     'parameters': {
                         'from': emailMessagesGet,
@@ -184,6 +206,7 @@ async function emailMessagesGet() {
 
 }
 async function emailMessagesGetContactName() {
+    setGetMessagesContext();
     var state = agent.parameters.state;
     var contact_name = agent.parameters.contact_name;
     let response = await gmailOps.getContacts(contact_name);
@@ -227,11 +250,15 @@ async function emailMessagesGetContactName() {
 //date
 async function emailMessagesGetDate() {
     try {
+        this.setGetMessagesContext()
+        let contextParameters = agent.context.contexts.parameters
         var date = agent.parameters.date;
         var todayDate = null;
         var operation = new Operations();
         if (date) {
             todayDate = date.split("T")[0];
+            contextParameters.date = todayDate;
+
         }
         let jsonResult = await gmailOps.getMessagesByDate(todayDate);
         jsonResult = operation.prepareGettingIdsResposne(jsonResult);
@@ -241,12 +268,10 @@ async function emailMessagesGetDate() {
                 agent.add(element.subject);
             });
             agent.context.set({
-                'name':get_messages_context, 
+                'name': get_messages_context,
                 'lifespan': default_context_life_span,
-                'parameters': {
-                    'date': todayDate
-                }
-            })
+                'parameters': contextParameters
+            });
         } else {
             agent("there is no message with specified date");
         }
@@ -291,19 +316,45 @@ async function emailMessagesGetCountMany() {
     }
 }
 //date contact_name
-async function emailMessagesGetDateContactName() {}
+async function emailMessagesGetDateContactName() { }
 //date count_single
-async function emailMessagesGetDateCountSingle() {}
+async function emailMessagesGetDateCountSingle() { }
 //date count_many
-async function emailMessagesGetDateCountMany() {}
+async function emailMessagesGetDateCountMany() { }
 // contact_name count_single
-async function emailMessagesGetContactNameCountSingle(){}
+async function emailMessagesGetContactNameCountSingle() { }
 // contact_name count_many
-async function emailMessagesGetContactNameCountMany(){}
+async function emailMessagesGetContactNameCountMany() { }
 //date contact_name count_single
-async function emailMessagesGetDateContactNameCountSingle() {}
+async function emailMessagesGetDateContactNameCountSingle() { }
 //date contact_name count_many
-async function emailMessagesGetDateContactNameCountMany() {}
+async function emailMessagesGetDateContactNameCountMany() { }
+// followup Intents 
+async function emailMessagesGetFollowupDate() {
+    let parameters = agent.context.contexts.get_messages_context.parameters
+    let date = agent.parameters.date;
+    // set date in the context 
+    parameters.date = date
+    agent.context.set({
+        'name': get_messages_context,
+        'lifespan': default_context_life_span,
+        'parameters': parameters
+    });
+
+    // query
+    let contact_name = parameters.contact_name;
+    let state = parameters.state;
+    let count = parameters.count;
+    let result= await gmailOps.queryMessages(date,contact_name, state, count);
+    console.log(result);
+
+}
+async function emailMessagesGetFollowupContactName() { }
+async function emailMessagesGetFollowupCount() { }
+async function emailMessagesGetFollowupContactNameCount() { }
+async function emailMessagesGetFollowupDateCount() { }
+async function emailMessagesGetFollowupDateContactName() { }
+async function emailMessagesGetFollowupDateContactNameCount() { }
 
 
 //handling contacts
@@ -457,7 +508,6 @@ async function getMessagesFromSubject() {
     }
 
 }
-
 
 // handling mails
 async function emailMessageShowBody() {
