@@ -335,7 +335,7 @@ async function emailMessagesGetDateContactNameCountSingle() { }
 async function emailMessagesGetDateContactNameCountMany() { }
 // followup Intents 
 async function emailMessagesGetFollowupDate() {
-    let params = agent.context.contexts.get_messages_context.parameters
+    let params = agent.context.contexts.getting_mails.parameters
     let date = agent.parameters.date;
     // set date in the context 
     params.date = date
