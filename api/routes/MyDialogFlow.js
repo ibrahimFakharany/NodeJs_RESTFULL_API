@@ -163,7 +163,7 @@ function handlingDefaultFallbackIntent() {
 function setGetMessagesContext() {
     agent.context.set({
         'name': getting_mails,
-        'lifespan': default_context_life_span,
+        'lifespan': 0,
         'parameters': {}
     });
 }
