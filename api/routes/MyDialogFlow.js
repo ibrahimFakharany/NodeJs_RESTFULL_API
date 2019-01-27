@@ -403,6 +403,10 @@ async function emailMessagesGetFollowupCount() {
     let contact_name = params.contact_name;
     let result = await gmailOps.queryMessages(date, contact_name, state, count);
     console.log(result);
+    result = {
+        'data': result
+    }
+    result = await gmailOps.gettingListSubjectFromMessageId(result);
     result.forEach(element => {
         agent.add(element.subject);
     });
