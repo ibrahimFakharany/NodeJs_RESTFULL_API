@@ -205,7 +205,6 @@ async function emailMessagesGetContactName() {
 }
 //date
 async function emailMessagesGetDate() {
-    let auth = await gmailOps.authorizeUser();
     try {
         var date = agent.parameters.date;
         var todayDate = null;
@@ -220,9 +219,17 @@ async function emailMessagesGetDate() {
             result.forEach(element => {
                 agent.add(element.subject);
             });
+            agent.context.set({
+                'name':get_messages_context, 
+                'lifespan': default_context_life_span,
+                'parameters': {
+                    'date': todayDate
+                }
+            })
         } else {
             agent("there is no message with specified date");
         }
+
     } catch (err) {
         agent.add('error in after getting messages' + err);
         console.log(err);
@@ -278,8 +285,6 @@ async function emailMessagesDateContactNameCountSingle() {}
 async function emailMessagesDateContactNameCountMany() {}
 
 
-
-
 //handling contacts
 async function emailSelecting() {
     let auth = await gmailOps.authorizeUser();
@@ -327,8 +332,6 @@ async function emailSelecting() {
 
 
 }
-
-
 
 //handling subject
 async function getMessagesFromSubject() {
