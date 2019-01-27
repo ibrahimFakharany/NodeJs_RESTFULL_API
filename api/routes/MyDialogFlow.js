@@ -170,6 +170,7 @@ function setGetMessagesContext() {
 async function emailMessagesGet() {
     let auth = await gmailOps.authorizeUser();
     try {
+        setGetMessagesContext();
         let jsonResult = await gmailOps.getMessages(-1);
         let list = null;
         switch (jsonResult.success) {
@@ -189,11 +190,13 @@ async function emailMessagesGet() {
                         'messages': list
                     }
                 });
+                
                 agent.context.set({
                     'name': get_messages_context,
                     'lifespan': default_context_life_span,
                     'parameters': {
                         'from': emailMessagesGet,
+                        
                     }
                 })
 
