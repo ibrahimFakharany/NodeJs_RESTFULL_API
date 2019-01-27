@@ -569,6 +569,7 @@ class GmailOperations {
         let countParameter = ""
         let baseLink = "https://www.googleapis.com/gmail/v1/users/me/messages?q="
         if (date) {
+            date = date.split("T")[0];
             baseLink = baseLink + `after:${date} `;
         }
         if (name) {
