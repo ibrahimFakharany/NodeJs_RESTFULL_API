@@ -564,9 +564,6 @@ class GmailOperations {
 
     async queryMessages(date, name, state, count) {
         let token = await this.getToken();
-        let dateParameter = ""
-        let nameParameter = ""
-        let countParameter = ""
         let baseLink = "https://www.googleapis.com/gmail/v1/users/me/messages?q="
         if (date) {
             date = date.split("T")[0];

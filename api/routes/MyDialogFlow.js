@@ -255,7 +255,6 @@ async function emailMessagesGetContactName() {
 async function emailMessagesGetDate() {
     try {
         setGetMessagesContext();
-        
         var date = agent.parameters.date;
         var todayDate = null;
         var operation = new Operations();
@@ -353,7 +352,24 @@ async function emailMessagesGetFollowupDate() {
     console.log(result);
     agent.add(result);
 }
-async function emailMessagesGetFollowupContactName() { }
+async function emailMessagesGetFollowupContactName() {
+    let params = agent.context.contexts.getting_mails.parameters
+    let contact_name = agent.parameters.contact_name;
+    // set date in the context 
+    params.contact_name = contact_name
+    agent.context.set({
+        'name': getting_mails,
+        'lifespan': default_context_life_span,
+        'parameters': params
+    });
+
+    // query
+    let date = params.date;
+    let state = params.state;
+    let count = params.count;
+    let result = await gmailOps.queryMessages(date, contact_name, state, count);
+    console.log(result);
+    agent.add(result); }
 async function emailMessagesGetFollowupCount() { }
 async function emailMessagesGetFollowupContactNameCount() { }
 async function emailMessagesGetFollowupDateCount() { }
