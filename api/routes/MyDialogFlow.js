@@ -162,8 +162,9 @@ function handlingDefaultFallbackIntent() {
 // getting messages
 
 function deleteGetMessagesContext() {
-    agent.context.delete({
-        'name': getting_mails
+    agent.context.set({
+        'name': getting_mails,
+        'lifespan': 0
     });
 }
 function setGetMessagesContext() {
