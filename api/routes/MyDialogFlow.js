@@ -190,11 +190,9 @@ async function emailMessagesGet() {
                     }
                 });
 
-                agent.context.set({
-                    'name': getting_mails,
-                    'lifespan': default_context_life_span,
-                    'parameters': {}
-                });
+                agent.context.delete({
+                    'name': getting_mails
+                })
                 console.log('the get mails context setted');
                 break;
         }
