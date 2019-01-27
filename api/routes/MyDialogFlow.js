@@ -13,7 +13,7 @@ router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 // contexts names 
 const handling_mail_context = "handling_mails";
-const get_mails = "getting_mails";
+const getting_mails = "getting_mails";
 const get_contacts_context = "getting_contacts";
 const handling_subject_context = "handling_subject";
 
