@@ -160,7 +160,7 @@ function handlingDefaultFallbackIntent() {
 
 
 // getting messages
-function setGetMessagesContext(){
+function setGetMessagesContext() {
     agent.context.set({
         'name': get_messages_context,
         'lifespan': default_context_life_span,
@@ -169,9 +169,7 @@ function setGetMessagesContext(){
 }
 async function emailMessagesGet() {
     let auth = await gmailOps.authorizeUser();
-
     try {
-
         let jsonResult = await gmailOps.getMessages(-1);
         let list = null;
         switch (jsonResult.success) {
