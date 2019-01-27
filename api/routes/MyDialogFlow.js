@@ -200,7 +200,6 @@ async function emailMessagesGet() {
                     }
                 });
                 console.log('the get mails context setted');
-
                 break;
         }
 
