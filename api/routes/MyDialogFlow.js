@@ -161,10 +161,8 @@ function handlingDefaultFallbackIntent() {
 
 // getting messages
 function setGetMessagesContext() {
-    agent.context.set({
-        'name': getting_mails,
-        'lifespan': 0,
-        'parameters': {}
+    agent.context.delete({
+        'name': getting_mails
     });
 }
 async function emailMessagesGet() {
@@ -186,13 +184,16 @@ async function emailMessagesGet() {
                     'name': handling_subject_context,
                     'lifespan': default_context_life_span,
                     'parameters': {
+                        'fromIntent': emailMessagesGet,
                         'messages': list
                     }
                 });
 
-                agent.context.delete({
-                    'name': getting_mails
-                })
+                agent.context.set({
+                    'name': getting_mails,
+                    'lifespan': default_context_life_span,
+                    'parameters': {}
+                });
                 console.log('the get mails context setted');
                 break;
         }
