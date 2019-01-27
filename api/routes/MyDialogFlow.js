@@ -195,10 +195,10 @@ async function emailMessagesGet() {
                     'name': get_messages_context,
                     'lifespan': default_context_life_span,
                     'parameters': {
-                        'from': emailMessagesGet,
-                        
+                        'from': emailMessagesGet
                     }
-                })
+                });
+                console.log('the get mails context setted');
 
                 break;
         }
@@ -335,20 +335,20 @@ async function emailMessagesGetDateContactNameCountSingle() { }
 async function emailMessagesGetDateContactNameCountMany() { }
 // followup Intents 
 async function emailMessagesGetFollowupDate() {
-    let parameters = agent.context.contexts.get_messages_context.parameters
+    let params = agent.context.contexts.get_messages_context.parameters
     let date = agent.parameters.date;
     // set date in the context 
-    parameters.date = date
+    params.date = date
     agent.context.set({
         'name': get_messages_context,
         'lifespan': default_context_life_span,
-        'parameters': parameters
+        'parameters': params
     });
 
     // query
-    let contact_name = parameters.contact_name;
-    let state = parameters.state;
-    let count = parameters.count;
+    let contact_name = params.contact_name;
+    let state = params.state;
+    let count = params.count;
     let result = await gmailOps.queryMessages(date, contact_name, state, count);
     console.log(result);
 
