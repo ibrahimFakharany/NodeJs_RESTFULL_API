@@ -403,7 +403,9 @@ async function emailMessagesGetFollowupCount() {
     let contact_name = params.contact_name;
     let result = await gmailOps.queryMessages(date, contact_name, state, count);
     console.log(result);
-    agent.add('1-\r\n' + result);
+    result.forEach(element => {
+        agent.add(element.subject);
+    });
 }
 async function emailMessagesGetFollowupContactNameCount() { }
 async function emailMessagesGetFollowupDateCount() { }
