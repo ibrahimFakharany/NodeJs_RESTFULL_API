@@ -190,7 +190,7 @@ async function emailMessagesGet() {
                         'messages': list
                     }
                 });
-                
+
                 agent.context.set({
                     'name': getting_mails,
                     'lifespan': default_context_life_span,
@@ -350,6 +350,9 @@ async function emailMessagesGetFollowupDate() {
     let count = params.count;
     let result = await gmailOps.queryMessages(date, contact_name, state, count);
     console.log(result);
+    resut ={
+        'data': result.messages
+    }
     agent.add(result);
 }
 async function emailMessagesGetFollowupContactName() {
@@ -369,7 +372,8 @@ async function emailMessagesGetFollowupContactName() {
     let count = params.count;
     let result = await gmailOps.queryMessages(date, contact_name, state, count);
     console.log(result);
-    agent.add(result); }
+    agent.add(result);
+}
 async function emailMessagesGetFollowupCount() { }
 async function emailMessagesGetFollowupContactNameCount() { }
 async function emailMessagesGetFollowupDateCount() { }
