@@ -351,7 +351,7 @@ async function emailMessagesGetFollowupDate() {
     let result = await gmailOps.queryMessages(date, contact_name, state, count);
     console.log(result);
     result ={
-        'data': result.messages
+        'data': result
     }
     result = await gmailOps.gettingListSubjectFromMessageId(result);
     result.forEach(element => {
