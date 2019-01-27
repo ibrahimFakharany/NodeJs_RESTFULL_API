@@ -11,15 +11,28 @@ let auth = null
 var agent = null;
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
-// intents names 
-const choose_index_entity = "choose_index_entity";
-const selecting_email_context = "selecting_email_context";
+// contexts names 
 const handling_mail_context = "handling_mails";
 const get_messages_context = "getting_mails";
 const get_contacts_context = "getting_contacts";
 const handling_subject_context = "handling_subject";
-const get_body_of_message_by_subject = "get_body_of_message_by_subject";
+
+// intents names
+const emailMessagesGetText = 'email.messages.get';
+const emailMessagesGetDateText ='email.messages.get.date';
+const emailMessagesGetContactNameText = 'email.messages.get.contact_name';
+const emailMessagesGetCountSingleText= 'email.messages.get.count.single';
+const emailMessagesGetCountManyText = 'email.messages.get.contact_name.count.many';
+const emailMessagesGetDateContactNameText = 'email.messages.get.date.contact_name'
+const emailMessagesGetContactNameCountSingleText = 'email.messages.get.contact_name.count.single';
+const emailMessagesGetContactNameCountManyText = 'email.messages.get.contact_name.count.many'
+const emailMessagesGetDateCountSingleText ='email.messages.get.date.count.single';
+const emailMessagesGetDateCountManyText = 'email.messages.get.date.count.many';
+const emailMessagesGetDateContactNameCountSingleText = 'email.messages.get.date.contact_name.count.single';
+const emailMessagesGetDateContactNameCountManyText ='email.messages.get.date.contact_name.count.many'
+
 const default_context_life_span = 5
+const delete_context_life_span = 0
 
 router.post('/', (req, server_response, next) => {
 
@@ -35,19 +48,19 @@ router.post('/', (req, server_response, next) => {
     intentMap.set('email.selecting.index', sendingEmailAfterSelectingIndex);
     intentMap.set('Default Fallback Intent', handlingDefaultFallbackIntent);
     // getting messages
-    intentMap.set('email.messages.get', emailMessagesGet);
-    intentMap.set('email.messages.get.date', emailMessagesGetDate);
-    intentMap.set('email.messages.get.contact_name', emailMessagesGetContactName);
-    intentMap.set('email.messages.get.count.single', emailMessagesGetCountSingle);
-    intentMap.set('email.messages.get.count.many', emailMessagesGetCountMany);
-    // unhandeled methods 
-    intentMap.set('email.messages.get.date.contact_name', emailMessagesGetDateContactName);
-    intentMap.set('email.messages.get.contact_name.count.single', emailMessagesGetContactNameCountSingle);
-    intentMap.set('email.messages.get.contact_name.count.many', emailMessagesGetContactNameCountMany);
-    intentMap.set('email.messages.get.date.count.single', emailMessagesGetDateCountSingle);
-    intentMap.set('email.messages.get.date.count.many', emailMessagesGetDateCountMany);
-    intentMap.set('email.messages.get.date.contact_name.count.single', emailMessagesDateContactNameCountSingle);
-    intentMap.set('email.messages.get.date.contact_name.count.many', emailMessagesDateContactNameCountMany);
+    intentMap.set(emailMessagesGetText, emailMessagesGet);
+    intentMap.set(emailMessagesGetDateText, emailMessagesGetDate);
+    intentMap.set(emailMessagesGetContactNameText, emailMessagesGetContactName);
+    intentMap.set(emailMessagesGetCountSingleText, emailMessagesGetCountSingle);
+    intentMap.set(emailMessagesGetCountManyText, emailMessagesGetCountMany);
+    // combinations methods
+    intentMap.set(emailMessagesGetDateContactNameText, emailMessagesGetDateContactName);
+    intentMap.set(emailMessagesGetContactNameCountSingleText , emailMessagesGetContactNameCountSingle);
+    intentMap.set(emailMessagesGetContactNameCountManyText, emailMessagesGetContactNameCountMany);
+    intentMap.set(emailMessagesGetDateCountSingleText, emailMessagesGetDateCountSingle);
+    intentMap.set(emailMessagesGetDateCountManyText, emailMessagesGetDateCountMany);
+    intentMap.set(emailMessagesGetDateContactNameCountSingleText, emailMessagesGetDateContactNameCountSingle);
+    intentMap.set(emailMessagesGetDateContactNameCountManyText, emailMessagesGetDateContactNameCountMany);
 
     intentMap.set('email.messages.get.date.between', emailMessagesGetDateInBetween);
     intentMap.set('email.selecting', emailSelecting);
@@ -90,7 +103,7 @@ async function messageContactEmailSending() {
 
             agent.add(ress.emails);
             agent.context.set({
-                'name': choose_index_entity,
+                'name': get_contacts_context,
                 'lifespan': lifespan,
                 'parameters': {
                     'emails': ress.emails,
@@ -146,10 +159,10 @@ async function emailMessagesGet() {
                     agent.add(element.subject);
                 });
                 agent.context.set({
-                    'name': get_body_of_message_by_subject,
+                    'name': handling_subject_context,
                     'lifespan': default_context_life_span,
                     'parameters': {
-                        'from': get_messages_context,
+                        'from': emailMessagesGet,
                         'messages': list
                     }
                 });
@@ -157,8 +170,7 @@ async function emailMessagesGet() {
                     'name':get_messages_context,
                     'lifespan': default_context_life_span,
                     'parameters': {
-                        'from': get_messages_context,
-                        'messages': list
+                        'from': emailMessagesGet,
                     }
                 })
 
@@ -195,7 +207,7 @@ async function emailMessagesGetContactName() {
             let emails = response.emails;
             agent.add("which one did you mean?\n.. choose one by copy and pasting it in the message!");
             agent.context.set({
-                'name': selecting_email_context,
+                'name': get_contacts_context,
                 'lifespan': default_context_life_span,
                 'parameters': {
                     'from': get_messages_context,
@@ -289,9 +301,9 @@ async function emailMessagesGetContactNameCountSingle(){}
 // contact_name count_many
 async function emailMessagesGetContactNameCountMany(){}
 //date contact_name count_single
-async function emailMessagesDateContactNameCountSingle() {}
+async function emailMessagesGetDateContactNameCountSingle() {}
 //date contact_name count_many
-async function emailMessagesDateContactNameCountMany() {}
+async function emailMessagesGetDateContactNameCountMany() {}
 
 
 //handling contacts
@@ -329,7 +341,7 @@ async function emailSelecting() {
             'name': handling_mail_context,
             'lifespan': default_context_life_span,
             'parameters': {
-                'from': selecting_email_context,
+                'from': get_contacts_context,
                 'email': foundEmail,
                 'msg': msg,
                 'message': message
@@ -373,7 +385,7 @@ async function getMessagesFromSubject() {
                 agent.add(element.subject);
             });
             agent.context({
-                'name': get_body_of_message_by_subject,
+                'name': handling_subject_context,
                 'lifespan': default_context_life_span,
                 'parameters': {
                     'from': get_messages_context,
@@ -478,7 +490,7 @@ async function emailMessageShowBody() {
 async function emailMessageForward() {
     let from = agent.context.contexts.handling_mail_context.parameters.from
     let auth = await gmailOps.authorizeUser()
-    if (from == selecting_email_context) {
+    if (from == get_contacts_context) {
         let email = agent.context.contexts.handling_mail_context.parameters.email;
         let msg = agent.context.contexts.handling_mail_context.parameters.msg;
         let message = agent.context.contexts.handling_mail_context.parameters.message;
@@ -502,7 +514,7 @@ async function emailMessageForward() {
                 agent.add(element);
             });
             agent.context.set({
-                'name': selecting_email_context,
+                'name': get_contacts_context,
                 'lifespan': default_context_life_span,
                 'parameters': {
                     'from': handling_mail_context,
