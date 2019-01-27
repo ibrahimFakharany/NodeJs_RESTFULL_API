@@ -586,7 +586,7 @@ class GmailOperations {
             });
         });
         let result = await promise;
-        return result
+        return result 
         
     }
 }

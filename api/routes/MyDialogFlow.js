@@ -168,7 +168,10 @@ function setGetMessagesContext(){
     });
 }
 async function emailMessagesGet() {
+    let auth = await gmailOps.authorizeUser();
+
     try {
+
         let jsonResult = await gmailOps.getMessages(-1);
         let list = null;
         switch (jsonResult.success) {
@@ -206,7 +209,7 @@ async function emailMessagesGet() {
 
 }
 async function emailMessagesGetContactName() {
-    setGetMessagesContext();
+    this.setGetMessagesContext();
     var state = agent.parameters.state;
     var contact_name = agent.parameters.contact_name;
     let response = await gmailOps.getContacts(contact_name);
@@ -250,7 +253,7 @@ async function emailMessagesGetContactName() {
 //date
 async function emailMessagesGetDate() {
     try {
-        this.setGetMessagesContext()
+        setGetMessagesContext();
         let contextParameters = agent.context.contexts.parameters
         var date = agent.parameters.date;
         var todayDate = null;
@@ -345,8 +348,7 @@ async function emailMessagesGetFollowupDate() {
     let contact_name = parameters.contact_name;
     let state = parameters.state;
     let count = parameters.count;
-    let result= await gmailOps.queryMessages(date,contact_name, state, count);
-    console.log(result);
+    gmailOps.handle
 
 }
 async function emailMessagesGetFollowupContactName() { }
