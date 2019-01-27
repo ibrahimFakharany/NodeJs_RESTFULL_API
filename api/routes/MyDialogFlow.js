@@ -152,7 +152,16 @@ async function emailMessagesGet() {
                         'from': get_messages_context,
                         'messages': list
                     }
+                });
+                agent.context.set({
+                    'name':get_messages_context,
+                    'lifespan': default_context_life_span,
+                    'parameters': {
+                        'from': get_messages_context,
+                        'messages': list
+                    }
                 })
+
                 break;
         }
 
