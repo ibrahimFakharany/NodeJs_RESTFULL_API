@@ -378,7 +378,13 @@ async function emailMessagesGetFollowupContactName() {
     let count = params.count;
     let result = await gmailOps.queryMessages(date, contact_name, state, count);
     console.log(result);
-    agent.add(`1-\r\n`+result);
+    result ={
+        'data': result
+    }
+    result = await gmailOps.gettingListSubjectFromMessageId(result);
+    result.forEach(element => {
+        agent.add(element.subject);
+    });
 }
 async function emailMessagesGetFollowupCount() { 
     let params = agent.context.contexts.getting_mails.parameters
