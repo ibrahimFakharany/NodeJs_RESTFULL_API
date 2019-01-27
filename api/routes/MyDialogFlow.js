@@ -255,7 +255,7 @@ async function emailMessagesGetContactName() {
 async function emailMessagesGetDate() {
     try {
         setGetMessagesContext();
-        let contextParameters = agent.context.contexts.parameters
+        
         var date = agent.parameters.date;
         var todayDate = null;
         var operation = new Operations();
