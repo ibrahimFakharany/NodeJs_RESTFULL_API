@@ -177,6 +177,7 @@ async function emailMessagesGet() {
     let auth = await gmailOps.authorizeUser();
     try {
         deleteGetMessagesContext();
+
         let jsonResult = await gmailOps.getMessages(-1);
         let list = null;
         switch (jsonResult.success) {
@@ -197,11 +198,7 @@ async function emailMessagesGet() {
                     }
                 });
 
-                agent.context.set({
-                    'name': getting_mails,
-                    'lifespan': default_context_life_span,
-                    'parameters': {}
-                });
+                
                 console.log('the get mails context setted');
                 break;
         }
