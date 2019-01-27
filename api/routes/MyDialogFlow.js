@@ -195,7 +195,8 @@ async function emailMessagesGet() {
                     'name': get_messages_context,
                     'lifespan': default_context_life_span,
                     'parameters': {
-                        'fromIntent': emailMessagesGet
+                        'fromIntent': emailMessagesGet,
+                        'messages': list
                     }
                 });
                 console.log('the get mails context setted');
