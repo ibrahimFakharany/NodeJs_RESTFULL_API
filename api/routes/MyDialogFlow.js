@@ -346,7 +346,8 @@ async function emailMessagesGetFollowupDate() {
     let contact_name = parameters.contact_name;
     let state = parameters.state;
     let count = parameters.count;
-    gmailOps.handle
+    let result = await gmailOps.queryMessages(date, contact_name, state, count);
+    console.log(result);
 
 }
 async function emailMessagesGetFollowupContactName() { }
