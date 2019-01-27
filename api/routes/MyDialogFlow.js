@@ -13,7 +13,7 @@ router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 // contexts names 
 const handling_mail_context = "handling_mails";
-const get_messages_context = "getting_mails";
+const get_mails = "getting_mails";
 const get_contacts_context = "getting_contacts";
 const handling_subject_context = "handling_subject";
 
@@ -162,7 +162,7 @@ function handlingDefaultFallbackIntent() {
 // getting messages
 function setGetMessagesContext() {
     agent.context.set({
-        'name': get_messages_context,
+        'name': get_mails,
         'lifespan': default_context_life_span,
         'parameters': {}
     });
@@ -192,7 +192,7 @@ async function emailMessagesGet() {
                 });
                 
                 agent.context.set({
-                    'name': get_messages_context,
+                    'name': get_mails,
                     'lifespan': default_context_life_span,
                     'parameters': {
                         'fromIntent': emailMessagesGet,
@@ -237,7 +237,7 @@ async function emailMessagesGetContactName() {
                 'name': get_contacts_context,
                 'lifespan': default_context_life_span,
                 'parameters': {
-                    'from': get_messages_context,
+                    'from': get_mails,
                     'state': state,
                 }
             });
@@ -272,7 +272,7 @@ async function emailMessagesGetDate() {
                 agent.add(element.subject);
             });
             agent.context.set({
-                'name': get_messages_context,
+                'name': get_mails,
                 'lifespan': default_context_life_span,
                 'parameters': contextParameters
             });
@@ -340,7 +340,7 @@ async function emailMessagesGetFollowupDate() {
     // set date in the context 
     params.date = date
     agent.context.set({
-        'name': get_messages_context,
+        'name': getting_mails,
         'lifespan': default_context_life_span,
         'parameters': params
     });
@@ -365,7 +365,7 @@ async function emailMessagesGetFollowupDateContactNameCount() { }
 async function emailSelecting() {
     let auth = await gmailOps.authorizeUser();
     let fromContext = agent.context.contexts.selecting_email_context.parameters.from
-    if (fromContext == get_messages_context) {
+    if (fromContext == get_mails) {
         let state = agent.context.contexts.selecting_email_context.parameters.state
         let email = agent.parameters.email;
         var operation = new Operations();
@@ -411,7 +411,7 @@ async function emailSelecting() {
 
 //handling subject
 async function getMessagesFromSubject() {
-    if (agent.context.contexts.get_body_of_message_by_subject.parameters.from == get_messages_context) {
+    if (agent.context.contexts.get_body_of_message_by_subject.parameters.from == get_mails) {
         let messages = agent.context.contexts.get_body_of_message_by_subject.parameters.messages
         let subject = agent.parameters.subject;
         let id = null;
@@ -443,7 +443,7 @@ async function getMessagesFromSubject() {
                 'name': handling_subject_context,
                 'lifespan': default_context_life_span,
                 'parameters': {
-                    'from': get_messages_context,
+                    'from': get_mails,
                     'messages': messages
                 }
             });
