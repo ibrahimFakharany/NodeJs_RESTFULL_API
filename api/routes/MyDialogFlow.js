@@ -168,9 +168,9 @@ function deleteGetMessagesContext() {
 }
 function setGetMessagesContext() {
     agent.context.set({
-        'name': getting_mails, 
+        'name': getting_mails,
         'lifespan': default_context_life_span,
-        'parameters':{}
+        'parameters': {}
     });
 }
 async function emailMessagesGet() {
@@ -353,7 +353,7 @@ async function emailMessagesGetFollowupDate() {
     let count = params.count;
     let result = await gmailOps.queryMessages(date, contact_name, state, count);
     console.log(result);
-    result ={
+    result = {
         'data': result
     }
     result = await gmailOps.gettingListSubjectFromMessageId(result);
@@ -378,7 +378,7 @@ async function emailMessagesGetFollowupContactName() {
     let count = params.count;
     let result = await gmailOps.queryMessages(date, contact_name, state, count);
     console.log(result);
-    result ={
+    result = {
         'data': result
     }
     result = await gmailOps.gettingListSubjectFromMessageId(result);
@@ -386,7 +386,7 @@ async function emailMessagesGetFollowupContactName() {
         agent.add(element.subject);
     });
 }
-async function emailMessagesGetFollowupCount() { 
+async function emailMessagesGetFollowupCount() {
     let params = agent.context.contexts.getting_mails.parameters
     let count = agent.parameters.count;
     // set date in the context 
@@ -403,7 +403,7 @@ async function emailMessagesGetFollowupCount() {
     let contact_name = params.contact_name;
     let result = await gmailOps.queryMessages(date, contact_name, state, count);
     console.log(result);
-    agent.add("1-\r\n"+result);
+    agent.add('1-\r\n' + result);
 }
 async function emailMessagesGetFollowupContactNameCount() { }
 async function emailMessagesGetFollowupDateCount() { }
