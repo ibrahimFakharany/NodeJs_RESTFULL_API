@@ -170,7 +170,7 @@ class GmailOperations {
     }
 
     // getting messages
-    async getMessages( maxResult) {
+    async getMessages(maxResult) {
         let token = await this.getToken();
         if (maxResult == -1) {
             let promiseGlobal = new Promise((resolveGlobal, reject) => {
@@ -567,27 +567,27 @@ class GmailOperations {
         let dateParameter = ""
         let nameParameter = ""
         let countParameter = ""
+        let baseLink = "https://www.googleapis.com/gmail/v1/users/me/messages?q="
         if (date) {
-            dateParameter = `after:${date} `;
+            baseLink = baseLink + `after:${date} `;
         }
         if (name) {
-            nameParameter = ` ${state}:${name}`;
+            baseLink = baseLink + ` ${state}:${name}`;
         }
         if (count) {
-            countParameter = `&maxResults=${count}`;
+            baseLink = baseLink + `&maxResults=${count}`;
         }
-
-
-        let link= `https://www.googleapis.com/gmail/v1/users/me/messages?q=${dateParameter} ${nameParameter} ${countParameter}&access_token=${token}`;
-        let promise = new Promise((resolve, reject) =>{
+        let link = `${baseLink}&access_token=${token}`;
+        console.log(link);
+        let promise = new Promise((resolve, reject) => {
             request(link, { json: true }, (err, res, body) => {
                 if (err) { return console.log(err); }
                 resolve(body);
             });
         });
         let result = await promise;
-        return result 
-        
+        return result
+
     }
 }
 module.exports = GmailOperations;
