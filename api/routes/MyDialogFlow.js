@@ -213,7 +213,7 @@ async function emailMessagesGet() {
 
 }
 async function emailMessagesGetContactName() {
-    setGetMessagesContext();
+    deleteGetMessagesContext();
     var state = agent.parameters.state;
     var contact_name = agent.parameters.contact_name;
     let response = await gmailOps.getContacts(contact_name);
@@ -228,9 +228,17 @@ async function emailMessagesGetContactName() {
                 result.forEach(element => {
                     agent.add(element.subject);
                 });
+                agent.context.set({
+                    'name': handling_mail_context,
+                    'lifespan': default_context_life_span,
+                    'parameters': {
+                        'result': result
+                    }
+                });
             } else {
                 agent.add("there is no messages for specified contact");
             }
+            
             break;
         case 1:
             // show these emails to user to select one
