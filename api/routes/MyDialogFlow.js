@@ -82,6 +82,8 @@ router.post('/', (req, server_response, next) => {
     intentMap.set(emailMessagesGetFollowupDateContactNameText, emailMessagesGetFollowupDateContactName);
     intentMap.set(emailMessagesGetFollowupDateContactNameCountText, emailMessagesGetFollowupDateContactNameCount);
 
+
+    intentMap.set(emailMessagesShowBody, emailMessageShowBody)
     intentMap.set('email.messages.get.date.between', emailMessagesGetDateInBetween);
     intentMap.set('email.selecting', emailSelecting);
     intentMap.set('email.messages.send_reply', emailMessageSendingReply);
