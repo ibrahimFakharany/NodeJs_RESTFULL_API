@@ -596,12 +596,12 @@ async function emailMessageShowBody() {
     }
 }
 async function emailMessageForward() {
-    let from = agent.context.contexts.handling_mail_context.parameters.from
+    let from = agent.context.contexts.handling_mails.parameters.from
     let auth = await gmailOps.authorizeUser()
     if (from == get_contacts_context) {
-        let email = agent.context.contexts.handling_mail_context.parameters.email;
-        let msg = agent.context.contexts.handling_mail_context.parameters.msg;
-        let message = agent.context.contexts.handling_mail_context.parameters.message;
+        let email = agent.context.contexts.handling_mails.parameters.email;
+        let msg = agent.context.contexts.handling_mails.parameters.msg;
+        let message = agent.context.contexts.handling_mails.parameters.message;
         if (message == null || typeof message === 'undefined') {
             // getting the message by the id
             let id = msg.id;
@@ -611,8 +611,8 @@ async function emailMessageForward() {
         }
     } else {
         //from is undefined or from another context 
-        let msg = agent.context.contexts.handling_mail_context.parameters.msg
-        let message = agent.context.contexts.handling_mail_context.parameters.message
+        let msg = agent.context.contexts.handling_mails.parameters.msg
+        let message = agent.context.contexts.handling_mails.parameters.message
         let email = agent.parameters.email;
         console.log(email);
         let contacts = await gmailOps.getContacts(email);
