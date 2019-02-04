@@ -31,7 +31,7 @@ const emailMessagesGetDateCountManyText = 'email.messages.get.date.count.many';
 const emailMessagesGetDateContactNameCountSingleText = 'email.messages.get.date.contact_name.count.single';
 const emailMessagesGetDateContactNameCountManyText = 'email.messages.get.date.contact_name.count.many'
 const emailMessagesShowBody = "email.messages.showBody";
-const emailMessagesShowBodyFromList = "email.messages.show_body_from_list";
+const emailMessagesShowBodyFromListText = "email.messages.show_body_from_list";
 
 
 //getting messages followup intents 
@@ -85,7 +85,7 @@ router.post('/', (req, server_response, next) => {
     intentMap.set(emailMessagesGetFollowupDateContactNameCountText, emailMessagesGetFollowupDateContactNameCount);
 
     intentMap.set(emailMessagesShowBody, emailMessageShowBody)
-    intentMap.set(emailMessagesShowBodyFromList, emailMessageShowBody)
+    intentMap.set(emailMessagesShowBodyFromListText, emailMessagesShowBodyFromList)
 
     intentMap.set('email.messages.get.date.between', emailMessagesGetDateInBetween);
     intentMap.set('email.selecting', emailSelecting);
