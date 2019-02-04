@@ -637,8 +637,6 @@ async function emailMessagesShowBodyFromList() {
     }else {
         agent.add("please select a valid message");
     }
-    
-
 }
 async function emailMessageForward() {
     let from = agent.context.contexts.handling_mails.parameters.from
