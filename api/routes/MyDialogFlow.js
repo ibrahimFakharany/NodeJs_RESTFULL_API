@@ -164,7 +164,6 @@ function handlingDefaultFallbackIntent() {
 
 
 // getting messages
-
 function deleteGetMessagesContext() {
     agent.context.set({
         'name': getting_mails,
