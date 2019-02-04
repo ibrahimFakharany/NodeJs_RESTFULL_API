@@ -573,8 +573,8 @@ async function getMessagesFromSubject() {
 
 // handling mails
 async function emailMessageShowBody() {
-    let msg = agent.context.contexts.handling_mail_context.parameters.msg
-    let message = agent.context.contexts.handling_mail_context.parameters.message
+    let msg = agent.context.contexts.handling_mails.parameters.msg
+    let message = agent.context.contexts.handling_mails.parameters.message
     let body = msg.body;
     if (body == null) {
         agent.add("No body to show, this might because the body is html page that couldn't or there is no body in the message");
