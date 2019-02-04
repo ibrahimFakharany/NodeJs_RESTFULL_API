@@ -30,8 +30,8 @@ const emailMessagesGetDateCountSingleText = 'email.messages.get.date.count.singl
 const emailMessagesGetDateCountManyText = 'email.messages.get.date.count.many';
 const emailMessagesGetDateContactNameCountSingleText = 'email.messages.get.date.contact_name.count.single';
 const emailMessagesGetDateContactNameCountManyText = 'email.messages.get.date.contact_name.count.many'
-const emailMessagesShowBody= "email.messages.showBody";
-const emailMessagesShowBodyFromList= "email.messages.show_body_from_list";
+const emailMessagesShowBody = "email.messages.showBody";
+const emailMessagesShowBodyFromList = "email.messages.show_body_from_list";
 
 
 //getting messages followup intents 
@@ -205,7 +205,7 @@ async function emailMessagesGet() {
                     }
                 });
 
-                
+
                 console.log('the get mails context setted');
                 break;
         }
@@ -242,7 +242,7 @@ async function emailMessagesGetContactName() {
             } else {
                 agent.add("there is no messages for specified contact");
             }
-            
+
             break;
         case 1:
             // show these emails to user to select one
@@ -334,7 +334,7 @@ async function emailMessagesGetCountMany() {
     }
 }
 //date contact_name
-async function emailMessagesGetDateContactName() { 
+async function emailMessagesGetDateContactName() {
 
 }
 //date count_single
@@ -613,14 +613,19 @@ async function emailMessageShowBody() {
 }
 async function emailMessagesShowBodyFromList() {
     let result = agent.context.contexts.handling_mails.parameters.result
-    let subject  = agent.parameters.subject
-    result.forEach(element=>{
-        if(element.subject =subject){
-            var id = element.id
+    let subject = agent.parameters.subject
+    let id = null;
+    result.forEach(element => {
+        if (element.subject = subject) {
+            id = element.id
         }
     })
-    if (body == null) {
-        agent.add("No body to show, this might because the body is html page that couldn't or there is no body in the message");
+
+    if(id!= null){
+        let message = await gmailOps.getMessagesByMessageId(id);
+        var operation = new Operations();
+        let msg = operation.getMsg(message);
+        agent.add(msg.subject);
         agent.context.set({
             'name': handling_mail_context,
             'lifespan': default_context_life_span,
@@ -629,18 +634,11 @@ async function emailMessagesShowBodyFromList() {
                 'message': message
             }
         });
-    } else {
-        agent.add(gmailOps.decodeMessageBody(body));
-        msg.body = body;
-        agent.context.set({
-            'name': handling_mail_context,
-            'lifespan': default_context_life_span,
-            'parameters': {
-                'msg': msg,
-                'message': message
-            }
-        });
+    }else {
+        agent.add("please select a valid message");
     }
+    
+
 }
 async function emailMessageForward() {
     let from = agent.context.contexts.handling_mails.parameters.from
