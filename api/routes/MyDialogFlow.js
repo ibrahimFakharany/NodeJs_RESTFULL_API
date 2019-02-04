@@ -616,7 +616,7 @@ async function emailMessagesShowBodyFromList() {
     let subject = agent.parameters.subject
     let id = null;
     result.forEach(element => {
-        if (element.subject = subject) {
+        if (element.subject.toString().toUpperCase() == subject.toString().toUpperCase()) {
             id = element.id
         }
     })
