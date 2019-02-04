@@ -30,6 +30,8 @@ const emailMessagesGetDateCountSingleText = 'email.messages.get.date.count.singl
 const emailMessagesGetDateCountManyText = 'email.messages.get.date.count.many';
 const emailMessagesGetDateContactNameCountSingleText = 'email.messages.get.date.contact_name.count.single';
 const emailMessagesGetDateContactNameCountManyText = 'email.messages.get.date.contact_name.count.many'
+const emailMessagesShowBody= "email.messages.showBody";
+
 //getting messages followup intents 
 const emailMessagesGetFollowupDateText = 'email.messages.get.followup.date'
 const emailMessagesGetFollowupContactNameText = 'email.messages.get.followup.contact_name'
