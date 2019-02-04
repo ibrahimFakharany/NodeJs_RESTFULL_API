@@ -87,7 +87,7 @@ router.post('/', (req, server_response, next) => {
     intentMap.set(emailMessagesShowBody, emailMessageShowBody)
     intentMap.set(emailMessagesShowBodyFromListText, emailMessagesShowBodyFromList)
 
-    intentMap.set('email.messages.get.date.between', emailMessagesGetDateInBetween);
+    // intentMap.set('email.messages.get.date.between', emailMessagesGetDateInBetween);
     intentMap.set('email.selecting', emailSelecting);
     intentMap.set('email.messages.send_reply', emailMessageSendingReply);
     intentMap.set('email.message.show_body', emailMessageShowBody);
@@ -709,28 +709,24 @@ async function emailMessageSendingReply() {
     let reply = await gmailOps.sendingReply(auth, userReply, message);
     agent.add(reply);
 }
-
-
-async function emailMessagesGetDateInBetween() {
-    var start = agent.parameters.start;
-    var end = agent.parameters.end;
-    if (start) {
-        start = start.split("T")[0];
-    }
-    if (end) {
-        end = end.split("T")[0];
-    }
-    var operation = new Operations();
-    let jsonResult = await gmailOps.getMessagesByDateInBetween(start, end);
-    jsonResult = operation.prepareGettingIdsResposne(jsonResult);
-    let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
-    if (result.length > 0) {
-        result.forEach(element => {
-            agent.add(element.subject);
-        });
-    } else {
-        agent("there is no message with specified date");
-    }
-}
+// async function emailMessagesGetDateInBetween() {
+//     var start = agent.parameters.start;
+//     var end = agent.parameters.end;
+//     if (start) {
+//         start = start.split("T")[0];
+//     }
+//     if (end) {
+//         end = end.split("T")[0];
+//     }
+//     var operation = new Operations();
+//     let jsonResult = await gmailOps.getMessagesByDateInBetween(start, end);
+//     jsonResult = operation.prepareGettingIdsResposne(jsonResult);
+//     let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
+//     if (result.length > 0) {
+//         result.forEach(element => {
+//             agent.add(element.subject);
+//         });
+//     } else {
+//         agent("there is no 
 
 module.exports = router;
