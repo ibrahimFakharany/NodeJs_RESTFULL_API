@@ -31,6 +31,8 @@ const emailMessagesGetDateCountManyText = 'email.messages.get.date.count.many';
 const emailMessagesGetDateContactNameCountSingleText = 'email.messages.get.date.contact_name.count.single';
 const emailMessagesGetDateContactNameCountManyText = 'email.messages.get.date.contact_name.count.many'
 const emailMessagesShowBody= "email.messages.showBody";
+const emailMessagesShowBodyFromList= "email.messages.show_body_from_list";
+
 
 //getting messages followup intents 
 const emailMessagesGetFollowupDateText = 'email.messages.get.followup.date'
@@ -83,6 +85,8 @@ router.post('/', (req, server_response, next) => {
     intentMap.set(emailMessagesGetFollowupDateContactNameCountText, emailMessagesGetFollowupDateContactNameCount);
 
     intentMap.set(emailMessagesShowBody, emailMessageShowBody)
+    intentMap.set(emailMessagesShowBodyFromList, emailMessageShowBody)
+
     intentMap.set('email.messages.get.date.between', emailMessagesGetDateInBetween);
     intentMap.set('email.selecting', emailSelecting);
     intentMap.set('email.messages.send_reply', emailMessageSendingReply);
@@ -584,6 +588,37 @@ async function emailMessageShowBody() {
     let msg = agent.context.contexts.handling_mails.parameters.msg
     let message = agent.context.contexts.handling_mails.parameters.message
     let body = msg.body;
+    if (body == null) {
+        agent.add("No body to show, this might because the body is html page that couldn't or there is no body in the message");
+        agent.context.set({
+            'name': handling_mail_context,
+            'lifespan': default_context_life_span,
+            'parameters': {
+                'msg': msg,
+                'message': message
+            }
+        });
+    } else {
+        agent.add(gmailOps.decodeMessageBody(body));
+        msg.body = body;
+        agent.context.set({
+            'name': handling_mail_context,
+            'lifespan': default_context_life_span,
+            'parameters': {
+                'msg': msg,
+                'message': message
+            }
+        });
+    }
+}
+async function emailMessagesShowBodyFromList() {
+    let result = agent.context.contexts.handling_mails.parameters.result
+    let subject  = agent.parameters.subject
+    result.forEach(element=>{
+        if(element.subject =subject){
+            var id = element.id
+        }
+    })
     if (body == null) {
         agent.add("No body to show, this might because the body is html page that couldn't or there is no body in the message");
         agent.context.set({
