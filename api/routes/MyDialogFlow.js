@@ -82,7 +82,6 @@ router.post('/', (req, server_response, next) => {
     intentMap.set(emailMessagesGetFollowupDateContactNameText, emailMessagesGetFollowupDateContactName);
     intentMap.set(emailMessagesGetFollowupDateContactNameCountText, emailMessagesGetFollowupDateContactNameCount);
 
-
     intentMap.set(emailMessagesShowBody, emailMessageShowBody)
     intentMap.set('email.messages.get.date.between', emailMessagesGetDateInBetween);
     intentMap.set('email.selecting', emailSelecting);
@@ -214,7 +213,7 @@ async function emailMessagesGet() {
 
 }
 async function emailMessagesGetContactName() {
-    this.setGetMessagesContext();
+    setGetMessagesContext();
     var state = agent.parameters.state;
     var contact_name = agent.parameters.contact_name;
     let response = await gmailOps.getContacts(contact_name);
@@ -324,7 +323,7 @@ async function emailMessagesGetCountMany() {
 }
 //date contact_name
 async function emailMessagesGetDateContactName() { 
-    
+
 }
 //date count_single
 async function emailMessagesGetDateCountSingle() { }
