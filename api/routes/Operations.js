@@ -47,6 +47,7 @@ class Operations {
         if (subject == '') {
             subject = 'no subject'
         }
+        var id = message.id
         let mimeType = message.payload.mimeType;
         if (message.payload.mimeType == "text/html") {
             body = null;
@@ -59,7 +60,7 @@ class Operations {
             });
         }
         return {
-            "id": message.id,
+            "id": id,
             "deliveredTo": deliveredTo,
             "from": from,
             "subject": subject,
