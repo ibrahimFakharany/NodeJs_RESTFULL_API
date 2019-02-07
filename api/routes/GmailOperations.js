@@ -25,10 +25,10 @@ class GmailOperations {
     async getNewToken(oAuth2Client) {
 
         const authUrl = oAuth2Client.generateAuthUrl({
-            access_type: 'offline',
+            access_type: 'online',
             scope: SCOPES,
         });
-
+        
         console.log('Authorize this app by visiting this url:', authUrl);
         const rl = readline.createInterface({
             input: process.stdin,
