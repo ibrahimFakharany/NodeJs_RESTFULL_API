@@ -22,7 +22,7 @@ class GmailOperations {
         this.agent = agent;
     }
     // authroization
-    async  getNewToken(oAuth2Client) {
+    async getNewToken(oAuth2Client) {
 
         const authUrl = oAuth2Client.generateAuthUrl({
             access_type: 'offline',
