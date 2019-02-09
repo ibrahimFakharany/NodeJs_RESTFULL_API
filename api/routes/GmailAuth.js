@@ -21,7 +21,12 @@ class GmailAuth {
     }
 
     // authroization
-    async getNewToken(oAuth2Client) {
+    async getNewToken() {
+        let con = await this.getCredentials();
+        con = JSON.parse(con);
+        const { client_secret, client_id, redirect_uris } = con.installed;
+        const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+       
         const authUrl = oAuth2Client.generateAuthUrl({
             access_type: 'online',
             scope: SCOPES,
@@ -108,7 +113,7 @@ class GmailAuth {
                 if (err || jToken.expiry_date < time) {
                     resolve({
                         'status': 2,
-                        'data':  await this.getNewToken(oAuth2Client), 
+                        'data':  await this.getNewToken(), 
                            
                     })
                 }
