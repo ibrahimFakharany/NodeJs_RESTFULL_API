@@ -173,7 +173,7 @@ async function emailMessagesGet() {
                     });
                     agent.context.set({
                         'name': Constants.handling_subject_context,
-                        'lifespan': default_context_life_span,
+                        'lifespan': Constants.default_context_life_span,
                         'parameters': {
                             'fromIntent': Constants.emailMessagesGetText,
                             'messages': list
