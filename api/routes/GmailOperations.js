@@ -29,25 +29,12 @@ class GmailOperations {
             scope: SCOPES,
         });
 
-        agent.add(authUrl);
-        agent.context.set({
+        this.agent.add(authUrl);
+        this.agent.context.set({
             "name": "handling_registration",
             "lifespan": 1
         });
-        // console.log('Authorize this app by visiting this url:', authUrl);
-        // const rl = readline.createInterface({
-        //     input: process.stdin,
-        //     output: process.stdout,
-        // });
-        // let codePromise = new Promise((resolve, reject) => {
-        //     rl.question('Enter the code from that page here: ', (code) => {
-        //         rl.close();
-        //         resolve(code);
-        //     });
-        // });
-        // let code = await codePromise;
-
-        
+       
 
         
     }
@@ -111,7 +98,6 @@ class GmailOperations {
                 let time = new Date().getTime();
                 if (err ||JSON.parse(token).expiry_date <time ) return resolve(await this.getNewToken(oAuth2Client));
                 oAuth2Client.setCredentials(JSON.parse(token));
-                console.log('authentication in authorize method in callback ---> ' + typeof oAuth2Client);
                 resolve(oAuth2Client);
             });
         });
