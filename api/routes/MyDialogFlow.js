@@ -172,10 +172,10 @@ async function emailMessagesGet() {
                         agent.add(element.subject);
                     });
                     agent.context.set({
-                        'name': handling_subject_context,
+                        'name': Context.handling_subject_context,
                         'lifespan': default_context_life_span,
                         'parameters': {
-                            'fromIntent': emailMessagesGet,
+                            'fromIntent': Context.emailMessagesGet,
                             'messages': list
                         }
                     });
