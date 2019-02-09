@@ -119,6 +119,7 @@ class GmailOperations {
         return google.gmail({ version: 'v1', auth });
     }
     async getToken() {
+        console.log("get token method");
         let con = await this.getCredentials();
         con = JSON.parse(con);
         const { client_secret, client_id, redirect_uris } = con.installed;

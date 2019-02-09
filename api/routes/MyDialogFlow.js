@@ -190,7 +190,6 @@ function setGetMessagesContext() {
     });
 }
 async function emailMessagesGet() {
-    let auth = await gmailOps.authorizeUser();
     try {
         deleteGetMessagesContext();
 
