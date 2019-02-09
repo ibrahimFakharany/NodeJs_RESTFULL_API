@@ -69,7 +69,7 @@ router.post('/', (req, server_response, next) => {
 async function handlingUserRegistration() {
     let code = agent.parameters.code
     agent.add("you entered ", code);
-    let auth = await gmailOps.getAuthObjectFromCode(code);
+    let auth = await gmailAuth.getAuthObjectFromCode(code);
 
 }
 
