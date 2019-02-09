@@ -54,7 +54,7 @@ class GmailOperations {
             fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
                 if (err) reject(error);
                 else {
-                    console.log('Token stored to', TOKEN_PATH);
+                    this.agent.add("token stored");
                     resolve(oAuth2Client);
                 }
             });
