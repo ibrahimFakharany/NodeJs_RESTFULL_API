@@ -34,18 +34,42 @@ class GmailOperations {
             "name": "handling_registration",
             "lifespan": 1
         });
-        // console.log('Authorize this app by visiting this url:', authUrl);
-        // const rl = readline.createInterface({
-        //     input: process.stdin,
-        //     output: process.stdout,
-        // });
-        // let codePromise = new Promise((resolve, reject) => {
-        //     rl.question('Enter the code from that page here: ', (code) => {
-        //         rl.close();
-        //         resolve(code);
-        //     });
-        // });
-        // let code = await codePromise;
+        console.log('Authorize this app by visiting this url:', authUrl);
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout,
+        });
+        let codePromise = new Promise((resolve, reject) => {
+            rl.question('Enter the code from that page here: ', (code) => {
+                rl.close();
+                resolve(code);
+            });
+        });
+        let code = await codePromise;
+
+        let tokenPromise = new Promise((resolve, reject) => {
+            oAuth2Client.getToken(code, async (err, token) => {
+
+                if (err) reject('Error retrieving access token');
+                else {
+                    oAuth2Client.setCredentials(token);
+                    // Store the token to disk for later program executions
+                    resolve(token);
+                }
+            });
+        });
+        let token = await tokenPromise;
+        let authPromise = new Promise((resolve, reject) => {
+            fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
+                if (err) reject(error);
+                else {
+                    console.log('Token stored to', TOKEN_PATH);
+                    resolve(oAuth2Client);
+                }
+            });
+        });
+        let auth = await authPromise;
+        return auth;
 
         
     }

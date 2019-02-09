@@ -97,7 +97,7 @@ router.post('/', (req, server_response, next) => {
 });
 
 
-function handlingUserRegistration() {
+async function handlingUserRegistration() {
     let code = agent.parameters.code
     let auth = await gmailOps.getAuthObjectFromCode(code);
         
