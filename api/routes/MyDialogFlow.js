@@ -16,6 +16,7 @@ const handling_mail_context = "handling_mails";
 const getting_mails = "getting_mails";
 const get_contacts_context = "getting_contacts";
 const handling_subject_context = "handling_subject";
+const handling_registration_context = "handling_registration";
 
 // intents names
 const emailMessagesGetText = 'email.messages.get';
@@ -32,7 +33,7 @@ const emailMessagesGetDateContactNameCountSingleText = 'email.messages.get.date.
 const emailMessagesGetDateContactNameCountManyText = 'email.messages.get.date.contact_name.count.many'
 const emailMessagesShowBody = "email.messages.showBody";
 const emailMessagesShowBodyFromListText = "email.messages.show_body_from_list";
-
+const userRegistrationText = "user.registration";
 
 //getting messages followup intents 
 const emailMessagesGetFollowupDateText = 'email.messages.get.followup.date'
@@ -86,7 +87,7 @@ router.post('/', (req, server_response, next) => {
 
     intentMap.set(emailMessagesShowBody, emailMessageShowBody)
     intentMap.set(emailMessagesShowBodyFromListText, emailMessagesShowBodyFromList)
-
+    intentMap.set(userRegistrationText, handlingUserRegistration);
     // intentMap.set('email.messages.get.date.between', emailMessagesGetDateInBetween);
     intentMap.set('email.selecting', emailSelecting);
     intentMap.set('email.messages.send_reply', emailMessageSendingReply);
@@ -94,6 +95,14 @@ router.post('/', (req, server_response, next) => {
     intentMap.set('email.message.forward', emailMessageForward);
     agent.handleRequest(intentMap);
 });
+
+
+function handlingUserRegistration() {
+    let code = agent.parameters.code
+    let auth = await gmailOps.getAuthObjectFromCode(code);
+        
+}
+
 //sending email
 async function fullAddressEmailSending() {
     let auth = await gmailOps.authorizeUser()
@@ -621,7 +630,7 @@ async function emailMessagesShowBodyFromList() {
         }
     })
 
-    if(id!= null){
+    if (id != null) {
         let message = await gmailOps.getMessagesByMessageId(id);
         var operation = new Operations();
         let msg = operation.getMsg(message);
@@ -635,7 +644,7 @@ async function emailMessagesShowBodyFromList() {
                 'message': message
             }
         });
-    }else {
+    } else {
         agent.add("please select a valid message");
     }
 }

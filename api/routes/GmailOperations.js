@@ -28,20 +28,28 @@ class GmailOperations {
             access_type: 'online',
             scope: SCOPES,
         });
-        
-        console.log('Authorize this app by visiting this url:', authUrl);
-        const rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout,
-        });
-        let codePromise = new Promise((resolve, reject) => {
-            rl.question('Enter the code from that page here: ', (code) => {
-                rl.close();
-                resolve(code);
-            });
-        });
-        let code = await codePromise;
 
+        agent.add(authUrl);
+        agent.context.set({
+            "name": "handling_registration",
+            "lifespan": 1
+        });
+        // console.log('Authorize this app by visiting this url:', authUrl);
+        // const rl = readline.createInterface({
+        //     input: process.stdin,
+        //     output: process.stdout,
+        // });
+        // let codePromise = new Promise((resolve, reject) => {
+        //     rl.question('Enter the code from that page here: ', (code) => {
+        //         rl.close();
+        //         resolve(code);
+        //     });
+        // });
+        // let code = await codePromise;
+
+        
+    }
+   async getAuthObjectFromCode(code){
         let tokenPromise = new Promise((resolve, reject) => {
             oAuth2Client.getToken(code, async (err, token) => {
 
@@ -71,7 +79,6 @@ class GmailOperations {
         let promise = new Promise((resolve, reject) => {
             fs.readFile('credentials.json', (err, content) => {
                 if (err) return console.log('Error loading client secret file:', err);
-
                 // Authorize a client with credentials, then call the Gmail API
                 resolve(content);
             });
@@ -112,7 +119,6 @@ class GmailOperations {
     getGmailObjFromAuth(auth) {
         return google.gmail({ version: 'v1', auth });
     }
-
     async getToken() {
         let con = await this.getCredentials();
         con = JSON.parse(con);
@@ -120,8 +126,11 @@ class GmailOperations {
         const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
         let promise = new Promise((resolve, reject) => {
             fs.readFile(TOKEN_PATH, async (err, token) => {
-                if (err) { return resolve(await this.getNewToken(oAuth2Client)); }
-                resolve(JSON.parse(token));
+                let time = new Date().getTime();
+                let jToken = JSON.parse(token);
+                console.log(time, " ", jToken.expiry_date);
+                if (err || jToken.expiry_date < time) { return resolve(await this.getNewToken(oAuth2Client)); }
+                resolve(jToken);
             });
         });
         let token = await promise;
