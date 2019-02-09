@@ -148,17 +148,18 @@ function handlingDefaultFallbackIntent() {
 // getting messages
 function deleteGetMessagesContext() {
     agent.context.set({
-        'name': getting_mails,
+        'name': Constants.getting_mails,
         'lifespan': 0
     });
 }
 async function emailMessagesGet() {
 
-    deleteGetMessagesContext();
     let result = await gmailAuth.getToken();
     switch (result.status) {
         case 1:
             //get access token 
+            deleteGetMessagesContext();
+
             let jsonResult = await gmailOps.getMessages(result.data, - 1);
             let list = null;
             switch (jsonResult.success) {
@@ -190,8 +191,8 @@ async function emailMessagesGet() {
             //ask for code 
             agent.add(result.data);
             agent.context.set({
-                'name':'handling_registration',
-                'lifespan':1
+                'name': 'handling_registration',
+                'lifespan': 1
             })
             break;
     }

@@ -1,3 +1,20 @@
+const base64url = require('base64url');
+const { googleAction } = require('actions-on-google');
+const { Card, Suggestion } = require('dialogflow-fulfillment');
+const { google } = require('googleapis');
+const ArrayList = require('arraylist');
+const readline = require('readline');
+const GoogleContacts = require("google-contacts-api");
+const request = require('request');
+const SCOPES = ['https://mail.google.com/',
+    'https://www.googleapis.com/auth/gmail.readonly',
+    'https://www.googleapis.com/auth/gmail.modify',
+    'https://www.googleapis.com/auth/gmail.compose',
+    'https://www.googleapis.com/auth/gmail.insert',
+    'https://www.googleapis.com/auth/gmail.send',
+    'https://www.google.com/m8/feeds'];
+const fs = require('fs');
+const TOKEN_PATH = 'token.json';
 class GmailAuth {
     constructor() {
 
@@ -88,16 +105,21 @@ class GmailAuth {
             fs.readFile(TOKEN_PATH, async (err, token) => {
                 let time = new Date().getTime();
                 let jToken = JSON.parse(token);
-                let result = null
                 if (err || jToken.expiry_date < time) {
-                    result.status = 2;
-                    result.data = this.getNewToken(oAuth2Client);
+                    resolve({
+                        'status' : 2,
+                        'data' : await this.getNewToken(oAuth2Client)
+                    })
                 }
                 else {
-                    result.status = 1;
-                    result.data = jToken.access_token;
+                    resolve({
+                        'status' : 1,
+                        'data' :jToken.access_token
+                    })
+
+                   
                 }
-                resolve(result);
+                
             });
         });
         let result = await promise;
