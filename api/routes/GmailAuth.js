@@ -29,6 +29,10 @@ class GmailAuth {
         return authUrl;
     }
     async getAuthObjectFromCode(code) {
+        let con = await this.getCredentials();
+        con = JSON.parse(con);
+        const { client_secret, client_id, redirect_uris } = con.installed;
+        const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
         let tokenPromise = new Promise((resolve, reject) => {
             oAuth2Client.getToken(code, async (err, token) => {
 
@@ -97,29 +101,26 @@ class GmailAuth {
         return google.gmail({ version: 'v1', auth });
     }
     async getToken() {
-        let con = await this.getCredentials();
-        con = JSON.parse(con);
-        const { client_secret, client_id, redirect_uris } = con.installed;
-        const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
         let promise = new Promise((resolve, reject) => {
             fs.readFile(TOKEN_PATH, async (err, token) => {
                 let time = new Date().getTime();
                 let jToken = JSON.parse(token);
                 if (err || jToken.expiry_date < time) {
                     resolve({
-                        'status' : 2,
-                        'data' : await this.getNewToken(oAuth2Client)
+                        'status': 2,
+                        'data':  await this.getNewToken(oAuth2Client), 
+                           
                     })
                 }
                 else {
                     resolve({
-                        'status' : 1,
-                        'data' :jToken.access_token
+                        'status': 1,
+                        'data': jToken.access_token
                     })
 
-                   
+
                 }
-                
+
             });
         });
         let result = await promise;
