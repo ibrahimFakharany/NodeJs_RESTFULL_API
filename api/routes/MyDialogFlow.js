@@ -191,38 +191,38 @@ function setGetMessagesContext() {
 }
 async function emailMessagesGet() {
     agent.add("getting message intent");
-    try {
-        deleteGetMessagesContext();
+    // try {
+    //     deleteGetMessagesContext();
 
-        let jsonResult = await gmailOps.getMessages(-1);
-        let list = null;
-        switch (jsonResult.success) {
-            case 0:
-                agent.add(jsonResult.message);
-                break;
-            case 1:
-                list = jsonResult.result;
-                list.forEach(element => {
-                    agent.add(element.subject);
-                });
-                agent.context.set({
-                    'name': handling_subject_context,
-                    'lifespan': default_context_life_span,
-                    'parameters': {
-                        'fromIntent': emailMessagesGet,
-                        'messages': list
-                    }
-                });
+    //     let jsonResult = await gmailOps.getMessages(-1);
+    //     let list = null;
+    //     switch (jsonResult.success) {
+    //         case 0:
+    //             agent.add(jsonResult.message);
+    //             break;
+    //         case 1:
+    //             list = jsonResult.result;
+    //             list.forEach(element => {
+    //                 agent.add(element.subject);
+    //             });
+    //             agent.context.set({
+    //                 'name': handling_subject_context,
+    //                 'lifespan': default_context_life_span,
+    //                 'parameters': {
+    //                     'fromIntent': emailMessagesGet,
+    //                     'messages': list
+    //                 }
+    //             });
 
 
-                console.log('the get mails context setted');
-                break;
-        }
+    //             console.log('the get mails context setted');
+    //             break;
+    //     }
 
-    } catch (err) {
-        agent.add('error in after getting messages' + err);
-        console.log(err);
-    }
+    // } catch (err) {
+    //     agent.add('error in after getting messages' + err);
+    //     console.log(err);
+    // }
 
 }
 async function emailMessagesGetContactName() {
