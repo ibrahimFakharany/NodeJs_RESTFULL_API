@@ -54,6 +54,8 @@ router.post('/', (req, server_response, next) => {
         response: server_response
     });
 
+
+    gmailOps = new GmailOperation(server_response, agent);
     let intentMap = new Map();
     intentMap.set('email.send.message_full_text', fullAddressEmailSending);
     intentMap.set('email.send.message_contact', messageContactEmailSending);
@@ -100,7 +102,7 @@ router.post('/', (req, server_response, next) => {
 async function handlingUserRegistration() {
     let code = agent.parameters.code
     let auth = await gmailOps.getAuthObjectFromCode(code);
-        
+
 }
 
 //sending email
