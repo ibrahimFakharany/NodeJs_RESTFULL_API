@@ -102,13 +102,12 @@ class GmailOperations {
     }
 
     async authorize(credentials) {
-
         const { client_secret, client_id, redirect_uris } = credentials.installed;
         const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
-
         return new Promise((resolve, reject) => {
             fs.readFile(TOKEN_PATH, async (err, token) => {
-                if (err) return resolve(await this.getNewToken(oAuth2Client));
+                let time = new Date().getTime();
+                if (err ||JSON.parse(token).expiry_date <time ) return resolve(await this.getNewToken(oAuth2Client));
                 oAuth2Client.setCredentials(JSON.parse(token));
                 console.log('authentication in authorize method in callback ---> ' + typeof oAuth2Client);
                 resolve(oAuth2Client);
