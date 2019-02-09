@@ -20,7 +20,7 @@ class GmailOperations {
         this.serverResponse = serverResponse;
         this.agent = agent;
     }
-    
+
 
     // sending email
     makeBody(to, from, subject, message) {
@@ -77,7 +77,7 @@ class GmailOperations {
             res = {
                 "data": res
             };
-
+            var response = res;
             let list = new ArrayList;
             var complete = 0;
             let promise = new Promise((resolve, reject) => {
@@ -103,12 +103,13 @@ class GmailOperations {
                             resolve(list);
                         }
                     });
-    
+
                 });
-    
+
             });
-    
+
             let result = await promise;
+
             return {
                 "success": 1,
                 "result": result
