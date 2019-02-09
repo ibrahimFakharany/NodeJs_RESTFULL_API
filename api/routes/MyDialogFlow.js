@@ -190,6 +190,7 @@ function setGetMessagesContext() {
     });
 }
 async function emailMessagesGet() {
+    agent.add("getting message intent");
     try {
         deleteGetMessagesContext();
 
