@@ -1,4 +1,6 @@
 const GmailOperation = require('./GmailOperations');
+const GmailAuth = require('./GmailAuth');
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const ArrayList = require('arraylist');
@@ -7,44 +9,12 @@ const { WebhookClient } = require('dialogflow-fulfillment');
 const Operations = require('./Operations');
 const TOKEN_PATH = 'token.json';
 var gmailOps = new GmailOperation();
+var gmailAuth = new GmailAuth();
 let auth = null
 var agent = null;
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
-// contexts names 
-const handling_mail_context = "handling_mails";
-const getting_mails = "getting_mails";
-const get_contacts_context = "getting_contacts";
-const handling_subject_context = "handling_subject";
-const handling_registration_context = "handling_registration";
 
-// intents names
-const emailMessagesGetText = 'email.messages.get';
-const emailMessagesGetDateText = 'email.messages.get.date';
-const emailMessagesGetContactNameText = 'email.messages.get.contact_name';
-const emailMessagesGetCountSingleText = 'email.messages.get.count.single';
-const emailMessagesGetCountManyText = 'email.messages.get.contact_name.count.many';
-const emailMessagesGetDateContactNameText = 'email.messages.get.date.contact_name'
-const emailMessagesGetContactNameCountSingleText = 'email.messages.get.contact_name.count.single';
-const emailMessagesGetContactNameCountManyText = 'email.messages.get.contact_name.count.many'
-const emailMessagesGetDateCountSingleText = 'email.messages.get.date.count.single';
-const emailMessagesGetDateCountManyText = 'email.messages.get.date.count.many';
-const emailMessagesGetDateContactNameCountSingleText = 'email.messages.get.date.contact_name.count.single';
-const emailMessagesGetDateContactNameCountManyText = 'email.messages.get.date.contact_name.count.many'
-const emailMessagesShowBody = "email.messages.showBody";
-const emailMessagesShowBodyFromListText = "email.messages.show_body_from_list";
-const userRegistrationText = "user.registration";
-
-//getting messages followup intents 
-const emailMessagesGetFollowupDateText = 'email.messages.get.followup.date'
-const emailMessagesGetFollowupContactNameText = 'email.messages.get.followup.contact_name'
-const emailMessagesGetFollowupCountText = 'email.messages.get.followup.count'
-const emailMessagesGetFollowupContactNameCountText = 'email.messages.get.followup.contact_name.count'
-const emailMessagesGetFollowupDateCountText = 'email.messages.get.followup.date.count'
-const emailMessagesGetFollowupDateContactNameText = 'email.messages.get.followup.date.contact_name'
-const emailMessagesGetFollowupDateContactNameCountText = 'email.messages.get.followup.date.contact_name.count'
-
-const default_context_life_span = 5
 const delete_context_life_span = 0
 
 router.post('/', (req, server_response, next) => {
@@ -53,9 +23,6 @@ router.post('/', (req, server_response, next) => {
         request: req,
         response: server_response
     });
-
-
-    gmailOps = new GmailOperation(server_response, agent);
     let intentMap = new Map();
     intentMap.set('email.send.message_full_text', fullAddressEmailSending);
     intentMap.set('email.send.message_contact', messageContactEmailSending);
@@ -63,33 +30,33 @@ router.post('/', (req, server_response, next) => {
     intentMap.set('email.selecting.index', sendingEmailAfterSelectingIndex);
     intentMap.set('Default Fallback Intent', handlingDefaultFallbackIntent);
     // getting messages
-    intentMap.set(emailMessagesGetText, emailMessagesGet);
-    intentMap.set(emailMessagesGetDateText, emailMessagesGetDate);
-    intentMap.set(emailMessagesGetContactNameText, emailMessagesGetContactName);
-    intentMap.set(emailMessagesGetCountSingleText, emailMessagesGetCountSingle);
-    intentMap.set(emailMessagesGetCountManyText, emailMessagesGetCountMany);
+    intentMap.set(Constants.emailMessagesGetText, emailMessagesGet);
+    intentMap.set(Constants.emailMessagesGetDateText, emailMessagesGetDate);
+    intentMap.set(Constants.emailMessagesGetContactNameText, emailMessagesGetContactName);
+    intentMap.set(Constants.emailMessagesGetCountSingleText, emailMessagesGetCountSingle);
+    intentMap.set(Constants.emailMessagesGetCountManyText, emailMessagesGetCountMany);
     // combinations methods
-    intentMap.set(emailMessagesGetDateContactNameText, emailMessagesGetDateContactName);
-    intentMap.set(emailMessagesGetContactNameCountSingleText, emailMessagesGetContactNameCountSingle);
-    intentMap.set(emailMessagesGetContactNameCountManyText, emailMessagesGetContactNameCountMany);
-    intentMap.set(emailMessagesGetDateCountSingleText, emailMessagesGetDateCountSingle);
-    intentMap.set(emailMessagesGetDateCountManyText, emailMessagesGetDateCountMany);
-    intentMap.set(emailMessagesGetDateContactNameCountSingleText, emailMessagesGetDateContactNameCountSingle);
-    intentMap.set(emailMessagesGetDateContactNameCountManyText, emailMessagesGetDateContactNameCountMany);
+    intentMap.set(Constants.emailMessagesGetDateContactNameText, emailMessagesGetDateContactName);
+    intentMap.set(Constants.emailMessagesGetContactNameCountSingleText, emailMessagesGetContactNameCountSingle);
+    intentMap.set(Constants.emailMessagesGetContactNameCountManyText, emailMessagesGetContactNameCountMany);
+    intentMap.set(Constants.emailMessagesGetDateCountSingleText, emailMessagesGetDateCountSingle);
+    intentMap.set(Constants.emailMessagesGetDateCountManyText, emailMessagesGetDateCountMany);
+    intentMap.set(Constants.emailMessagesGetDateContactNameCountSingleText, emailMessagesGetDateContactNameCountSingle);
+    intentMap.set(Constants.emailMessagesGetDateContactNameCountManyText, emailMessagesGetDateContactNameCountMany);
 
     //followup intents getting messages 
 
-    intentMap.set(emailMessagesGetFollowupDateText, emailMessagesGetFollowupDate);
-    intentMap.set(emailMessagesGetFollowupContactNameText, emailMessagesGetFollowupContactName);
-    intentMap.set(emailMessagesGetFollowupCountText, emailMessagesGetFollowupCount);
-    intentMap.set(emailMessagesGetFollowupContactNameCountText, emailMessagesGetFollowupContactNameCount);
-    intentMap.set(emailMessagesGetFollowupDateCountText, emailMessagesGetFollowupDateCount);
-    intentMap.set(emailMessagesGetFollowupDateContactNameText, emailMessagesGetFollowupDateContactName);
-    intentMap.set(emailMessagesGetFollowupDateContactNameCountText, emailMessagesGetFollowupDateContactNameCount);
+    intentMap.set(Constants.emailMessagesGetFollowupDateText, emailMessagesGetFollowupDate);
+    intentMap.set(Constants.emailMessagesGetFollowupContactNameText, emailMessagesGetFollowupContactName);
+    intentMap.set(Constants.emailMessagesGetFollowupCountText, emailMessagesGetFollowupCount);
+    intentMap.set(Constants.emailMessagesGetFollowupContactNameCountText, emailMessagesGetFollowupContactNameCount);
+    intentMap.set(Constants.emailMessagesGetFollowupDateCountText, emailMessagesGetFollowupDateCount);
+    intentMap.set(Constants.emailMessagesGetFollowupDateContactNameText, emailMessagesGetFollowupDateContactName);
+    intentMap.set(Constants.emailMessagesGetFollowupDateContactNameCountText, emailMessagesGetFollowupDateContactNameCount);
 
-    intentMap.set(emailMessagesShowBody, emailMessageShowBody)
-    intentMap.set(emailMessagesShowBodyFromListText, emailMessagesShowBodyFromList)
-    intentMap.set(userRegistrationText, handlingUserRegistration);
+    intentMap.set(Constants.emailMessagesShowBody, emailMessageShowBody)
+    intentMap.set(Constants.emailMessagesShowBodyFromListText, emailMessagesShowBodyFromList)
+    intentMap.set(Constants.userRegistrationText, handlingUserRegistration);
     // intentMap.set('email.messages.get.date.between', emailMessagesGetDateInBetween);
     intentMap.set('email.selecting', emailSelecting);
     intentMap.set('email.messages.send_reply', emailMessageSendingReply);
@@ -101,7 +68,7 @@ router.post('/', (req, server_response, next) => {
 
 async function handlingUserRegistration() {
     let code = agent.parameters.code
-    agent.add("you entered " , code);
+    agent.add("you entered ", code);
     let auth = await gmailOps.getAuthObjectFromCode(code);
 
 }
@@ -185,47 +152,51 @@ function deleteGetMessagesContext() {
         'lifespan': 0
     });
 }
-function setGetMessagesContext() {
-    agent.context.set({
-        'name': getting_mails,
-        'lifespan': default_context_life_span,
-        'parameters': {}
-    });
-}
 async function emailMessagesGet() {
-    agent.add("getting message intent");
-    try {
-        deleteGetMessagesContext();
 
-        let jsonResult = await gmailOps.getMessages(-1);
-        let list = null;
-        switch (jsonResult.success) {
-            case 0:
-                agent.add(jsonResult.message);
-                break;
-            case 1:
-                list = jsonResult.result;
-                list.forEach(element => {
-                    agent.add(element.subject);
-                });
-                agent.context.set({
-                    'name': handling_subject_context,
-                    'lifespan': default_context_life_span,
-                    'parameters': {
-                        'fromIntent': emailMessagesGet,
-                        'messages': list
-                    }
-                });
+    deleteGetMessagesContext();
+    let result = await gmailAuth.getToken();
+    switch (result.status) {
+        case 1:
+            //get access token 
+            let jsonResult = await gmailOps.getMessages(result.data, - 1);
+            let list = null;
+            switch (jsonResult.success) {
+                case 0:
+                    agent.add(jsonResult.message);
+                    break;
+                case 1:
+                    list = jsonResult.result;
+                    list.forEach(element => {
+                        agent.add(element.subject);
+                    });
+                    agent.context.set({
+                        'name': handling_subject_context,
+                        'lifespan': default_context_life_span,
+                        'parameters': {
+                            'fromIntent': emailMessagesGet,
+                            'messages': list
+                        }
+                    });
 
 
-                console.log('the get mails context setted');
-                break;
-        }
+                    console.log('the get mails context setted');
+                    break;
+            }
 
-    } catch (err) {
-        agent.add('error in after getting messages' + err);
-        console.log(err);
+            break;
+        case 2:
+            //show login link 
+            //ask for code 
+            agent.add(result.data);
+            agent.context.set({
+                'name':'handling_registration',
+                'lifespan':1
+            })
+            break;
     }
+
+
 
 }
 async function emailMessagesGetContactName() {
@@ -488,110 +459,6 @@ async function emailSelecting() {
 
     }
 
-
-}
-
-//handling subject
-async function getMessagesFromSubject() {
-    if (agent.context.contexts.get_body_of_message_by_subject.parameters.from == getting_mails) {
-        let messages = agent.context.contexts.get_body_of_message_by_subject.parameters.messages
-        let subject = agent.parameters.subject;
-        let id = null;
-        messages.forEach(element => {
-            if (subject == element.subject) {
-                id = element.id
-            }
-        });
-        if (id != null) {
-            let message = await gmailOps.getMessagesByMessageId(id);
-            let operation = new Operation();
-            let msg = operation.getMsg(message);
-            console.log(message.snippet);
-            agent.add(message.snippet);
-            agent.context.set({
-                'name': handling_mail_context,
-                'lifespan': default_context_life_span,
-                'parameters': {
-                    'msg': msg,
-                    'message': message
-                }
-            })
-        } else {
-            agent.add("please select one of the following subjects ");
-            messages.forEach(element => {
-                agent.add(element.subject);
-            });
-            agent.context({
-                'name': handling_subject_context,
-                'lifespan': default_context_life_span,
-                'parameters': {
-                    'from': getting_mails,
-                    'messages': messages
-                }
-            });
-        }
-        agent.context.set({
-            'name': handling_mail_context,
-            'lifespan': default_context_life_span,
-            'parameters': {
-
-            }
-        })
-    } else {
-        let state = agent.context.contexts.get_body_of_message_by_subject.parameters.state
-        let email = agent.context.contexts.get_body_of_message_by_subject.parameters.email
-        let subject = agent.parameters.subject;
-        let result = await gmailOps.getMessagesBySubject(subject, state, email);
-        let size = result.messages.length;
-        let msgs = result.messages;
-
-        if (size > 1) {
-            // show to user 
-            console.log("#of messages returned by subject is greater than one");
-
-            let listOfPossibleMessages = new ArrayList()
-            let promise = new Promise(async (resolve, reject) => {
-                msgs.forEach(async element => {
-                    let id = element.id;
-                    console.log("id " + id);
-                    let possibleMessageWithThisSubject = await gmailOps.getDateEmailSubjectWithMessageId(id);
-                    listOfPossibleMessages.add(possibleMessageWithThisSubject);
-                });
-                resolve(listOfPossibleMessages);
-            });
-
-            let thisResult = await promise;
-
-            console.log(thisResult);
-
-            agent.add("please select message by typing its index number! ");
-            thisResult.forEach(element => {
-                agent.add(element.date);
-                agent.add(element.email);
-                agent.add(element.subject);
-            })
-
-        } else {
-            // get body with this id 
-            let id = msgs[0].id
-            let message = await gmailOps.getMessagesByMessageId(id);
-            console.log(message);
-            let body = null;
-            message.payload.parts.forEach(element => {
-                if (element.mimeType == "text/plain") {
-                    body = element.body.data
-                }
-            })
-            agent.add(gmailOps.decodeMessageBody(body));
-            agent.context.set({
-                'name': send_reply_to_the_email,
-                'lifespan': default_context_life_span,
-                'parameters': {
-                    'message': message
-                }
-            });
-        }
-    }
 
 }
 
