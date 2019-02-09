@@ -77,8 +77,38 @@ class GmailOperations {
             res = {
                 "data": res
             };
-            let result = await this.gettingListSubjectFromMessageId(res);
 
+            let list = new ArrayList;
+            var complete = 0;
+            let promise = new Promise((resolve, reject) => {
+                console.log(response);
+                response.data.messages.forEach(element => {
+                    var messageId = element.id;
+                    request('https://www.googleapis.com/gmail/v1/users/me/messages/' + messageId + '?access_token=' + token, { json: true }, (err, res, body) => {
+                        if (err) { return console.log(err); }
+                        let stringResponse = JSON.stringify(res);
+                        let jsonResponse = JSON.parse(stringResponse);
+                        complete++;
+                        for (var i = 0; i < jsonResponse.body.payload.headers.length; i++) {
+                            if (jsonResponse.body.payload.headers[i].name.toString().toUpperCase() == "Subject".toUpperCase()) {
+                                var subject = jsonResponse.body.payload.headers[i].value;
+                                if (subject === '') {
+                                    subject = "no subject";
+                                }
+                                list.add({ "id": messageId, "subject": subject });
+                                break;
+                            }
+                        }
+                        if (complete == response.data.messages.length) {
+                            resolve(list);
+                        }
+                    });
+    
+                });
+    
+            });
+    
+            let result = await promise;
             return {
                 "success": 1,
                 "result": result
@@ -175,9 +205,6 @@ class GmailOperations {
         return response;
     }
 
-    async getBodyOfMessage(message) {
-
-    }
 
     // getting contacts
     async getContacts(contactName) {
