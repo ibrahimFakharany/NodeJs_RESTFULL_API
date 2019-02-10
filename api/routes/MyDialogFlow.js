@@ -524,7 +524,7 @@ async function emailMessagesShowBodyFromList() {
 }
 async function emailMessageForward() {
     let from = agent.context.contexts.handling_mails.parameters.from
-    let auth = await gmailOps.authorizeUser()
+    let auth = await gmailAuth.authorizeUser()
     if (from == get_contacts_context) {
         let email = agent.context.contexts.handling_mails.parameters.email;
         let msg = agent.context.contexts.handling_mails.parameters.msg;

@@ -211,8 +211,8 @@ class GmailOperations {
 
     // getting contacts
     async getContacts(contactName) {
-        let token = await this.getToken();
-
+        let resultToken = await gmailAuth.getToken();
+        let token = resultToken.data;
         let promise = new Promise((resolve, reject) => {
             request('https://www.google.com/m8/feeds/contacts/default/full?alt=json&q="' + contactName + '"&access_token=' + token, { json: true }, (err, res, body) => {
                 if (err) { return console.log(err); }
