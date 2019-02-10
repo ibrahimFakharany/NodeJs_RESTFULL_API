@@ -261,8 +261,8 @@ class GmailOperations {
     async gettingListSubjectFromMessageId(response) {
         let list = new ArrayList;
         var complete = 0;
-        let result = await gmailAuth.getToken();
-        let token = result.data;
+        let jsonResult = await gmailAuth.getToken();
+        let token = jsonResult.data;
         let promise = new Promise((resolve, reject) => {
             console.log(response);
             response.data.messages.forEach(element => {
