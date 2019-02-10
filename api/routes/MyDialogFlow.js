@@ -418,10 +418,10 @@ async function emailMessagesGetFollowupDateContactNameCount() { }
 
 //handling contacts 
 async function emailSelecting() {
-    let auth = await gmailOps.authorizeUser();
-    let fromContext = agent.context.contexts.selecting_email_context.parameters.from
-    if (fromContext == getting_mails) {
-        let state = agent.context.contexts.selecting_email_context.parameters.state
+    let auth = await gmailAuth.authorizeUser();
+    let fromContext = agent.context.contexts.getting_contacts.parameters.from
+    if (fromContext == Constants.getting_mails) {
+        let state = agent.context.contexts.getting_mails.parameters.state
         let email = agent.parameters.email;
         var operation = new Operations();
         let jsonResult = await gmailOps.getMessagesByContactName(state, email);
@@ -434,10 +434,10 @@ async function emailSelecting() {
         } else {
             agent.add("there is no messages for specified contact");
         }
-    } else if (fromContext == handling_mail_context) {
+    } else if (fromContext == Constants.handling_mail_context) {
         let foundEmail = agent.parameters.email;
-        let msg = agent.context.contexts.selecting_email_context.parameters.msg;
-        let message = agent.context.contexts.selecting_email_context.parameters.messasge;
+        let msg = agent.context.contexts.getting_contacts.parameters.msg;
+        let message = agent.context.contexts.getting_contacts.parameters.messasge;
         let returnedMessage = null
         if (message == null || typeof message === 'undefined') {
             // get the message and send it
@@ -448,10 +448,10 @@ async function emailSelecting() {
         }
         let agentMessage = await gmailOps.forwardMessage(auth, returnedMessage, foundEmail, msg.deliveredTo);
         agent.context.set({
-            'name': handling_mail_context,
-            'lifespan': default_context_life_span,
+            'name': Constants.handling_mail_context,
+            'lifespan': Constants.default_context_life_span,
             'parameters': {
-                'from': get_contacts_context,
+                'from': Constants.get_contacts_context,
                 'email': foundEmail,
                 'msg': msg,
                 'message': message
