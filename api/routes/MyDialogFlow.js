@@ -483,8 +483,8 @@ async function emailMessageShowBody() {
     if (body == null) {
         agent.add("No body to show, this might because the body is html page that couldn't or there is no body in the message");
         agent.context.set({
-            'name': handling_mail_context,
-            'lifespan': default_context_life_span,
+            'name': Constants.handling_mail_context,
+            'lifespan':  Constants.default_context_life_span,
             'parameters': {
                 'msg': msg,
                 'message': message
@@ -494,8 +494,8 @@ async function emailMessageShowBody() {
         agent.add(gmailOps.decodeMessageBody(body));
         msg.body = body;
         agent.context.set({
-            'name': handling_mail_context,
-            'lifespan': default_context_life_span,
+            'name':  Constants.handling_mail_context,
+            'lifespan':  Constants.default_context_life_span,
             'parameters': {
                 'msg': msg,
                 'message': message
