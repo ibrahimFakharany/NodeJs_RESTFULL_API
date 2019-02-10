@@ -581,7 +581,7 @@ async function emailMessageForward() {
 
 }
 async function emailMessageSendingReply() {
-    let auth = await gmailOps.authorizeUser()
+    let auth = await gmailAuth.authorizeUser()
     let msg = agent.context.contexts.handling_mails.parameters.msg;
     let message = agent.context.contexts.handling_mails.parameters.message;
     if (message == null || message == 'undefined') {
