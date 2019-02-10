@@ -281,7 +281,7 @@ async function emailMessagesGetDate() {
         jsonResult = {
             "data":
             {
-                "messages" : jsonResult.messages
+                "messages": jsonResult.messages
             }
         }
         let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
@@ -476,7 +476,11 @@ async function emailSelecting() {
         let email = agent.parameters.email;
         var operation = new Operations();
         let jsonResult = await gmailOps.queryMessages(token, null, email, state, 5);
-        jsonResult = operation.prepareGettingIdsResposne(jsonResult);
+        jsonResult = {
+            "data": {
+                "messages": jsonResult.messages
+            }
+        }
         let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
         if (result.length > 0) {
             result.forEach(element => {
