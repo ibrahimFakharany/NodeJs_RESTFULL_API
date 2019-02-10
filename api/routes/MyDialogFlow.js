@@ -287,22 +287,36 @@ async function emailMessagesGetDate() {
 }
 //count_single
 async function emailMessagesGetCountSingle() {
-    let jsonResult = await gmailOps.getMessagesWithLimit(1);
-    console.log(JSON.stringify(jsonResult));
-    var message = await gmailOps.getMessagesByMessageId(jsonResult.body.messages[0].id);
-    let operation = new Operations();
-    let msg = operation.getMsg(message);
-    var msgData = msg
+    let result = await gmailAuth.getToken();
+    switch (result.status) {
+        case 1:
+            let jsonResult = await gmailOps.getMessagesWithLimit(result.data, 1);
+            console.log(JSON.stringify(jsonResult));
+            var message = await gmailOps.getMessagesByMessageId(jsonResult.body.messages[0].id);
+            let operation = new Operations();
+            let msg = operation.getMsg(message);
+            var msgData = msg
 
-    agent.context.set({
-        'name': Constants.handling_mail_context,
-        'lifespan':  Constants.default_context_life_span,
-        'parameters': {
-            'msg': msgData,
-            'message': message
-        }
-    });
-    agent.add(msgData.subject);
+            agent.context.set({
+                'name': Constants.handling_mail_context,
+                'lifespan': Constants.default_context_life_span,
+                'parameters': {
+                    'msg': msgData,
+                    'message': message
+                }
+            });
+            agent.add(msgData.subject);
+            break;
+        case 2:
+            agent.add(result.data);
+            agent.context.set({
+                'name': 'handling_registration',
+                'lifespan': 1
+            })
+
+            break;
+    }
+
 }
 //count_many
 async function emailMessagesGetCountMany() {
@@ -500,11 +514,11 @@ async function emailMessagesShowBodyFromList() {
     });
     console.log("subject ", subject);
     if (id != null) {
-        console.log("id " , id);
+        console.log("id ", id);
         let message = await gmailOps.getMessagesByMessageId(id);
         var operation = new Operations();
         let msg = operation.getMsg(message);
-        console.log("msg :",msg);
+        console.log("msg :", msg);
         agent.add(
             gmailOps.decodeMessageBody(msg.body));
         agent.context.set({

@@ -169,7 +169,7 @@ class GmailOperations {
 
     }
 
-    async getMessagesWithLimit(limit) {
+    async getMessagesWithLimit(token, limit) {
         console.log("get messages single ");
         var resultToken = await gmailAuth.getToken();
         let token = resultToken.data;

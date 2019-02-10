@@ -112,6 +112,7 @@ class GmailAuth {
 
 
                 if (err || JSON.parse(token).expiry_date < time) {
+                
                     resolve({
                         'status': 2,
                         'data': await this.getNewToken(),
