@@ -458,10 +458,7 @@ async function emailSelecting() {
             }
         });
         agent.add(agentMessage);
-
     }
-
-
 }
 
 // handling mails
