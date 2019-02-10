@@ -525,7 +525,7 @@ async function emailMessagesShowBodyFromList() {
 async function emailMessageForward() {
     let from = agent.context.contexts.handling_mails.parameters.from
     let auth = await gmailAuth.authorizeUser()
-    if (from == get_contacts_context) {
+    if (from == Constants.get_contacts_context) {
         let email = agent.context.contexts.handling_mails.parameters.email;
         let msg = agent.context.contexts.handling_mails.parameters.msg;
         let message = agent.context.contexts.handling_mails.parameters.message;
@@ -545,20 +545,22 @@ async function emailMessageForward() {
         let contacts = await gmailOps.getContacts(email);
         console.log(JSON.stringify(contacts));
         if (contacts.sent == 1) {
+            // found multiple emails 
             contacts.emails.forEach(element => {
                 agent.add(element);
             });
             agent.context.set({
-                'name': get_contacts_context,
-                'lifespan': default_context_life_span,
+                'name': Constants.get_contacts_context,
+                'lifespan': Constants.default_context_life_span,
                 'parameters': {
-                    'from': handling_mail_context,
+                    'from': Constants.handling_mail_context,
                     'msg': msg,
                     'message': message
                 }
             });
 
         } else if (contacts.sent == 0) {
+            // found single email
             let foundEmail = contacts.email;
             let returnedMessage = null
             if (message == null || typeof message === 'undefined') {
