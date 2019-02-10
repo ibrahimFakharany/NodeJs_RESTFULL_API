@@ -558,6 +558,8 @@ async function emailMessageForward() {
         console.log(JSON.stringify(contacts));
         if (contacts.sent == 1) {
             // found multiple emails 
+    console.log("case multiple emails");
+
             contacts.emails.forEach(element => {
                 agent.add(element);
             });
@@ -572,7 +574,8 @@ async function emailMessageForward() {
             });
 
         } else if (contacts.sent == 0) {
-            // found single email
+    console.log("case single email");
+    // found single email
             let foundEmail = contacts.email;
             let returnedMessage = null
             if (message == null || typeof message === 'undefined') {
@@ -586,6 +589,7 @@ async function emailMessageForward() {
             agent.add(agentMessage);
         } else {
             // show contact couldn't found   
+            console.log("case no email");
 
         }
     }
