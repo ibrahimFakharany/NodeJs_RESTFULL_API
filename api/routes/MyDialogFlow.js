@@ -226,7 +226,14 @@ async function emailMessagesGetContactName() {
                         'name': Constants.get_contacts_context,
                         'lifespan': Constants.default_context_life_span,
                         'parameters': {
-                            'result': result
+                            'result': result,
+                        }
+                    });
+                    agent.context.set({
+                        'name': Constants.handling_mail_context,
+                        'lifespan':  Constants.default_context_life_span,
+                        'parameters': {
+                            'state': state
                         }
                     });
                 } else {
@@ -464,7 +471,7 @@ async function emailSelecting() {
     let auth = await gmailAuth.authorizeUser();
     let fromContext = agent.context.contexts.getting_contacts.parameters.from
     if (fromContext == Constants.getting_mails) {
-        let state = agent.context.contexts.getting_mails.parameters.state
+        let state = agent.context.contexts.getting_contacts.parameters.state
         let email = agent.parameters.email;
         var operation = new Operations();
         let jsonResult = await gmailOps.getMessagesByContactName(state, email);
