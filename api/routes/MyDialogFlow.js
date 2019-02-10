@@ -510,8 +510,8 @@ async function emailMessagesShowBodyFromList() {
         agent.add(
             gmailOps.decodeMessageBody(msg.body));
         agent.context.set({
-            'name': handling_mail_context,
-            'lifespan': default_context_life_span,
+            'name': Constants.handling_mail_context,
+            'lifespan': Constants.default_context_life_span,
             'parameters': {
                 'msg': msg,
                 'message': message
