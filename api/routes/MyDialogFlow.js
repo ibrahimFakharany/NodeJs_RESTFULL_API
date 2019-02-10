@@ -208,7 +208,7 @@ async function emailMessagesGetContactName() {
     let tokenResult = gmailAuth.getToken();
     switch(tokenResult.status){
         case 1: 
-        let response = await gmailOps.getContacts(contact_name);
+        let response = await gmailOps.getContacts(tokenResult.data,contact_name);
         var operation = new Operations();
         switch (response.sent) {
             case 0:
@@ -263,8 +263,7 @@ async function emailMessagesGetContactName() {
             'lifespan': 1
         })
         break;
-    }
-    
+    } 
 }
 //date
 async function emailMessagesGetDate() {
@@ -276,7 +275,6 @@ async function emailMessagesGetDate() {
         if (date) {
             todayDate = date.split("T")[0];
             contextParameters.date = todayDate;
-
         }
         let jsonResult = await gmailOps.getMessagesByDate(todayDate);
         jsonResult = operation.prepareGettingIdsResposne(jsonResult);
