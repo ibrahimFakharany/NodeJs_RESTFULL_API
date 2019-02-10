@@ -205,52 +205,66 @@ async function emailMessagesGetContactName() {
     deleteGetMessagesContext();
     var state = agent.parameters.state;
     var contact_name = agent.parameters.contact_name;
-    let response = await gmailOps.getContacts(contact_name);
-    var operation = new Operations();
-    switch (response.sent) {
-        case 0:
-            // get messages by this email
-            // let jsonResult = await gmailOps.getMessagesByContactName(state, contact_name);
-            let jsonResult = await gmailOps.queryMessages(token, null, contact_name, state,5)
-            jsonResult = operation.prepareGettingIdsResposne(jsonResult);
-            let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
-            if (result.length > 0) {
-                result.forEach(element => {
-                    agent.add(element.subject);
-                });
+    let tokenResult = gmailAuth.getToken();
+    switch(tokenResult.status){
+        case 1: 
+        let response = await gmailOps.getContacts(contact_name);
+        var operation = new Operations();
+        switch (response.sent) {
+            case 0:
+                let token= resultToken.data;
+                // get messages by this email
+                // let jsonResult = await gmailOps.getMessagesByContactName(state, contact_name);
+                let jsonResult = await gmailOps.queryMessages(token, null, contact_name, state,5)
+                jsonResult = operation.prepareGettingIdsResposne(jsonResult);
+                let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
+                if (result.length > 0) {
+                    result.forEach(element => {
+                        agent.add(element.subject);
+                    });
+                    agent.context.set({
+                        'name': Constants.handling_mail_context,
+                        'lifespan': Constants.default_context_life_span,
+                        'parameters': {
+                            'result': result
+                        }
+                    });
+                } else {
+                    agent.add("there is no messages for specified contact");
+                }
+    
+                break;
+            case 1:
+                // show these emails to user to select one
+                let emails = response.emails;
+                agent.add("which one did you mean?\n.. choose one by copy and pasting it in the message!");
                 agent.context.set({
-                    'name': Constants.handling_mail_context,
-                    'lifespan': Constants.default_context_life_span,
+                    'name': Constants.get_contacts_context,
+                    'lifespan':  Constants.default_context_life_span,
                     'parameters': {
-                        'result': result
+                        'from': Constants.getting_mails,
+                        'state': state,
                     }
                 });
-            } else {
-                agent.add("there is no messages for specified contact");
-            }
-
-            break;
-        case 1:
-            // show these emails to user to select one
-            let emails = response.emails;
-            agent.add("which one did you mean?\n.. choose one by copy and pasting it in the message!");
-            agent.context.set({
-                'name': Constants.get_contacts_context,
-                'lifespan':  Constants.default_context_life_span,
-                'parameters': {
-                    'from': Constants.getting_mails,
-                    'state': state,
-                }
-            });
-            agent.add(emails);
-
-            break;
-
-        case -1:
-            // show there is no contact with this name
-            agent.add('there is no contact with this name');
-            break;
+                agent.add(emails);
+    
+                break;
+    
+            case -1:
+                // show there is no contact with this name
+                agent.add('there is no contact with this name');
+                break;
+        }
+        break;
+        case 2: 
+        agent.add(result.data);
+        agent.context.set({
+            'name': 'handling_registration',
+            'lifespan': 1
+        })
+        break;
     }
+    
 }
 //date
 async function emailMessagesGetDate() {
