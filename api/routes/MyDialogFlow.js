@@ -484,7 +484,7 @@ async function emailMessageShowBody() {
         agent.add("No body to show, this might because the body is html page that couldn't or there is no body in the message");
         agent.context.set({
             'name': Constants.handling_mail_context,
-            'lifespan':  Constants.default_context_life_span,
+            'lifespan': Constants.default_context_life_span,
             'parameters': {
                 'msg': msg,
                 'message': message
@@ -494,8 +494,8 @@ async function emailMessageShowBody() {
         agent.add(gmailOps.decodeMessageBody(body));
         msg.body = body;
         agent.context.set({
-            'name':  Constants.handling_mail_context,
-            'lifespan':  Constants.default_context_life_span,
+            'name': Constants.handling_mail_context,
+            'lifespan': Constants.default_context_life_span,
             'parameters': {
                 'msg': msg,
                 'message': message
@@ -538,6 +538,7 @@ async function emailMessageForward() {
     let from = agent.context.contexts.handling_mails.parameters.from
     let auth = await gmailAuth.authorizeUser()
     if (from == Constants.get_contacts_context) {
+        console.log("from get_contacts context")
         let email = agent.context.contexts.handling_mails.parameters.email;
         let msg = agent.context.contexts.handling_mails.parameters.msg;
         let message = agent.context.contexts.handling_mails.parameters.message;
@@ -549,6 +550,8 @@ async function emailMessageForward() {
             agent.add(agentMessage);
         }
     } else {
+        console.log("from other context")
+
         //from is undefined or from another context 
         let msg = agent.context.contexts.handling_mails.parameters.msg
         let message = agent.context.contexts.handling_mails.parameters.message
@@ -558,7 +561,7 @@ async function emailMessageForward() {
         console.log(JSON.stringify(contacts));
         if (contacts.sent == 1) {
             // found multiple emails 
-    console.log("case multiple emails");
+            console.log("case multiple emails");
 
             contacts.emails.forEach(element => {
                 agent.add(element);
@@ -574,8 +577,8 @@ async function emailMessageForward() {
             });
 
         } else if (contacts.sent == 0) {
-    console.log("case single email");
-    // found single email
+            console.log("case single email");
+            // found single email
             let foundEmail = contacts.email;
             let returnedMessage = null
             if (message == null || typeof message === 'undefined') {
