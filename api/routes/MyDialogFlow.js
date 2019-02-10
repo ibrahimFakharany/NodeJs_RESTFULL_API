@@ -474,16 +474,15 @@ async function emailSelecting() {
     if (fromContext == Constants.getting_mails) {
         let state = agent.context.contexts.getting_contacts.parameters.state
         let email = agent.parameters.email;
-        var operation = new Operations();
         let jsonResult = await gmailOps.queryMessages(token, null, email, state, 5);
         jsonResult = {
             "data": {
                 "messages": jsonResult.messages
             }
         }
-        let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
-        if (result.length > 0) {
-            result.forEach(element => {
+        let msgs = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
+        if (msgs.length > 0) {
+            msgs.forEach(element => {
                 agent.add(element.subject);
             });
         } else {
