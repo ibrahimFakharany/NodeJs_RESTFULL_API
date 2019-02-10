@@ -546,11 +546,10 @@ async function emailMessageForward() {
             // getting the message by the id
             let id = msg.id;
             let message = await gmailOps.getMessagesByMessageId(id);
-            let agentMessage = await gmailOps.forwardMessage(message, email, msg.deliveredTo);
+            let agentMessage = await gmailOps.forwardMessage(auth, message, email, msg.deliveredTo);
             agent.add(agentMessage);
-        }else {
-            let message = await gmailOps.getMessagesByMessageId(msg.id);
-            let agentMessage = await gmailOps.forwardMessage(message, email, msg.deliveredTo);
+        } else {
+            let agentMessage = await gmailOps.forwardMessage(auth, message, email, msg.deliveredTo);
             agent.add(agentMessage);
         }
     } else {
