@@ -216,7 +216,11 @@ async function emailMessagesGetContactName() {
                     // get messages by this email
                     // let jsonResult = await gmailOps.getMessagesByContactName(state, contact_name);
                     let jsonResult = await gmailOps.queryMessages(token, null, contact_name, state, 5)
-                    jsonResult = operation.prepareGettingIdsResposne(jsonResult);
+                    jsonResult = {
+                        "data":{
+                            "messages": jsonResult.messages
+                        }
+                    }
                     let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
                     if (result.length > 0) {
                         result.forEach(element => {
