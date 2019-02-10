@@ -463,6 +463,8 @@ async function emailMessagesGetFollowupContactNameCount() { }
 async function emailMessagesGetFollowupDateCount() { }
 async function emailMessagesGetFollowupDateContactName() { }
 async function emailMessagesGetFollowupDateContactNameCount() { }
+
+
 async function selectingEmail() {
     let auth = await gmailAuth.authorizeUser();
     let tokenResult = await gmailAuth.getToken();
@@ -472,6 +474,7 @@ async function selectingEmail() {
         let state = agent.context.contexts.getting_contacts.parameters.state
         let email = agent.parameters.email;
         let jsonResult = await gmailOps.queryMessages(token, null, email, state, 5);
+        console.log(JSON.stringify(jsonResult));
         jsonResult = {
             "data": {
                 "messages": jsonResult.messages
