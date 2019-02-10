@@ -229,13 +229,6 @@ async function emailMessagesGetContactName() {
                             'result': result,
                         }
                     });
-                    agent.context.set({
-                        'name': Constants.handling_mail_context,
-                        'lifespan':  Constants.default_context_life_span,
-                        'parameters': {
-                            'state': state
-                        }
-                    });
                 } else {
                     agent.add("there is no messages for specified contact");
                 }
