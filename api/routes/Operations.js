@@ -31,7 +31,7 @@ class Operations {
         var body = null;
         message.payload.headers.forEach((header) => {
             let key = header.name.toString().toUpperCase();
-                
+
             if (key == "Delivered-To".toUpperCase()) {
                 deliveredTo = header.value;
             } else if (key == "From".toUpperCase()) {
@@ -58,6 +58,11 @@ class Operations {
                     body = element.body.data;
                 }
             });
+
+        }
+
+        if (body == null) {
+            body = message.snippet;
         }
         return {
             "id": id,
