@@ -504,7 +504,6 @@ async function emailMessagesShowBodyFromList() {
     if (id != null) {
         console.log("id " , id);
         let message = await gmailOps.getMessagesByMessageId(id);
-        console.log("message ", message);
         var operation = new Operations();
         let msg = operation.getMsg(message);
         agent.add(
