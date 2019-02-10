@@ -223,7 +223,7 @@ async function emailMessagesGetContactName() {
                         agent.add(element.subject);
                     });
                     agent.context.set({
-                        'name': Constants.handling_mail_context,
+                        'name': Constants.getting_mails,
                         'lifespan': Constants.default_context_life_span,
                         'parameters': {
                             'result': result
