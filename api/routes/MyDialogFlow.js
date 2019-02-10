@@ -205,7 +205,7 @@ async function emailMessagesGetContactName() {
     deleteGetMessagesContext();
     var state = agent.parameters.state;
     var contact_name = agent.parameters.contact_name;
-    let tokenResult = gmailAuth.getToken();
+    let tokenResult = await gmailAuth.getToken();
     switch(tokenResult.status){
         case 1: 
         let response = await gmailOps.getContacts(tokenResult.data,contact_name);
