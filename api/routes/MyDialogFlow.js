@@ -506,6 +506,7 @@ async function emailMessagesShowBodyFromList() {
         let message = await gmailOps.getMessagesByMessageId(id);
         var operation = new Operations();
         let msg = operation.getMsg(message);
+        console.log(msg);
         agent.add(
             gmailOps.decodeMessageBody(msg.body));
         agent.context.set({
