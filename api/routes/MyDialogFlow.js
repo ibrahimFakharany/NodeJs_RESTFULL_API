@@ -206,64 +206,65 @@ async function emailMessagesGetContactName() {
     var state = agent.parameters.state;
     var contact_name = agent.parameters.contact_name;
     let tokenResult = await gmailAuth.getToken();
-    switch(tokenResult.status){
-        case 1: 
-        let response = await gmailOps.getContacts(tokenResult.data,contact_name);
-        var operation = new Operations();
-        switch (response.sent) {
-            case 0:
-                let token= resultToken.data;
-                // get messages by this email
-                // let jsonResult = await gmailOps.getMessagesByContactName(state, contact_name);
-                let jsonResult = await gmailOps.queryMessages(token, null, contact_name, state,5)
-                jsonResult = operation.prepareGettingIdsResposne(jsonResult);
-                let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
-                if (result.length > 0) {
-                    result.forEach(element => {
-                        agent.add(element.subject);
-                    });
+    switch (tokenResult.status) {
+        case 1:
+            let response = await gmailOps.getContacts(tokenResult.data, contact_name);
+            var operation = new Operations();
+            switch (response.sent) {
+                case 0:
+                    let token = resultToken.data;
+                    // get messages by this email
+                    // let jsonResult = await gmailOps.getMessagesByContactName(state, contact_name);
+                    let jsonResult = await gmailOps.queryMessages(token, null, contact_name, state, 5)
+                    jsonResult = operation.prepareGettingIdsResposne(jsonResult);
+                    let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
+                    if (result.length > 0) {
+                        result.forEach(element => {
+                            agent.add(element.subject);
+                        });
+                        agent.context.set({
+                            'name': Constants.get_contacts_context,
+                            'lifespan': Constants.default_context_life_span,
+                            'parameters': {
+                                'result': result,
+                            }
+                        });
+                    } else {
+                        agent.add("there is no messages for specified contact");
+                    }
+
+                    break;
+                case 1:
+                    // show these emails to user to select one
+                    let emails = response.emails;
+                    agent.add("which one did you mean?\n.. choose one by copy and pasting it in the message!");
                     agent.context.set({
                         'name': Constants.get_contacts_context,
                         'lifespan': Constants.default_context_life_span,
                         'parameters': {
+                            'from': Constants.getting_mails,
                             'result': result,
+                            'state': state
                         }
                     });
-                } else {
-                    agent.add("there is no messages for specified contact");
-                }
-    
-                break;
-            case 1:
-                // show these emails to user to select one
-                let emails = response.emails;
-                agent.add("which one did you mean?\n.. choose one by copy and pasting it in the message!");
-                agent.context.set({
-                    'name': Constants.get_contacts_context,
-                    'lifespan':  Constants.default_context_life_span,
-                    'parameters': {
-                        'from': Constants.getting_mails,
-                        'state': state
-                    }
-                });
-                agent.add(emails);
-    
-                break;
-    
-            case -1:
-                // show there is no contact with this name
-                agent.add('there is no contact with this name');
-                break;
-        }
-        break;
-        case 2: 
-        agent.add(tokenResult.data);
-        agent.context.set({
-            'name': 'handling_registration',
-            'lifespan': 1
-        })
-        break;
-    } 
+                    agent.add(emails);
+
+                    break;
+
+                case -1:
+                    // show there is no contact with this name
+                    agent.add('there is no contact with this name');
+                    break;
+            }
+            break;
+        case 2:
+            agent.add(tokenResult.data);
+            agent.context.set({
+                'name': 'handling_registration',
+                'lifespan': 1
+            })
+            break;
+    }
 }
 //date
 async function emailMessagesGetDate() {
@@ -277,7 +278,12 @@ async function emailMessagesGetDate() {
             contextParameters.date = todayDate;
         }
         let jsonResult = await gmailOps.getMessagesByDate(todayDate);
-        jsonResult = operation.prepareGettingIdsResposne(jsonResult);
+        jsonResult = {
+            "data":
+            {
+                "messages" : jsonResult.messages
+            }
+        }
         let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
         if (result.length > 0) {
             result.forEach(element => {
@@ -463,13 +469,13 @@ async function emailMessagesGetFollowupDateContactNameCount() { }
 async function emailSelecting() {
     let auth = await gmailAuth.authorizeUser();
     let tokenResult = await gmailAuth.getToken();
-    let token =  tokenResult.data
+    let token = tokenResult.data
     let fromContext = agent.context.contexts.getting_contacts.parameters.from
     if (fromContext == Constants.getting_mails) {
         let state = agent.context.contexts.getting_contacts.parameters.state
         let email = agent.parameters.email;
         var operation = new Operations();
-        let jsonResult = await gmailOps.queryMessages(token,null, email,state,5);
+        let jsonResult = await gmailOps.queryMessages(token, null, email, state, 5);
         jsonResult = operation.prepareGettingIdsResposne(jsonResult);
         let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
         if (result.length > 0) {
