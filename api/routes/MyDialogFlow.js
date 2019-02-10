@@ -170,6 +170,7 @@ async function emailMessagesGet() {
                     list = jsonResult.result;
                     list.forEach(element => {
                         agent.add(element.subject);
+                        consol.log(element.subject);
                     });
                     agent.context.set({
                         'name': Constants.handling_mail_context,
@@ -506,7 +507,7 @@ async function emailMessagesShowBodyFromList() {
         let message = await gmailOps.getMessagesByMessageId(id);
         var operation = new Operations();
         let msg = operation.getMsg(message);
-        console.log(msg);
+        console.log("msg :",msg);
         agent.add(
             gmailOps.decodeMessageBody(msg.body));
         agent.context.set({
