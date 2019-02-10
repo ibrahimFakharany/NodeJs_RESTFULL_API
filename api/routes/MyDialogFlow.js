@@ -469,12 +469,14 @@ async function emailMessagesGetFollowupDateContactNameCount() { }
 //handling contacts 
 async function emailSelecting() {
     let auth = await gmailAuth.authorizeUser();
+    let tokenResult = await gmailAuth.getToken();
+    let token =  tokenResult.data
     let fromContext = agent.context.contexts.getting_contacts.parameters.from
     if (fromContext == Constants.getting_mails) {
         let state = agent.context.contexts.getting_contacts.parameters.state
         let email = agent.parameters.email;
         var operation = new Operations();
-        let jsonResult = await gmailOps.getMessagesByContactName(state, email);
+        let jsonResult = await gmailOps.queryMessages(token,null, email,state,5);
         jsonResult = operation.prepareGettingIdsResposne(jsonResult);
         let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
         if (result.length > 0) {
