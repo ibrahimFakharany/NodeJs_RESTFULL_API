@@ -170,7 +170,7 @@ async function emailMessagesGet() {
                     list = jsonResult.result;
                     list.forEach(element => {
                         agent.add(element.subject);
-                        consol.log(element.subject);
+                        console.log(element.subject);
                     });
                     agent.context.set({
                         'name': Constants.handling_mail_context,
