@@ -116,7 +116,7 @@ class GmailAuth {
                         'status': 2,
                         'data': await this.getNewToken(),
 
-                    })
+                    });
                 }
                 else {
                     let jToken = JSON.parse(token);
