@@ -243,7 +243,7 @@ async function emailMessagesGetContactName() {
                         'lifespan': Constants.default_context_life_span,
                         'parameters': {
                             'from': Constants.getting_mails,
-                            'result': result,
+                            'result': emails,
                             'state': state
                         }
                     });
