@@ -58,7 +58,7 @@ router.post('/', (req, server_response, next) => {
     intentMap.set(Constants.emailMessagesShowBodyFromListText, emailMessagesShowBodyFromList)
     intentMap.set(Constants.userRegistrationText, handlingUserRegistration);
     // intentMap.set('email.messages.get.date.between', emailMessagesGetDateInBetween);
-    intentMap.set('email.selecting', emailSelecting);
+    // intentMap.set('email.selecting', emailSelecting);
     intentMap.set('email.messages.send_reply', emailMessageSendingReply);
     intentMap.set('email.message.show_body', emailMessageShowBody);
     intentMap.set('email.message.forward', emailMessageForward);
@@ -464,7 +464,7 @@ async function emailMessagesGetFollowupDateCount() { }
 async function emailMessagesGetFollowupDateContactName() { }
 async function emailMessagesGetFollowupDateContactNameCount() { }
 
-
+/*
 //handling contacts 
 async function emailSelecting() {
     let auth = await gmailAuth.authorizeUser();
@@ -514,7 +514,7 @@ async function emailSelecting() {
         agent.add(agentMessage);
     }
 }
-
+*/
 // handling mails
 async function emailMessageShowBody() {
     let msg = agent.context.contexts.handling_mails.parameters.msg
