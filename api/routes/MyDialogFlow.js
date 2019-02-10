@@ -223,7 +223,7 @@ async function emailMessagesGetContactName() {
                         agent.add(element.subject);
                     });
                     agent.context.set({
-                        'name': Constants.getting_mails,
+                        'name': Constants.get_contacts_context,
                         'lifespan': Constants.default_context_life_span,
                         'parameters': {
                             'result': result
@@ -243,7 +243,7 @@ async function emailMessagesGetContactName() {
                     'lifespan':  Constants.default_context_life_span,
                     'parameters': {
                         'from': Constants.getting_mails,
-                        'state': state,
+                        'state': state
                     }
                 });
                 agent.add(emails);
