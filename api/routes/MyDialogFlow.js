@@ -176,7 +176,7 @@ async function emailMessagesGet() {
                         'lifespan': Constants.default_context_life_span,
                         'parameters': {
                             'fromIntent': Constants.emailMessagesGetText,
-                            'messages': list
+                            'result': list
                         }
                     });
 
