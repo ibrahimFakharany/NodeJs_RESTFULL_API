@@ -212,7 +212,7 @@ async function emailMessagesGetContactName() {
             var operation = new Operations();
             switch (response.sent) {
                 case 0:
-                    let token = resultToken.data;
+                    let token = tokenResult.data;
                     // get messages by this email
                     // let jsonResult = await gmailOps.getMessagesByContactName(state, contact_name);
                     let jsonResult = await gmailOps.queryMessages(token, null, contact_name, state, 5)
