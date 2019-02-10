@@ -487,8 +487,7 @@ class GmailOperations {
         return encodedMail;
     }
 
-    async queryMessages(date, name, state, count) {
-        let token = await this.getToken();
+    async queryMessages(token, date, name, state, count) {
         let baseLink = "https://www.googleapis.com/gmail/v1/users/me/messages?q="
         if (date) {
             date = date.split("T")[0];

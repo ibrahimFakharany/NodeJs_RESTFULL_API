@@ -210,7 +210,8 @@ async function emailMessagesGetContactName() {
     switch (response.sent) {
         case 0:
             // get messages by this email
-            let jsonResult = await gmailOps.getMessagesByContactName(state, contact_name);
+            // let jsonResult = await gmailOps.getMessagesByContactName(state, contact_name);
+            let jsonResult = await gmailOps.queryMessages(token, null, contact_name, state,5)
             jsonResult = operation.prepareGettingIdsResposne(jsonResult);
             let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
             if (result.length > 0) {
@@ -218,8 +219,8 @@ async function emailMessagesGetContactName() {
                     agent.add(element.subject);
                 });
                 agent.context.set({
-                    'name': handling_mail_context,
-                    'lifespan': default_context_life_span,
+                    'name': Constants.handling_mail_context,
+                    'lifespan': Constants.default_context_life_span,
                     'parameters': {
                         'result': result
                     }
@@ -234,10 +235,10 @@ async function emailMessagesGetContactName() {
             let emails = response.emails;
             agent.add("which one did you mean?\n.. choose one by copy and pasting it in the message!");
             agent.context.set({
-                'name': get_contacts_context,
-                'lifespan': default_context_life_span,
+                'name': Constants.get_contacts_context,
+                'lifespan':  Constants.default_context_life_span,
                 'parameters': {
-                    'from': getting_mails,
+                    'from': Constants.getting_mails,
                     'state': state,
                 }
             });
@@ -350,29 +351,45 @@ async function emailMessagesGetDateContactNameCountSingle() { }
 async function emailMessagesGetDateContactNameCountMany() { }
 // followup Intents 
 async function emailMessagesGetFollowupDate() {
-    let params = agent.context.contexts.getting_mails.parameters
-    let date = agent.parameters.date;
-    // set date in the context 
-    params.date = date
-    agent.context.set({
-        'name': getting_mails,
-        'lifespan': default_context_life_span,
-        'parameters': params
-    });
 
-    // query
-    let contact_name = params.contact_name;
-    let state = params.state;
-    let count = params.count;
-    let result = await gmailOps.queryMessages(date, contact_name, state, count);
-    console.log(result);
-    result = {
-        'data': result
+    let resultToken = await gmailAuth.getToken()
+    switch (resultToken.status) {
+        case 1:
+            let token = resultToken.data
+            let params = agent.context.contexts.getting_mails.parameters
+            let date = agent.parameters.date;
+            // set date in the context 
+            params.date = date
+            agent.context.set({
+                'name': getting_mails,
+                'lifespan': default_context_life_span,
+                'parameters': params
+            });
+
+            // query
+            let contact_name = params.contact_name;
+            let state = params.state;
+            let count = params.count;
+            let result = await gmailOps.queryMessages(token, date, contact_name, state, count);
+            console.log(result);
+            result = {
+                'data': result
+            }
+            result = await gmailOps.gettingListSubjectFromMessageId(result);
+            result.forEach(element => {
+                agent.add(element.subject);
+            });
+            break;
+
+        case 2:
+            agent.add(result.data);
+            agent.context.set({
+                'name': 'handling_registration',
+                'lifespan': 1
+            })
+            break;
     }
-    result = await gmailOps.gettingListSubjectFromMessageId(result);
-    result.forEach(element => {
-        agent.add(element.subject);
-    });
+
 }
 async function emailMessagesGetFollowupContactName() {
     let params = agent.context.contexts.getting_mails.parameters
