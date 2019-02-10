@@ -318,6 +318,7 @@ class GmailOperations {
     async getMessagesByMessageId(id) {
         let result = await this.getToken();
         let token = result.data;
+        console.log("access token ", token );
         let promise = new Promise((resolve, reject) => {
             request('https://www.googleapis.com/gmail/v1/users/me/messages/' + id + '?access_token=' + token, { json: true }, (err, res, body) => {
                 if (err) {

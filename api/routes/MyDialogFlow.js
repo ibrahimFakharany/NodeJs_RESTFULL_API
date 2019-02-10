@@ -415,7 +415,7 @@ async function emailMessagesGetFollowupDateContactName() { }
 async function emailMessagesGetFollowupDateContactNameCount() { }
 
 
-//handling contacts
+//handling contacts 
 async function emailSelecting() {
     let auth = await gmailOps.authorizeUser();
     let fromContext = agent.context.contexts.selecting_email_context.parameters.from
@@ -499,10 +499,12 @@ async function emailMessagesShowBodyFromList() {
         if (element.subject.toString().toUpperCase() == subject.toString().toUpperCase()) {
             id = element.id
         }
-    })
-
+    });
+    console.log("subject ", subject);
     if (id != null) {
+        console.log("id " , id);
         let message = await gmailOps.getMessagesByMessageId(id);
+        console.log("message ", message);
         var operation = new Operations();
         let msg = operation.getMsg(message);
         agent.add(
