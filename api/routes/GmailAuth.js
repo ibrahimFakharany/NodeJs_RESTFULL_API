@@ -26,7 +26,7 @@ class GmailAuth {
         con = JSON.parse(con);
         const { client_secret, client_id, redirect_uris } = con.installed;
         const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
-       
+
         const authUrl = oAuth2Client.generateAuthUrl({
             access_type: 'online',
             scope: SCOPES,
@@ -54,7 +54,7 @@ class GmailAuth {
             fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
                 if (err) reject(error);
                 else {
-            
+
                     resolve(oAuth2Client);
                 }
             });
@@ -109,15 +109,17 @@ class GmailAuth {
         let promise = new Promise((resolve, reject) => {
             fs.readFile(TOKEN_PATH, async (err, token) => {
                 let time = new Date().getTime();
-                let jToken = JSON.parse(token);
-                if (err || jToken.expiry_date < time) {
+
+
+                if (err || JSON.parse(token).expiry_date < time) {
                     resolve({
                         'status': 2,
-                        'data':  await this.getNewToken(), 
-                           
+                        'data': await this.getNewToken(),
+
                     })
                 }
                 else {
+                    let jToken = JSON.parse(token);
                     resolve({
                         'status': 1,
                         'data': jToken.access_token

@@ -1,3 +1,4 @@
+const GmailAuth = require('./GmailAuth');
 const base64url = require('base64url');
 const { googleAction } = require('actions-on-google');
 const { Card, Suggestion } = require('dialogflow-fulfillment');
@@ -6,6 +7,7 @@ const ArrayList = require('arraylist');
 const readline = require('readline');
 const GoogleContacts = require("google-contacts-api");
 const request = require('request');
+const gmailAuth = new GmailAuth();
 const SCOPES = ['https://mail.google.com/',
     'https://www.googleapis.com/auth/gmail.readonly',
     'https://www.googleapis.com/auth/gmail.modify',
@@ -261,7 +263,8 @@ class GmailOperations {
     async gettingListSubjectFromMessageId(response) {
         let list = new ArrayList;
         var complete = 0;
-        let token = await this.getToken();
+        let result = await gmailAuth.getToken();
+        let token = result.data;
         let promise = new Promise((resolve, reject) => {
             console.log(response);
             response.data.messages.forEach(element => {
@@ -313,7 +316,8 @@ class GmailOperations {
     }
 
     async getMessagesByMessageId(id) {
-        let token = await this.getToken();
+        let result = await this.getToken();
+        let token = result.data;
         let promise = new Promise((resolve, reject) => {
             request('https://www.googleapis.com/gmail/v1/users/me/messages/' + id + '?access_token=' + token, { json: true }, (err, res, body) => {
                 if (err) {
