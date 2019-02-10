@@ -492,6 +492,8 @@ class GmailOperations {
             baseLink = baseLink + `after:${date} `;
         }
         if (name) {
+            if (state == "by")
+                state = "from";
             baseLink = baseLink + ` ${state}:${name}`;
         }
         if (count) {
