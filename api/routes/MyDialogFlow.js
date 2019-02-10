@@ -257,7 +257,7 @@ async function emailMessagesGetContactName() {
         }
         break;
         case 2: 
-        agent.add(result.data);
+        agent.add(tokenResult.data);
         agent.context.set({
             'name': 'handling_registration',
             'lifespan': 1
