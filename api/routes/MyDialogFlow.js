@@ -209,7 +209,6 @@ async function emailMessagesGetContactName() {
     switch (tokenResult.status) {
         case 1:
             let response = await gmailOps.getContacts(tokenResult.data, contact_name);
-            var operation = new Operations();
             switch (response.sent) {
                 case 0:
                     let token = tokenResult.data;
@@ -223,16 +222,18 @@ async function emailMessagesGetContactName() {
                     }
                     let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
                     if (result.length > 0) {
+                        agent.context.set({
+                            'name': Constants.handling_mail_context,
+                            'lifespan': Constants.default_context_life_span,
+                            'parameters': {
+                                'fromIntent': Constants.emailMessagesGetContactName,
+                                'result': result
+                            }
+                        });
                         result.forEach(element => {
                             agent.add(element.subject);
                         });
-                        agent.context.set({
-                            'name': Constants.get_contacts_context,
-                            'lifespan': Constants.default_context_life_span,
-                            'parameters': {
-                                'result': result,
-                            }
-                        });
+                    
                     } else {
                         agent.add("there is no messages for specified contact");
                     }
