@@ -300,7 +300,9 @@ async function emailMessagesGetDate() {
                     agent.context.set({
                         'name': Constants.handling_mail_context,
                         'lifespan': Constants.default_context_life_span,
-                        'parameters': contextParameters
+                        'parameters': {
+                            "result": result
+                        }
                     });
                 } else {
                     agent("there is no message with specified date");
