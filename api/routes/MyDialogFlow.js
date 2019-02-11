@@ -216,7 +216,7 @@ async function emailMessagesGetContactName() {
                     // let jsonResult = await gmailOps.getMessagesByContactName(state, contact_name);
                     let jsonResult = await gmailOps.queryMessages(token, null, contact_name, state, 5)
                     jsonResult = {
-                        "data":{
+                        "data": {
                             "messages": jsonResult.messages
                         }
                     }
@@ -233,7 +233,7 @@ async function emailMessagesGetContactName() {
                         result.forEach(element => {
                             agent.add(element.subject);
                         });
-                    
+
                     } else {
                         agent.add("there is no messages for specified contact");
                     }
@@ -554,6 +554,7 @@ async function emailMessageShowBody() {
     }
 }
 async function emailMessagesShowBodyFromList() {
+    console.log("show message from list intent")
     let result = agent.context.contexts.handling_mails.parameters.result
     let subject = agent.parameters.subject
     let id = null;
