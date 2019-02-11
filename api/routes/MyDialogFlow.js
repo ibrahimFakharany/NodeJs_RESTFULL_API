@@ -586,8 +586,8 @@ async function emailMessagesShowBodyFromList() {
         var operation = new Operations();
         let msg = operation.getMsg(message);
         console.log("msg :", msg);
-        agent.add(
-            gmailOps.decodeMessageBody(msg.body));
+        agent.add(msg.body)
+        // agent.add(gmailOps.decodeMessageBody(msg.body));
         agent.context.set({
             'name': Constants.handling_mail_context,
             'lifespan': Constants.default_context_life_span,
