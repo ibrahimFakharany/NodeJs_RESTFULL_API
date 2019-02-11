@@ -283,7 +283,7 @@ async function emailMessagesGetDate() {
                 var token = tokenResult.data
                 if (date) {
                     todayDate = date.split("T")[0];
-                    contextParameters.date = todayDate;
+                    
                 }
                 let jsonResult = await gmailOps.queryMessages(token, todayDate, null, null, 5);
                 jsonResult = {
