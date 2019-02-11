@@ -587,6 +587,8 @@ async function emailMessagesShowBodyFromList() {
 async function emailMessageForward() {
     console.log("forward method ");
     let from = agent.context.contexts.handling_mails.parameters.from
+    let tokenResult = gmailAuth.getToken();
+    let token = tokenResult.data;
     let auth = await gmailAuth.authorizeUser()
     if (from == Constants.get_contacts_context) {
         console.log("from get_contacts context")
@@ -611,7 +613,7 @@ async function emailMessageForward() {
         let message = agent.context.contexts.handling_mails.parameters.message
         let email = agent.parameters.email;
         console.log(email);
-        let contacts = await gmailOps.getContacts(email);
+        let contacts = await gmailOps.getContacts(token, email);
         console.log(JSON.stringify(contacts));
         if (contacts.sent == 1) {
             // found multiple emails 
