@@ -135,8 +135,7 @@ class GmailOperations {
     }
 
     // by date 
-    async getMessagesByDate(date) {
-        let token = await this.getToken();
+    async getMessagesByDate(token, date) {
         let promise = new Promise((resolve, reject) => {
             request('https://www.googleapis.com/gmail/v1/users/me/messages?q=after:' + date + '&access_token=' + token, { json: true }, (err, res, body) => {
                 if (err) { return console.log(err); }

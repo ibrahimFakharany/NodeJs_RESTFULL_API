@@ -277,30 +277,44 @@ async function emailMessagesGetDate() {
         deleteGetMessagesContext();
         var date = agent.parameters.date;
         var todayDate = null;
-        var operation = new Operations();
-        if (date) {
-            todayDate = date.split("T")[0];
-            contextParameters.date = todayDate;
-        }
-        let jsonResult = await gmailOps.getMessagesByDate(todayDate);
-        jsonResult = {
-            "data":
-            {
-                "messages": jsonResult.messages
-            }
-        }
-        let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
-        if (result.length > 0) {
-            result.forEach(element => {
-                agent.add(element.subject);
-            });
-            agent.context.set({
-                'name': getting_mails,
-                'lifespan': default_context_life_span,
-                'parameters': contextParameters
-            });
-        } else {
-            agent("there is no message with specified date");
+        var tokenResult = await gmailAuth.getToken();
+        switch (tokenResult.status) {
+            case 1:
+                var token = tokenResult.data
+                if (date) {
+                    todayDate = date.split("T")[0];
+                    contextParameters.date = todayDate;
+                }
+                let jsonResult = await gmailOps.queryMessages(token, todayDate, null, null, 5);
+                jsonResult = {
+                    "data":
+                    {
+                        "messages": jsonResult.messages
+                    }
+                }
+                let result = await gmailOps.gettingListSubjectFromMessageId(jsonResult);
+                if (result.length > 0) {
+                    result.forEach(element => {
+                        agent.add(element.subject);
+                    });
+                    agent.context.set({
+                        'name': Constants.handling_mail_context,
+                        'lifespan': Constants.default_context_life_span,
+                        'parameters': contextParameters
+                    });
+                } else {
+                    agent("there is no message with specified date");
+                }
+
+                break;
+            case 2:
+                agent.add(result.data);
+                agent.context.set({
+                    'name': 'handling_registration',
+                    'lifespan': 1
+                })
+                break;
+
         }
 
     } catch (err) {
@@ -587,7 +601,7 @@ async function emailMessagesShowBodyFromList() {
 async function emailMessageForward() {
     console.log("forward method ");
     let from = agent.context.contexts.handling_mails.parameters.from
-    let tokenResult =await  gmailAuth.getToken();
+    let tokenResult = await gmailAuth.getToken();
     let token = tokenResult.data;
     let auth = await gmailAuth.authorizeUser()
     if (from == Constants.get_contacts_context) {
@@ -649,7 +663,7 @@ async function emailMessageForward() {
         } else {
             // show contact couldn't found   
             console.log("case no email");
-   
+
         }
     }
 
