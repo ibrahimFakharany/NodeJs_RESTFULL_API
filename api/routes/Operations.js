@@ -51,7 +51,6 @@ class Operations {
         let mimeType = message.payload.mimeType;
         if (message.payload.mimeType == "text/html") {
             body = null;
-            message = null;
         } else if (message.payload.mimeType == "multipart/alternative") {
             message.payload.parts.forEach(element => {
                 if (element.mimeType == "text/plain") {
@@ -61,7 +60,7 @@ class Operations {
 
         }
 
-        if (body == null) {
+        if (body == null && message.payload.mimeType == "text/html" && message != null) {
             body = message.snippet;
         }
         return {
