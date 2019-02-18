@@ -75,8 +75,9 @@ async function handlingUserRegistration() {
 
 //sending email
 async function fullAddressEmailSending() {
-    let auth = await gmailAuth.authorizeUser()
+    
     let result = await gmailAuth.getToken();
+    let auth = await gmailAuth.authorizeUser()
     switch (result.status) {
         case 1:
             try {
