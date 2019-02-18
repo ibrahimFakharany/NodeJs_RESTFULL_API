@@ -45,7 +45,12 @@ class GmailOperations {
             userId: 'me'
         }, (err, data) => {
 
-            if (err) return console.log('The API returned an error: ' + err)
+            if (err) {
+                console.log('The API returned an error: ' + err)
+                return -1
+            }
+
+              
             var userEmail = data.emailAddress;
             var raw = this.makeBody(toEmail, userEmail, subjectEmail, bodyEmail);
             gmail.users.messages.send({

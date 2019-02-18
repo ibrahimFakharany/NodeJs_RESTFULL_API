@@ -78,7 +78,9 @@ async function fullAddressEmailSending() {
     let auth = await gmailAuth.authorizeUser();
     try {
         const x = await gmailOps.sendEmail(auth, agent.parameters.email, agent.parameters.any, agent.parameters.any1);
-        agent.add('sent');
+       if(x == -1 ){
+        agent.add('Error in sending');
+       } else {agent.add('sent');}
     } catch (err) {
         agent.add('error in after send email catch');
     }
