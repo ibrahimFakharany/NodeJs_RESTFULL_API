@@ -41,7 +41,7 @@ class GmailAuth {
         let tokenPromise = new Promise((resolve, reject) => {
             oAuth2Client.getToken(code, async (err, token) => {
 
-                if (err) reject('Error retrieving access token');
+                if (err) reject('Error retrieving access token ok');
                 else {
                     oAuth2Client.setCredentials(token);
                     // Store the token to disk for later program executions
