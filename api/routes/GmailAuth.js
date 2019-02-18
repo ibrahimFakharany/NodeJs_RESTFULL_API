@@ -95,7 +95,10 @@ class GmailAuth {
         return new Promise((resolve, reject) => {
             fs.readFile(TOKEN_PATH, async (err, token) => {
                 let time = new Date().getTime();
-                if (err || JSON.parse(token).expiry_date < time) return resolve(await this.getNewToken(oAuth2Client));
+                if (err || JSON.parse(token).expiry_date < time) {
+                    console.log("error message when retrieving access token in authorize method :", err.message);
+                    return resolve(await this.getNewToken(oAuth2Client));
+                }
                 oAuth2Client.setCredentials(JSON.parse(token));
                 resolve(oAuth2Client);
             });
@@ -112,7 +115,7 @@ class GmailAuth {
 
 
                 if (err || JSON.parse(token).expiry_date < time) {
-                
+
                     resolve({
                         'status': 2,
                         'data': await this.getNewToken(),
