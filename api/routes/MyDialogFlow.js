@@ -77,7 +77,6 @@ async function handlingUserRegistration() {
 async function fullAddressEmailSending() {
 
     let result = await gmailAuth.getToken();
-
     switch (result.status) {
         case 1:
             let auth = await gmailAuth.authorizeUser()
@@ -90,8 +89,9 @@ async function fullAddressEmailSending() {
                 agent.add('error in after send email catch');
             }
             break;
-            //show login link 
-            //ask for code 
+        //show login link 
+        //ask for code 
+        case 0:
             agent.add(result.data);
             agent.context.set({
                 'name': 'handling_registration',
