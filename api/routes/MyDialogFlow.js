@@ -667,7 +667,7 @@ async function emailMessageForward() {
                 'parameters': {
                     'from': Constants.handling_mail_context,
                     'msg': msg,
-                    'message': message
+                    'message': message  
                 }
             });
 
