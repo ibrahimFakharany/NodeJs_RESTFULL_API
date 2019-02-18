@@ -75,15 +75,29 @@ async function handlingUserRegistration() {
 
 //sending email
 async function fullAddressEmailSending() {
-    let auth = await gmailAuth.authorizeUser();
-    try {
-        const x = await gmailOps.sendEmail(auth, agent.parameters.email, agent.parameters.any, agent.parameters.any1);
-       if(x == -1 ){
-        agent.add('Error in sending');
-       } else {agent.add('sent');}
-    } catch (err) {
-        agent.add('error in after send email catch');
+    let result = await gmailAuth.getToken();
+    switch (result.status) {
+        case 1:
+            try {
+                const x = await gmailOps.sendEmail(auth, agent.parameters.email, agent.parameters.any, agent.parameters.any1);
+                if (x == -1) {
+                    agent.add('Error in sending');
+                } else { agent.add('sent'); }
+            } catch (err) {
+                agent.add('error in after send email catch');
+            }
+            break;
+            //show login link 
+            //ask for code 
+            agent.add(result.data);
+            agent.context.set({
+                'name': 'handling_registration',
+                'lifespan': 1
+            })
+            break;
     }
+
+
 }
 
 async function messageContactEmailSending() {
@@ -285,7 +299,7 @@ async function emailMessagesGetDate() {
                 var token = tokenResult.data
                 if (date) {
                     todayDate = date.split("T")[0];
-                    
+
                 }
                 let jsonResult = await gmailOps.queryMessages(token, todayDate, null, null, 5);
                 jsonResult = {
