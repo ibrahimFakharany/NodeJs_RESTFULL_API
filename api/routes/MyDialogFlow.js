@@ -75,11 +75,12 @@ async function handlingUserRegistration() {
 
 //sending email
 async function fullAddressEmailSending() {
-    
+
     let result = await gmailAuth.getToken();
-    let auth = await gmailAuth.authorizeUser()
+
     switch (result.status) {
         case 1:
+            let auth = await gmailAuth.authorizeUser()
             try {
                 const x = await gmailOps.sendEmail(auth, agent.parameters.email, agent.parameters.any, agent.parameters.any1);
                 if (x == -1) {
