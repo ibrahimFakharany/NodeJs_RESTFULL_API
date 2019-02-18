@@ -75,7 +75,7 @@ async function handlingUserRegistration() {
 
 //sending email
 async function fullAddressEmailSending() {
-    let auth = await gmailOps.authorizeUser()
+    let auth = await gmailAuth.authorizeUser();
     try {
         const x = await gmailOps.sendEmail(auth, agent.parameters.email, agent.parameters.any, agent.parameters.any1);
         agent.add('sent');
