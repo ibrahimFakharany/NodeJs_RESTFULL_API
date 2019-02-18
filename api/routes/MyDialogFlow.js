@@ -75,7 +75,7 @@ async function handlingUserRegistration() {
 
 //sending email
 async function fullAddressEmailSending() {
-
+ 
     let result = await gmailAuth.getToken();
     switch (result.status) {
         case 1:
