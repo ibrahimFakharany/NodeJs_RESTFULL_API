@@ -79,7 +79,7 @@ async function fullAddressEmailSending() {
     let result = await gmailAuth.getToken();
     switch (result.status) {
         case 1:
-        console.log("result is 1");
+            console.log("result is 1");
             let auth = await gmailAuth.authorizeUser()
             try {
                 const x = await gmailOps.sendEmail(auth, agent.parameters.email, agent.parameters.any, agent.parameters.any1);
@@ -93,7 +93,7 @@ async function fullAddressEmailSending() {
         //show login link 
         //ask for code 
         case 0:
-        console.log("result is 2");
+            console.log("result is 2");
 
             agent.add(result.data);
             agent.context.set({
@@ -667,7 +667,7 @@ async function emailMessageForward() {
                 'parameters': {
                     'from': Constants.handling_mail_context,
                     'msg': msg,
-                    'message': message  
+                    'message': message
                 }
             });
 
