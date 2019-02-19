@@ -399,7 +399,7 @@ async function emailMessagesGetDateContactName() {
 
 }
 //date count_single
-async function emailMessagesGetDateCountSingle() { }
+async function emailMessagesGetDateCountSingle() { }  
 //date count_many
 async function emailMessagesGetDateCountMany() { }
 // contact_name count_single
