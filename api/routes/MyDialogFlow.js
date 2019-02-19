@@ -556,7 +556,7 @@ async function selectingEmail() {
         });
         agent.add(agentMessage);
     }
-}
+}  
 /*
 //handling contacts 
 async function emailSelecting() {
