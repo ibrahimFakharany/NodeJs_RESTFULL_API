@@ -501,7 +501,7 @@ async function emailMessagesGetFollowupCount() {
     result.forEach(element => {
         agent.add(element.subject);
     });
-}
+}   
 async function emailMessagesGetFollowupContactNameCount() { }
 async function emailMessagesGetFollowupDateCount() { }
 async function emailMessagesGetFollowupDateContactName() { }
