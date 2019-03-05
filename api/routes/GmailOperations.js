@@ -50,7 +50,7 @@ class GmailOperations {
                 return -1
             }
 
-              
+
             var userEmail = data.emailAddress;
             var raw = this.makeBody(toEmail, userEmail, subjectEmail, bodyEmail);
             gmail.users.messages.send({
@@ -514,6 +514,40 @@ class GmailOperations {
         let result = await promise;
         return result
 
+    }
+
+
+    async getListMessagesFromListOfIds(messagesIdsList) {
+        let list = new ArrayList;
+        var complete = 0;
+        let promise = new Promise((resolve, reject) => {
+            messagesIdsList.forEach(element => {
+                request('https://www.googleapis.com/gmail/v1/users/me/messages/' + element.id + '?access_token=' + token, { json: true }, (err, res, body) => {
+                    if (err) { return console.log(err); }
+                    let stringResponse = JSON.stringify(res);
+                    let jsonResponse = JSON.parse(stringResponse);
+                    console.log("json response :" + JSON.stringify(jsonResponse));
+                    complete++;
+                    for (var i = 0; i < jsonResponse.body.payload.headers.length; i++) {
+                        if (jsonResponse.body.payload.headers[i].name.toString().toUpperCase() == "Subject".toUpperCase()) {
+                            var subject = jsonResponse.body.payload.headers[i].value;
+                            if (subject === '') {
+                                subject = "no subject";
+                            }
+                            list.add({ "id": messageId, "subject": subject });
+                            break;
+                        }
+                    }
+                    if (complete == response.length) {
+                        resolve(list);
+                    }
+                });
+
+            });
+        });
+
+        let messagesList = await promise;
+        console.log("this is result :" + messagesList);
     }
 }
 module.exports = GmailOperations;

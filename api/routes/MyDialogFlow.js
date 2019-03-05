@@ -184,37 +184,7 @@ async function emailMessagesGet() {
             let jsonResult = await gmailOps.queryMessages(result.data, null, null, null, null)
             // let jsonResult = await gmailOps.getMessages(result.data, - 1);
             var response = jsonResult.messages;
-            let list = new ArrayList;
-            var complete = 0;
-            let promise = new Promise((resolve, reject) => {
-                jsonResult.messages.forEach(element => {
-                    request('https://www.googleapis.com/gmail/v1/users/me/messages/' + element.id + '?access_token=' + token, { json: true }, (err, res, body) => {
-                        if (err) { return console.log(err); }
-                        let stringResponse = JSON.stringify(res);
-                        let jsonResponse = JSON.parse(stringResponse);
-                        console.log("json response :" + JSON.stringify(jsonResponse));
-                        complete++;
-                        for (var i = 0; i < jsonResponse.body.payload.headers.length; i++) {
-                            if (jsonResponse.body.payload.headers[i].name.toString().toUpperCase() == "Subject".toUpperCase()) {
-                                var subject = jsonResponse.body.payload.headers[i].value;
-                                if (subject === '') {
-                                    subject = "no subject";
-                                }
-                                list.add({ "id": messageId, "subject": subject });
-                                break;
-                            }
-                        }
-                        if (complete == response.length) {
-                            resolve(list);
-                        }
-                    });
-
-                });
-            });
-
-            let messagesList = await promise;
-            console.log("this is result :"+messagesList);
-        
+           let messagesList =await   gmailOps.getListMessagesFromListOfIds(response);
             // let list = null;
             // switch (jsonResult.success) {
             //     case 0:
@@ -239,7 +209,7 @@ async function emailMessagesGet() {
             //         console.log('the get mails context setted');
             //         break;
             // }
-
+            console.log("this is result :" + messagesList);
             break;
         case 2:
             //show login link 
