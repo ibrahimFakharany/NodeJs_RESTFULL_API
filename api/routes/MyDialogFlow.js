@@ -75,7 +75,7 @@ async function handlingUserRegistration() {
 
 //sending email
 async function fullAddressEmailSending() {
- 
+
     let result = await gmailAuth.getToken();
     switch (result.status) {
         case 1:
@@ -181,8 +181,8 @@ async function emailMessagesGet() {
         case 1:
             //get access token 
             deleteGetMessagesContext();
-            let jsonResult = await gmailOps.queryMessages(result.data,null,null,null,null)
-console.log("json result : "+jsonResult)
+            let jsonResult = await gmailOps.queryMessages(result.data, null, null, null, null)
+            console.log("json result : " + json.stringify(jsonResult));
             // let jsonResult = await gmailOps.getMessages(result.data, - 1);
             let list = null;
             switch (jsonResult.success) {
@@ -400,7 +400,7 @@ async function emailMessagesGetDateContactName() {
 
 }
 //date count_single
-async function emailMessagesGetDateCountSingle() { }  
+async function emailMessagesGetDateCountSingle() { }
 //date count_many   
 async function emailMessagesGetDateCountMany() { }
 // contact_name count_single
@@ -502,7 +502,7 @@ async function emailMessagesGetFollowupCount() {
     result.forEach(element => {
         agent.add(element.subject);
     });
-}   
+}
 async function emailMessagesGetFollowupContactNameCount() { }
 async function emailMessagesGetFollowupDateCount() { }
 async function emailMessagesGetFollowupDateContactName() { }
@@ -557,7 +557,7 @@ async function selectingEmail() {
         });
         agent.add(agentMessage);
     }
-}  
+}
 /*
 //handling contacts 
 async function emailSelecting() {
