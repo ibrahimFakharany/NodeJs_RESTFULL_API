@@ -559,7 +559,8 @@ class GmailOperations {
             });
         });
 
-        let messagesList = await promise;
+        let messagesContent = await promise;
+        return messagesContent
         // console.log("this is result :" + messagesList);
     }
 }
