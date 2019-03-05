@@ -29,12 +29,14 @@ router.post('/', (req, server_response, next) => {
     intentMap.set('email.send.message_email', messageEmailSending);
     intentMap.set('email.selecting.index', sendingEmailAfterSelectingIndex);
     intentMap.set('Default Fallback Intent', handlingDefaultFallbackIntent);
+    
     // getting messages
     intentMap.set(Constants.emailMessagesGetText, emailMessagesGet);
     intentMap.set(Constants.emailMessagesGetDateText, emailMessagesGetDate);
     intentMap.set(Constants.emailMessagesGetContactNameText, emailMessagesGetContactName);
     intentMap.set(Constants.emailMessagesGetCountSingleText, emailMessagesGetCountSingle);
     intentMap.set(Constants.emailMessagesGetCountManyText, emailMessagesGetCountMany);
+    
     // combinations methods
     intentMap.set(Constants.emailMessagesGetDateContactNameText, emailMessagesGetDateContactName);
     intentMap.set(Constants.emailMessagesGetContactNameCountSingleText, emailMessagesGetContactNameCountSingle);
@@ -401,7 +403,6 @@ async function emailMessagesGetDateContactNameCountSingle() { }
 async function emailMessagesGetDateContactNameCountMany() { }
 // followup Intents 
 async function emailMessagesGetFollowupDate() {
-
     let resultToken = await gmailAuth.getToken()
     switch (resultToken.status) {
         case 1:
@@ -421,14 +422,30 @@ async function emailMessagesGetFollowupDate() {
             let state = params.state;
             let count = params.count;
             let result = await gmailOps.queryMessages(token, date, contact_name, state, count);
-            console.log(result);
-            result = {
-                'data': result
-            }
-            result = await gmailOps.gettingListSubjectFromMessageId(result);
-            result.forEach(element => {
+            let messagesList = await gmailOps.getListMessagesFromListOfIds(result, token);
+            messagesList.forEach(element => {
                 agent.add(element.subject);
+            });           
+
+
+            agent.context.set({
+                'name': Constants.handling_mail_context,
+                'lifespan': Constants.default_context_life_span,
+                'parameters': {
+                    'fromIntent':Constants.emailMessagesGetFollowupDateText,
+                    'result': messagesList
+                }
             });
+
+
+            // console.log(result);
+            // result = {
+            //     'data': result
+            // }
+            // result = await gmailOps.gettingListSubjectFromMessageId(result);
+            // result.forEach(element => {
+            //     agent.add(element.subject);
+            // });
             break;
 
         case 2:
