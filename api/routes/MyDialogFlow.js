@@ -23,7 +23,7 @@ router.post('/', (req, server_response, next) => {
         request: req,
         response: server_response
     });
-    
+
     // console.log("intent display name : "+req.queryResult.intent.displayName)
     let intentMap = new Map();
     intentMap.set('email.send.message_full_text', fullAddressEmailSending);
@@ -31,14 +31,14 @@ router.post('/', (req, server_response, next) => {
     intentMap.set('email.send.message_email', messageEmailSending);
     intentMap.set('email.selecting.index', sendingEmailAfterSelectingIndex);
     intentMap.set('Default Fallback Intent', handlingDefaultFallbackIntent);
-    
+
     // getting messages
     intentMap.set(Constants.emailMessagesGetText, emailMessagesGet);
     intentMap.set(Constants.emailMessagesGetDateText, emailMessagesGetDate);
     intentMap.set(Constants.emailMessagesGetContactNameText, emailMessagesGetContactName);
     intentMap.set(Constants.emailMessagesGetCountSingleText, emailMessagesGetCountSingle);
     intentMap.set(Constants.emailMessagesGetCountManyText, emailMessagesGetCountMany);
-    
+
     // combinations methods
     intentMap.set(Constants.emailMessagesGetDateContactNameText, emailMessagesGetDateContactName);
     intentMap.set(Constants.emailMessagesGetContactNameCountSingleText, emailMessagesGetContactNameCountSingle);
@@ -49,7 +49,6 @@ router.post('/', (req, server_response, next) => {
     intentMap.set(Constants.emailMessagesGetDateContactNameCountManyText, emailMessagesGetDateContactNameCountMany);
 
     //followup intents getting messages 
-
     intentMap.set(Constants.emailMessagesGetFollowupDateText, emailMessagesGetFollowupDate);
     intentMap.set(Constants.emailMessagesGetFollowupContactNameText, emailMessagesGetFollowupContactName);
     intentMap.set(Constants.emailMessagesGetFollowupCountText, emailMessagesGetFollowupCount);
@@ -204,6 +203,16 @@ async function emailMessagesGet() {
                     'result': messagesList
                 }
             });
+
+
+
+            agent.context.set({
+                'name': Constants.getting_mails,
+                'lifespan': Constants.default_context_life_span,
+            });
+
+
+
             break;
         case 2:
             //show login link 
@@ -414,7 +423,7 @@ async function emailMessagesGetFollowupDate() {
             // set date in the context 
             params.date = date
             agent.context.set({
-                'name': getting_mails,
+                'name': Constants.getting_mails,
                 'lifespan': default_context_life_span,
                 'parameters': params
             });
@@ -427,26 +436,19 @@ async function emailMessagesGetFollowupDate() {
             let messagesList = await gmailOps.getListMessagesFromListOfIds(result, token);
             messagesList.forEach(element => {
                 agent.add(element.subject);
-            });           
+            });
 
             agent.context.set({
                 'name': Constants.handling_mail_context,
                 'lifespan': Constants.default_context_life_span,
                 'parameters': {
-                    'fromIntent':Constants.emailMessagesGetFollowupDateText,
+                    'fromIntent': Constants.emailMessagesGetFollowupDateText,
                     'result': messagesList
                 }
             });
 
 
-            // console.log(result);
-            // result = {
-            //     'data': result
-            // }
-            // result = await gmailOps.gettingListSubjectFromMessageId(result);
-            // result.forEach(element => {
-            //     agent.add(element.subject);
-            // });
+
             break;
 
         case 2:
