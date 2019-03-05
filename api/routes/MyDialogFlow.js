@@ -173,7 +173,7 @@ function deleteGetMessagesContext() {
         'name': Constants.getting_mails,
         'lifespan': 0,
         'parameters': {
-            "result": null
+            "result": ""
         }
     });
 }
