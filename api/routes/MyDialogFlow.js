@@ -466,8 +466,8 @@ async function emailMessagesGetFollowupContactName() {
     // set date in the context 
     params.contact_name = contact_name
     agent.context.set({
-        'name': getting_mails,
-        'lifespan': default_context_life_span,
+        'name': constants.getting_mails,
+        'lifespan': constants.default_context_life_span,
         'parameters': params
     });
 
