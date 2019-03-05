@@ -502,6 +502,8 @@ class GmailOperations {
         }
         if (count) {
             baseLink = baseLink + `&maxResults=${count}`;
+        }else{
+            count = 5
         }
         let link = `${baseLink}&access_token=${token}`;
         console.log(link);

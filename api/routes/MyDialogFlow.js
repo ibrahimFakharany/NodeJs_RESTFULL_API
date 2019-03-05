@@ -433,15 +433,8 @@ async function emailMessagesGetFollowupDate() {
             let state = params.state;
             let count = params.count;
             let result = await gmailOps.queryMessages(token, date, contact_name, state, count);
-            
             console.log(JSON.stringify(result));
-            
             let messagesList = await gmailOps.getListMessagesFromListOfIds(result.messages, token);
-
-
-
-
-
             messagesList.forEach(element => {
                 agent.add(element.subject);
             });
