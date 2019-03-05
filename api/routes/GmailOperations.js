@@ -526,7 +526,7 @@ class GmailOperations {
                     if (err) { return console.log(err); }
                     let stringResponse = JSON.stringify(res);
                     let jsonResponse = JSON.parse(stringResponse);
-                    console.log("this is message : " + jsonResponse);
+                    console.log("this is message : " + JSON.stringify(jsonResponse));
                     complete++;
                     for (var i = 0; i < jsonResponse.body.payload.headers.length; i++) {
                         if (jsonResponse.body.payload.headers[i].name.toString().toUpperCase() == "Subject".toUpperCase()) {
@@ -537,7 +537,6 @@ class GmailOperations {
                             list.add({ 
                                 "id": element.id,
                                 "subject": subject
-                               
                              });
                             break;
                         }
