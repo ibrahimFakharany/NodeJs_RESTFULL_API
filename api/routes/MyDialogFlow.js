@@ -212,8 +212,8 @@ async function emailMessagesGet() {
                 });
             });
 
-            let list = await promise;
-            console.log("this is result :"+list);
+            let messagesList = await promise;
+            console.log("this is result :"+messagesList);
         
             // let list = null;
             // switch (jsonResult.success) {
