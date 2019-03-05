@@ -520,13 +520,17 @@ class GmailOperations {
     async getListMessagesFromListOfIds(messagesIdsList, token) {
         let list = new ArrayList;
         var complete = 0;
+        let someMessage = null
         let promise = new Promise((resolve, reject) => {
             messagesIdsList.forEach(element => {
                 request('https://www.googleapis.com/gmail/v1/users/me/messages/' + element.id + '?access_token=' + token, { json: true }, (err, res, body) => {
                     if (err) { return console.log(err); }
                     let stringResponse = JSON.stringify(res);
                     let jsonResponse = JSON.parse(stringResponse);
-                    console.log("this is message : " + JSON.stringify(jsonResponse));
+                    if (someMessage == null) {
+                        console.log("this is message : " + JSON.stringify(jsonResponse));
+                        someMessage = jsonResponse
+                    }
                     complete++;
                     for (var i = 0; i < jsonResponse.body.payload.headers.length; i++) {
                         if (jsonResponse.body.payload.headers[i].name.toString().toUpperCase() == "Subject".toUpperCase()) {
@@ -534,10 +538,10 @@ class GmailOperations {
                             if (subject === '') {
                                 subject = "no subject";
                             }
-                            list.add({ 
+                            list.add({
                                 "id": element.id,
                                 "subject": subject
-                             });
+                            });
                             break;
                         }
                     }
