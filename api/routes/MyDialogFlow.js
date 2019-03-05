@@ -466,6 +466,7 @@ async function emailMessagesGetFollowupContactName() {
     let resultToken = await gmailAuth.getToken()
     switch (resultToken.status) {
         case 1:
+            let token = resultToken.data
             let params = agent.context.contexts.getting_mails.parameters;
             let contact_name = agent.parameters.contact_name;
 
