@@ -500,11 +500,14 @@ class GmailOperations {
                 state = "from";
             baseLink = baseLink + ` ${state}:${name}`;
         }
-        if (count) {
+        if (!count) {
             baseLink = baseLink + `&maxResults=${count}`;
-        }else{
+        } else {
             count = 5
+            baseLink = baseLink + `&maxResults=${count}`;
+
         }
+
         let link = `${baseLink}&access_token=${token}`;
         console.log(link);
         let promise = new Promise((resolve, reject) => {
@@ -540,7 +543,7 @@ class GmailOperations {
                             if (subject === '') {
                                 subject = "no subject";
                             }
-                            
+
                             break;
                         }
                     }
@@ -548,7 +551,7 @@ class GmailOperations {
 
                     list.add({
                         "id": element.id,
-                        "threadId" : jsonResponse.body.threadId, 
+                        "threadId": jsonResponse.body.threadId,
                         "snippet": jsonResponse.body.snippet,
                         "subject": subject,
 
