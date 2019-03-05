@@ -500,7 +500,7 @@ class GmailOperations {
                 state = "from";
             baseLink = baseLink + ` ${state}:${name}`;
         }
-        if (!count) {
+        if (count) {
             baseLink = baseLink + `&maxResults=${count}`;
         } else {
             count = 5

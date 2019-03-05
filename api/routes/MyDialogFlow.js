@@ -475,14 +475,20 @@ async function emailMessagesGetFollowupContactName() {
     let date = params.date;
     let state = params.state;
     let count = params.count;
-    let result = await gmailOps.queryMessages(date, contact_name, state, count);
-    console.log(result);
-    result = {
-        'data': result
-    }
-    result = await gmailOps.gettingListSubjectFromMessageId(result);
-    result.forEach(element => {
+    let result = await gmailOps.queryMessages(token, date, contact_name, state, count);
+    console.log(JSON.stringify(result));
+    let messagesList = await gmailOps.getListMessagesFromListOfIds(result.messages, token);
+    messagesList.forEach(element => {
         agent.add(element.subject);
+    });
+
+    agent.context.set({
+        'name': Constants.handling_mail_context,
+        'lifespan': Constants.default_context_life_span,
+        'parameters': {
+            'fromIntent': Constants.emailMessagesGetFollowupDateText,
+            'result': messagesList
+        }
     });
 }
 async function emailMessagesGetFollowupCount() {
