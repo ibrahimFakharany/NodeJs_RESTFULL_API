@@ -534,7 +534,7 @@ class GmailOperations {
                             if (subject === '') {
                                 subject = "no subject";
                             }
-                            list.add({ "id": messageId, "subject": subject });
+                            list.add({ "id": element.id, "subject": subject });
                             break;
                         }
                     }
