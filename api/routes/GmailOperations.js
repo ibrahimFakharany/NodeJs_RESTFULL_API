@@ -538,7 +538,7 @@ class GmailOperations {
                             break;
                         }
                     }
-                    if (complete == response.length) {
+                    if (complete == messagesIdsList.length) {
                         resolve(list);
                     }
                 });
