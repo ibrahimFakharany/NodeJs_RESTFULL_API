@@ -181,7 +181,7 @@ async function emailMessagesGet() {
         case 1:
             //get access token 
             deleteGetMessagesContext();
-            let jsonResult = await gmailOps.queryMessages(result.data, null, null, null, null)
+            let jsonResult = await gmailOps.queryMessages(result.data, null, null, null,5)
             // let jsonResult = await gmailOps.getMessages(result.data, - 1);
             var response = jsonResult.messages;
             let messagesList = await gmailOps.getListMessagesFromListOfIds(response, result.data);
@@ -198,31 +198,6 @@ async function emailMessagesGet() {
                     'result': messagesList
                 }
             });
-            // let list = null;
-            // switch (jsonResult.success) {
-            //     case 0:
-            //         agent.add(jsonResult.message);
-            //         break;
-            //     case 1:
-            //         list = jsonResult.result;
-            //         list.forEach(element => {
-            //             agent.add(element.subject);
-            //             console.log(element.subject);
-            //         });
-            //         agent.context.set({
-            //             'name': Constants.handling_mail_context,
-            //             'lifespan': Constants.default_context_life_span,
-            //             'parameters': {
-            //                 'fromIntent': Constants.emailMessagesGetText,
-            //                 'result': list
-            //             }
-            //         });
-
-
-            //         console.log('the get mails context setted');
-            //         break;
-            // }
-            // console.log("this is result :" + messagesList);
             break;
         case 2:
             //show login link 
@@ -234,9 +209,6 @@ async function emailMessagesGet() {
             })
             break;
     }
-
-
-
 }
 async function emailMessagesGetContactName() {
     deleteGetMessagesContext();
@@ -612,9 +584,13 @@ async function emailMessagesShowBodyFromList() {
     let subject = agent.parameters.subject
     let id = null;
     result.forEach(element => {
-        if (element.subject.toString().toUpperCase() == subject.toString().toUpperCase()) {
-            id = element.id
-        }
+        // if (element.subject.toString().toUpperCase() == subject.toString().toUpperCase()) {
+        //     id = element.id
+        // }
+
+        if (element.subject.toString().includes(subject.toString())) {
+               id = element.id
+            }
     });
     console.log("subject ", subject);
     if (id != null) {
