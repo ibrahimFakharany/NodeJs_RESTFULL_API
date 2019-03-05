@@ -185,6 +185,19 @@ async function emailMessagesGet() {
             // let jsonResult = await gmailOps.getMessages(result.data, - 1);
             var response = jsonResult.messages;
             let messagesList = await gmailOps.getListMessagesFromListOfIds(response, result.data);
+
+            messagesList.forEach(element => {
+                agent.add(element.subject);
+                console.log(element.subject);
+            });
+            agent.context.set({
+                'name': Constants.handling_mail_context,
+                'lifespan': Constants.default_context_life_span,
+                'parameters': {
+                    'fromIntent': Constants.emailMessagesGetText,
+                    'result': messagesList
+                }
+            });
             // let list = null;
             // switch (jsonResult.success) {
             //     case 0:
