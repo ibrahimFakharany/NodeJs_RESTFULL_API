@@ -517,7 +517,7 @@ class GmailOperations {
     }
 
 
-    async getListMessagesFromListOfIds(messagesIdsList) {
+    async getListMessagesFromListOfIds(messagesIdsList, token) {
         let list = new ArrayList;
         var complete = 0;
         let promise = new Promise((resolve, reject) => {

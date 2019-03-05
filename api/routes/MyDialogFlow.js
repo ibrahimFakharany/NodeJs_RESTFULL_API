@@ -184,7 +184,7 @@ async function emailMessagesGet() {
             let jsonResult = await gmailOps.queryMessages(result.data, null, null, null, null)
             // let jsonResult = await gmailOps.getMessages(result.data, - 1);
             var response = jsonResult.messages;
-           let messagesList =await   gmailOps.getListMessagesFromListOfIds(response);
+            let messagesList = await gmailOps.getListMessagesFromListOfIds(response, result.data);
             // let list = null;
             // switch (jsonResult.success) {
             //     case 0:
