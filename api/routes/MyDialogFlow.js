@@ -181,8 +181,9 @@ async function emailMessagesGet() {
         case 1:
             //get access token 
             deleteGetMessagesContext();
-
-            let jsonResult = await gmailOps.getMessages(result.data, - 1);
+            let jsonResult = await gmailOps.queryMessages(result.data,null,null,null,null)
+console.log("json result : "+jsonResult)
+            // let jsonResult = await gmailOps.getMessages(result.data, - 1);
             let list = null;
             switch (jsonResult.success) {
                 case 0:
@@ -610,7 +611,6 @@ async function emailMessagesShowBodyFromList() {
         console.log("msg :", msg);
         agent.add(gmailOps.decodeMessageBody(msg.body))
 
-        // agent.add(gmailOps.decodeMessageBody(msg.body));
         agent.context.set({
             'name': Constants.handling_mail_context,
             'lifespan': Constants.default_context_life_span,
@@ -709,4 +709,4 @@ async function emailMessageSendingReply() {
     agent.add(reply);
 }
 
-module.exports = router;  
+module.exports = router;    
