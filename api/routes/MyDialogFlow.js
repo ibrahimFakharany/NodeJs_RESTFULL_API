@@ -427,7 +427,6 @@ async function emailMessagesGetFollowupDate() {
                 agent.add(element.subject);
             });           
 
-
             agent.context.set({
                 'name': Constants.handling_mail_context,
                 'lifespan': Constants.default_context_life_span,
