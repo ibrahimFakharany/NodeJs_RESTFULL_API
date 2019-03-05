@@ -182,32 +182,63 @@ async function emailMessagesGet() {
             //get access token 
             deleteGetMessagesContext();
             let jsonResult = await gmailOps.queryMessages(result.data, null, null, null, null)
-            console.log("json result : " + JSON.stringify(jsonResult));
             // let jsonResult = await gmailOps.getMessages(result.data, - 1);
-            let list = null;
-            switch (jsonResult.success) {
-                case 0:
-                    agent.add(jsonResult.message);
-                    break;
-                case 1:
-                    list = jsonResult.result;
-                    list.forEach(element => {
-                        agent.add(element.subject);
-                        console.log(element.subject);
-                    });
-                    agent.context.set({
-                        'name': Constants.handling_mail_context,
-                        'lifespan': Constants.default_context_life_span,
-                        'parameters': {
-                            'fromIntent': Constants.emailMessagesGetText,
-                            'result': list
+            var response = jsonResult.messages;
+            let list = new ArrayList;
+            var complete = 0;
+            let promise = new Promise((resolve, reject) => {
+                jsonResult.messages.forEach(element => {
+                    request('https://www.googleapis.com/gmail/v1/users/me/messages/' + element.id + '?access_token=' + token, { json: true }, (err, res, body) => {
+                        if (err) { return console.log(err); }
+                        let stringResponse = JSON.stringify(res);
+                        let jsonResponse = JSON.parse(stringResponse);
+                        console.log("json response :" + JSON.stringify(jsonResponse));
+                        complete++;
+                        for (var i = 0; i < jsonResponse.body.payload.headers.length; i++) {
+                            if (jsonResponse.body.payload.headers[i].name.toString().toUpperCase() == "Subject".toUpperCase()) {
+                                var subject = jsonResponse.body.payload.headers[i].value;
+                                if (subject === '') {
+                                    subject = "no subject";
+                                }
+                                list.add({ "id": messageId, "subject": subject });
+                                break;
+                            }
+                        }
+                        if (complete == response.length) {
+                            resolve(list);
                         }
                     });
 
+                });
+            });
 
-                    console.log('the get mails context setted');
-                    break;
-            }
+            let result = await promise;
+            console.log("this is result :"+result);
+        
+            // let list = null;
+            // switch (jsonResult.success) {
+            //     case 0:
+            //         agent.add(jsonResult.message);
+            //         break;
+            //     case 1:
+            //         list = jsonResult.result;
+            //         list.forEach(element => {
+            //             agent.add(element.subject);
+            //             console.log(element.subject);
+            //         });
+            //         agent.context.set({
+            //             'name': Constants.handling_mail_context,
+            //             'lifespan': Constants.default_context_life_span,
+            //             'parameters': {
+            //                 'fromIntent': Constants.emailMessagesGetText,
+            //                 'result': list
+            //             }
+            //         });
+
+
+            //         console.log('the get mails context setted');
+            //         break;
+            // }
 
             break;
         case 2:
@@ -355,7 +386,7 @@ async function emailMessagesGetCountSingle() {
         case 1:
             let jsonResult = await gmailOps.getMessagesWithLimit(result.data, 1);
             console.log(JSON.stringify(jsonResult));
-            var message = await gmailOps.getMessagesByMessageId(jsonResult.body.messages[0].id);
+            var message = await gmailOps.getMessageByMessageId(jsonResult.body.messages[0].id);
             let operation = new Operations();
             let msg = operation.getMsg(message);
             var msgData = msg
@@ -540,7 +571,7 @@ async function selectingEmail() {
         if (message == null || typeof message === 'undefined') {
             // get the message and send it
             let id = msg.id;
-            returnedMessage = await gmailOps.getMessagesByMessageId(id);
+            returnedMessage = await gmailOps.getMessageByMessageId(id);
         } else {
             returnedMessage = message;
         }
@@ -605,7 +636,7 @@ async function emailMessagesShowBodyFromList() {
     console.log("subject ", subject);
     if (id != null) {
         console.log("id ", id);
-        let message = await gmailOps.getMessagesByMessageId(id);
+        let message = await gmailOps.getMessageByMessageId(id);
         var operation = new Operations();
         let msg = operation.getMsg(message);
         console.log("msg :", msg);
@@ -637,7 +668,7 @@ async function emailMessageForward() {
         if (message == null || typeof message === 'undefined') {
             // getting the message by the id
             let id = msg.id;
-            let message = await gmailOps.getMessagesByMessageId(id);
+            let message = await gmailOps.getMessageByMessageId(id);
             let agentMessage = await gmailOps.forwardMessage(auth, message, email, msg.deliveredTo);
             agent.add(agentMessage);
         } else {
@@ -679,7 +710,7 @@ async function emailMessageForward() {
             if (message == null || typeof message === 'undefined') {
                 // get the message and send it
                 let id = msg.id;
-                returnedMessage = await gmailOps.getMessagesByMessageId(id);
+                returnedMessage = await gmailOps.getMessageByMessageId(id);
             } else {
                 returnedMessage = message;
             }
@@ -701,7 +732,7 @@ async function emailMessageSendingReply() {
     if (message == null || message == 'undefined') {
         // getting message with the id
         let id = msg.id;
-        message = await gmailOps.getMessagesByMessageId(id);
+        message = await gmailOps.getMessageByMessageId(id);
     }
     let userReply = agent.parameters.reply;
     console.log('message ' + message);
