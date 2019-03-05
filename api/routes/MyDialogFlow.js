@@ -172,9 +172,9 @@ function deleteGetMessagesContext() {
     agent.context.set({
         'name': Constants.getting_mails,
         'lifespan': 0,
-         'parameters': {
-             "result": null 
-         }
+        'parameters': {
+            "result": null
+        }
     });
 }
 async function emailMessagesGet() {
@@ -183,7 +183,7 @@ async function emailMessagesGet() {
     switch (result.status) {
         case 1:
             //get access token 
-            let jsonResult = await gmailOps.queryMessages(result.data, null, null, null,5)
+            let jsonResult = await gmailOps.queryMessages(result.data, null, null, null, 5)
             // let jsonResult = await gmailOps.getMessages(result.data, - 1);
             var response = jsonResult.messages;
             let messagesList = await gmailOps.getListMessagesFromListOfIds(response, result.data);
@@ -591,8 +591,8 @@ async function emailMessagesShowBodyFromList() {
         // }
 
         if (element.subject.toString().includes(subject.toString())) {
-               id = element.id
-            }
+            id = element.id
+        }
     });
     console.log("subject ", subject);
     if (id != null) {
