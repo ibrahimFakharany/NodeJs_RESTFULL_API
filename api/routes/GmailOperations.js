@@ -538,13 +538,19 @@ class GmailOperations {
                             if (subject === '') {
                                 subject = "no subject";
                             }
-                            list.add({
-                                "id": element.id,
-                                "subject": subject
-                            });
+                            
                             break;
                         }
                     }
+
+
+                    list.add({
+                        "id": element.id,
+                        "threadId" : jsonResponse.body.threadId, 
+                        "snippet": jsonResponse.body.snippet,
+                        "subject": subject,
+
+                    });
                     if (complete == messagesIdsList.length) {
                         resolve(list);
                     }
