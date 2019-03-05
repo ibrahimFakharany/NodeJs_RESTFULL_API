@@ -526,7 +526,7 @@ class GmailOperations {
                     if (err) { return console.log(err); }
                     let stringResponse = JSON.stringify(res);
                     let jsonResponse = JSON.parse(stringResponse);
-                    console.log("json response :" + JSON.stringify(jsonResponse));
+                    console.log("this is message : " + jsonResponse);
                     complete++;
                     for (var i = 0; i < jsonResponse.body.payload.headers.length; i++) {
                         if (jsonResponse.body.payload.headers[i].name.toString().toUpperCase() == "Subject".toUpperCase()) {
@@ -534,7 +534,11 @@ class GmailOperations {
                             if (subject === '') {
                                 subject = "no subject";
                             }
-                            list.add({ "id": element.id, "subject": subject });
+                            list.add({ 
+                                "id": element.id,
+                                "subject": subject,
+                                "snippet":snippet
+                             });
                             break;
                         }
                     }
@@ -547,7 +551,7 @@ class GmailOperations {
         });
 
         let messagesList = await promise;
-        console.log("this is result :" + messagesList);
+        // console.log("this is result :" + messagesList);
     }
 }
 module.exports = GmailOperations;

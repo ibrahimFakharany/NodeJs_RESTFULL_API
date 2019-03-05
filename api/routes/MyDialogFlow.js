@@ -209,7 +209,7 @@ async function emailMessagesGet() {
             //         console.log('the get mails context setted');
             //         break;
             // }
-            console.log("this is result :" + messagesList);
+            // console.log("this is result :" + messagesList);
             break;
         case 2:
             //show login link 
