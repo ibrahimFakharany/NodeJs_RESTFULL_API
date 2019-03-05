@@ -461,35 +461,50 @@ async function emailMessagesGetFollowupDate() {
 
 }
 async function emailMessagesGetFollowupContactName() {
-    let params = agent.context.contexts.getting_mails.parameters;
-    let contact_name = agent.parameters.contact_name;
+
     // set date in the context 
-    params.contact_name = contact_name
-    agent.context.set({
-        'name':Constants.getting_mails,
-        'lifespan': Constants.default_context_life_span,
-        'parameters': params
-    });
+    let resultToken = await gmailAuth.getToken()
+    switch (resultToken.status) {
+        case 1:
+            let params = agent.context.contexts.getting_mails.parameters;
+            let contact_name = agent.parameters.contact_name;
 
-    // query
-    let date = params.date;
-    let state = params.state;
-    let count = params.count;
-    let result = await gmailOps.queryMessages(token, date, contact_name, state, count);
-    console.log(JSON.stringify(result));
-    let messagesList = await gmailOps.getListMessagesFromListOfIds(result.messages, token);
-    messagesList.forEach(element => {
-        agent.add(element.subject);
-    });
+            params.contact_name = contact_name
+            agent.context.set({
+                'name': Constants.getting_mails,
+                'lifespan': Constants.default_context_life_span,
+                'parameters': params
+            });
 
-    agent.context.set({
-        'name': Constants.handling_mail_context,
-        'lifespan': Constants.default_context_life_span,
-        'parameters': {
-            'fromIntent': Constants.emailMessagesGetFollowupDateText,
-            'result': messagesList
-        }
-    });
+            // query
+            let date = params.date;
+            let state = params.state;
+            let count = params.count;
+            let result = await gmailOps.queryMessages(token, date, contact_name, state, count);
+            console.log(JSON.stringify(result));
+            let messagesList = await gmailOps.getListMessagesFromListOfIds(result.messages, token);
+            messagesList.forEach(element => {
+                agent.add(element.subject);
+            });
+
+            agent.context.set({
+                'name': Constants.handling_mail_context,
+                'lifespan': Constants.default_context_life_span,
+                'parameters': {
+                    'fromIntent': Constants.emailMessagesGetFollowupDateText,
+                    'result': messagesList
+                }
+            });
+            break;
+        case 2:
+            agent.add(result.data);
+            agent.context.set({
+                'name': 'handling_registration',
+                'lifespan': 1
+            })
+            break;
+    }
+
 }
 async function emailMessagesGetFollowupCount() {
     let params = agent.context.contexts.getting_mails.parameters
