@@ -182,7 +182,7 @@ async function emailMessagesGet() {
             //get access token 
             deleteGetMessagesContext();
             let jsonResult = await gmailOps.queryMessages(result.data, null, null, null, null)
-            console.log("json result : " + json.stringify(jsonResult));
+            console.log("json result : " + JSON.stringify(jsonResult));
             // let jsonResult = await gmailOps.getMessages(result.data, - 1);
             let list = null;
             switch (jsonResult.success) {
