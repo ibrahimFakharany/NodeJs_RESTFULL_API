@@ -171,16 +171,18 @@ function handlingDefaultFallbackIntent() {
 function deleteGetMessagesContext() {
     agent.context.set({
         'name': Constants.getting_mails,
-        'lifespan': 0
+        'lifespan': 0,
+         'parameters': {
+             "result": null 
+         }
     });
 }
 async function emailMessagesGet() {
-
+    deleteGetMessagesContext();
     let result = await gmailAuth.getToken();
     switch (result.status) {
         case 1:
             //get access token 
-            deleteGetMessagesContext();
             let jsonResult = await gmailOps.queryMessages(result.data, null, null, null,5)
             // let jsonResult = await gmailOps.getMessages(result.data, - 1);
             var response = jsonResult.messages;
@@ -594,7 +596,6 @@ async function emailMessagesShowBodyFromList() {
     });
     console.log("subject ", subject);
     if (id != null) {
-        console.log("id ", id);
         let message = await gmailOps.getMessageByMessageId(id);
         var operation = new Operations();
         let msg = operation.getMsg(message);
@@ -605,8 +606,7 @@ async function emailMessagesShowBodyFromList() {
             'name': Constants.handling_mail_context,
             'lifespan': Constants.default_context_life_span,
             'parameters': {
-                'msg': msg,
-                'message': message
+                'msg': msg
             }
         });
     } else {

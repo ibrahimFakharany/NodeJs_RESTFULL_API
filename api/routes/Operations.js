@@ -71,7 +71,7 @@ class Operations {
             "date": date,
             "messageId": messageId,
             "body": body,
-            "mimeType": mimeType
+            "mimeType": mimeType,
         }
     }
 }
