@@ -23,7 +23,7 @@ router.post('/', (req, server_response, next) => {
         request: req,
         response: server_response
     });
-    console.log("intent display name :"+request.queryResult.intent.displayName)
+    console.log("intent display name :"+req.queryResult.intent.displayName)
     let intentMap = new Map();
     intentMap.set('email.send.message_full_text', fullAddressEmailSending);
     intentMap.set('email.send.message_contact', messageContactEmailSending);
