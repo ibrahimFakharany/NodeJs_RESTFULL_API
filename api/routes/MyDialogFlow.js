@@ -461,7 +461,7 @@ async function emailMessagesGetFollowupDate() {
 
 }
 async function emailMessagesGetFollowupContactName() {
-    let params = agent.context.contexts.getting_mails.parameters
+    let params = agent.context.contexts.getting_mails.parameters;
     let contact_name = agent.parameters.contact_name;
     // set date in the context 
     params.contact_name = contact_name
