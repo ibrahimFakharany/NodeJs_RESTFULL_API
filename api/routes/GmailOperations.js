@@ -536,8 +536,8 @@ class GmailOperations {
                             }
                             list.add({ 
                                 "id": element.id,
-                                "subject": subject,
-                                "snippet":snippet
+                                "subject": subject
+                               
                              });
                             break;
                         }
