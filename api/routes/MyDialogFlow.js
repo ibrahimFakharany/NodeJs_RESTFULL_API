@@ -424,7 +424,7 @@ async function emailMessagesGetFollowupDate() {
             params.date = date
             agent.context.set({
                 'name': Constants.getting_mails,
-                'lifespan': default_context_life_span,
+                'lifespan': Constants.default_context_life_span,
                 'parameters': params
             });
 
@@ -446,8 +446,6 @@ async function emailMessagesGetFollowupDate() {
                     'result': messagesList
                 }
             });
-
-
 
             break;
 
